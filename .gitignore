@@ -1,0 +1,9 @@
+# IDE Files
+.idea
+.vs
+
+# Security Files
+security
+
+# Logs
+logs
