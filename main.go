@@ -2,12 +2,18 @@ package main
 
 import (
 	"BizMart/db"
+	"BizMart/logger"
 	"BizMart/routes"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	err := db.ConnectToDB()
+	err := logger.Init()
+	if err != nil {
+		panic(err)
+	}
+
+	err = db.ConnectToDB()
 	if err != nil {
 		panic(err)
 	}
