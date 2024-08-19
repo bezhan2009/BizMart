@@ -7,7 +7,12 @@ import (
 )
 
 func main() {
-	err := db.Migrate()
+	err := db.ConnectToDB()
+	if err != nil {
+		panic(err)
+	}
+
+	err = db.Migrate()
 	if err != nil {
 		panic(err)
 	}
@@ -15,4 +20,8 @@ func main() {
 	router := gin.Default()
 
 	routes.SetupRouter(router)
+	err = router.Run(":8080")
+	if err != nil {
+		panic(err)
+	}
 }
