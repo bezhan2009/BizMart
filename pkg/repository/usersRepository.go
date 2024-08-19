@@ -4,6 +4,7 @@ import (
 	"BizMart/db"
 	"BizMart/logger"
 	"BizMart/models"
+	"gorm.io/gorm"
 )
 
 func GetAllUsers() (users []models.User, err error) {
@@ -25,14 +26,36 @@ func GetUserByID(id uint) (user models.User, err error) {
 	return user, nil
 }
 
-func GetUserByUsername(username string) (user models.User, err error) {
-	err = db.GetDBConn().Where("username = ?", username).First(&user).Error
+func GetUserByUsername(username string) (*models.User, error) {
+	var user models.User
+	err := db.GetDBConn().Where("username = ?", username).First(&user).Error
+
 	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
 		logger.Error.Printf("[repository.GetUserByUsername] error getting user by username: %v\n", err)
-		return user, err
+		return nil, err
+	}
+	return &user, nil
+}
+
+func UserExists(username, email string) (bool, bool, error) {
+	users, err := GetAllUsers()
+	if err != nil {
+		return false, false, err
 	}
 
-	return user, nil
+	var usernameExists, emailExists bool
+	for _, user := range users {
+		if user.Username == username {
+			usernameExists = true
+		}
+		if user.Email == email {
+			emailExists = true
+		}
+	}
+	return usernameExists, emailExists, nil
 }
 
 func CreateUser(user models.User) (err error) {

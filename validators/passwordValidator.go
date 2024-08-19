@@ -2,7 +2,6 @@ package validators
 
 import (
 	"BizMart/validators/utils"
-	"unicode"
 )
 
 func Password(password string) bool {
@@ -15,11 +14,6 @@ func Password(password string) bool {
 			if string(char) == sym {
 				return false
 			}
-		}
-
-		// Проверка на принадлежность к латинским буквам и числам
-		if !unicode.IsLetter(char) && !unicode.IsDigit(char) {
-			return false
 		}
 
 		// Проверка на принадлежность к алфавитным символам (например, A-Z, a-z)
