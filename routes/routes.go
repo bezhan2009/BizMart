@@ -14,6 +14,12 @@ func SetupRouter(r *gin.Engine) {
 		usersRoute.GET(":id", controllers.GetUserByID)
 	}
 
+	auth := r.Group("/auth")
+	{
+		auth.POST("/sign-up", SignUp)
+		auth.POST("/sign-in", SignIn)
+	}
+
 	// storeRoutes Маршруты для магазинов
 	storeRoutes := r.Group("/stores")
 	{

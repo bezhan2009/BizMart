@@ -68,3 +68,13 @@ func CreateUser(user models.User) (err error) {
 	//logger.Debug.Println(user.ID)
 	return nil
 }
+
+func GetUserByUsernameAndPassword(username string, password string) (user models.User, err error) {
+	err = db.GetDBConn().Where("username = ? AND password = ?", username, password).First(&user).Error
+	if err != nil {
+		logger.Error.Printf("[repository.GetUserByUsernameAndPassword] error getting user by username and password: %v\n", err)
+		return user, err
+	}
+
+	return user, nil
+}
