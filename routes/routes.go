@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"BizMart/middlewares"
 	"BizMart/pkg/controllers"
 	"github.com/gin-gonic/gin"
 )
@@ -16,8 +17,8 @@ func SetupRouter(r *gin.Engine) {
 
 	auth := r.Group("/auth")
 	{
-		auth.POST("/sign-up", SignUp)
-		auth.POST("/sign-in", SignIn)
+		auth.POST("/sign-up", controllers.SignUp)
+		auth.POST("/sign-in", controllers.SignIn)
 	}
 
 	// storeRoutes Маршруты для магазинов
@@ -25,9 +26,9 @@ func SetupRouter(r *gin.Engine) {
 	{
 		storeRoutes.GET("/")
 		storeRoutes.GET("/:id")
-		storeRoutes.POST("/")
-		storeRoutes.PUT("/:id")
-		storeRoutes.DELETE("/:id")
+		storeRoutes.POST("/", middlewares.CheckUserAuthentication)
+		storeRoutes.PUT("/:id", middlewares.CheckUserAuthentication)
+		storeRoutes.DELETE("/:id", middlewares.CheckUserAuthentication)
 	}
 
 	// reviewRoutes Маршруты для отзывов на магазины
@@ -35,8 +36,8 @@ func SetupRouter(r *gin.Engine) {
 	{
 		reviewRoutes.GET("/")
 		reviewRoutes.GET("/:id")
-		reviewRoutes.POST("/")
-		reviewRoutes.PUT("/:id")
-		reviewRoutes.DELETE("/:id")
+		reviewRoutes.POST("/", middlewares.CheckUserAuthentication)
+		reviewRoutes.PUT("/:id", middlewares.CheckUserAuthentication)
+		reviewRoutes.DELETE("/:id", middlewares.CheckUserAuthentication)
 	}
 }

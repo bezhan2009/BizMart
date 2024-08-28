@@ -11,14 +11,19 @@ import (
 var dbConn *gorm.DB
 
 func ConnectToDB() error {
-	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s", security.HostName, security.Port, security.UserName, security.Password, security.DBName, security.SSLMode)
+	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
+		security.HostName,
+		security.Port,
+		security.UserName,
+		security.Password,
+		security.DBName,
+		security.SSLMode,
+	)
 
 	db, err := gorm.Open(postgres.Open(connStr), &gorm.Config{})
 	if err != nil {
 		return err
 	}
-
-	fmt.Println("Connected to database")
 
 	dbConn = db
 	return nil
