@@ -4,3 +4,7 @@
 
 # Logs
 logs
+
+# Security Files
+configs/configs.json
+.env

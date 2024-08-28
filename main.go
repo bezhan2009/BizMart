@@ -17,7 +17,10 @@ var err error
 func main() {
 	err = godotenv.Load(".env")
 	if err != nil {
-		panic(errors.New(fmt.Sprintf("error loading .env file. Error is %s", err)))
+		err = godotenv.Load("example.env")
+		if err != nil {
+			panic(errors.New(fmt.Sprintf("error loading .env file. Error is %s", err)))
+		}
 	}
 
 	security.AppSettings, err = configs.ReadSettings()
