@@ -14,9 +14,9 @@ var (
 	SSLMode  string
 )
 
-func SetConnDB(AppSettings models.Configs) {
+func SetConnDB(AppSettingsConfig models.Configs) {
+	AppSettings = AppSettingsConfig
 	var postgresParams = AppSettings.PostgresParams
-
 	HostName = postgresParams.Host
 	Port = postgresParams.Port
 	UserName = postgresParams.User

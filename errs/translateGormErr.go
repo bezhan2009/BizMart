@@ -2,7 +2,7 @@ package errs
 
 import (
 	"errors"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 func TranslateGormError(err error) error {

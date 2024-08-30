@@ -59,21 +59,41 @@ func UserExists(username, email string) (bool, bool, error) {
 	return usernameExists, emailExists, nil
 }
 
-func CreateUser(user models.User) (err error) {
+func CreateUser(user models.User) (id uint, err error) {
 	//logger.Debug.Println(user.ID)
 	if err = db.GetDBConn().Create(&user).Error; err != nil {
 		logger.Error.Printf("[repository.CreateUser] error creating user: %v\n", err)
-		return errs.TranslateGormError(err)
+		return 0, errs.TranslateGormError(err)
 	}
 
 	//logger.Debug.Println(user.ID)
-	return nil
+	return user.ID, nil
 }
 
 func GetUserByUsernameAndPassword(username string, password string) (user models.User, err error) {
-	err = db.GetDBConn().Where("username = ? AND password = ?", username, password).First(&user).Error
+	err = db.GetDBConn().Where("username = ? AND hash_password = ?", username, password).First(&user).Error
 	if err != nil {
 		logger.Error.Printf("[repository.GetUserByUsernameAndPassword] error getting user by username and password: %v\n", err)
+		return user, errs.TranslateGormError(err)
+	}
+
+	return user, nil
+}
+
+func GetUserByEmailAndPassword(email string, password string) (user models.User, err error) {
+	err = db.GetDBConn().Where("email = ? AND hash_password = ?", email, password).First(&user).Error
+	if err != nil {
+		logger.Error.Printf("[repository.GetUserByEmailAndPassword] error getting user by email and password: %v\n", err)
+		return user, errs.TranslateGormError(err)
+	}
+
+	return user, nil
+}
+
+func GetUserByEmailPasswordAndUsername(username, email, password string) (user models.User, err error) {
+	err = db.GetDBConn().Where("email = ? AND hash_password = ? AND username = ?", email, password, username).First(&user).Error
+	if err != nil {
+		logger.Error.Printf("[repository.GetUserByEmailPasswordAndUsername] error getting user by username, email and password: %v\n", err)
 		return user, errs.TranslateGormError(err)
 	}
 

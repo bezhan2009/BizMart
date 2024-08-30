@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	"BizMart/pkg/service"
+	"BizMart/utils"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -40,7 +40,7 @@ func CheckUserAuthentication(c *gin.Context) {
 
 	accessToken := headerParts[1]
 
-	claims, err := service.ParseToken(accessToken)
+	claims, err := utils.ParseToken(accessToken)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return

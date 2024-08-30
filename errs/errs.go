@@ -4,8 +4,17 @@ import "errors"
 
 var (
 	ErrUsernameUniquenessFailed    = errors.New("ErrUsernameUniquenessFailed")
-	ErrOperationNotFound           = errors.New("ErrOperationNotFound")
 	ErrIncorrectUsernameOrPassword = errors.New("ErrIncorrectUsernameOrPassword")
+	ErrEmailUniquenessFailed       = errors.New("ErrEmailUniquenessFailed")
 	ErrRecordNotFound              = errors.New("ErrRecordNotFound")
 	ErrSomethingWentWrong          = errors.New("ErrSomethingWentWrong")
+	ErrInvalidData                 = errors.New("ErrInvalidData")
+	ErrInvalidDataCustom           = errors.New("ErrInvalidDataCustom")
+	ErrPasswordIsEmpty             = errors.New("ErrPasswordIsEmpty")
+	ErrPasswordIncorrect           = errors.New("ErrPasswordIncorrect")
+	ErrEmailIsEmpty                = errors.New("ErrEmailIsEmpty")
+	ErrUsernameIsEmpty             = errors.New("ErrUsernameIsEmpty")
+	ErrUsernameOrEmailIsEmpty      = errors.New("ErrUsernameOrEmailIsEmpty")
+	ErrUsernameOrPasswordIsEmpty   = errors.New("ErrUsernameOrPasswordIsEmpty")
+	ErrEmailOrPasswordIsEmpty      = errors.New("ErrEmailOrPasswordIsEmpty")
 )

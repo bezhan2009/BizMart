@@ -1,10 +1,11 @@
 package service
 
 import (
+	"BizMart/errs"
+	"BizMart/logger"
 	"BizMart/models"
-	"BizMart/pkg/algorithms/PasswordAlgoritm"
 	"BizMart/pkg/repository"
-	"BizMart/validators"
+	"BizMart/utils"
 	"fmt"
 )
 
@@ -26,34 +27,33 @@ func GetUserByID(id uint) (user models.User, err error) {
 	return user, nil
 }
 
-func CreateUser(user models.User) error {
+func CreateUser(user models.User) (uint, error) {
 	usernameExists, emailExists, err := repository.UserExists(user.Username, user.Email)
 	if err != nil {
-		return fmt.Errorf("failed to check existing user: %w", err)
+		return 0, fmt.Errorf("failed to check existing user: %w", err)
 	}
 
 	if user.HashPassword == "" || user.Email == "" || user.Username == "" {
-		return fmt.Errorf("invalid data")
+		return 0, errs.ErrInvalidDataCustom
 	}
-
-	isValid := validators.Password(user.HashPassword)
-
-	if !isValid {
-		return fmt.Errorf("invalid password")
-	}
-	user.HashPassword = PasswordAlgoritm.Usage(user.HashPassword, true)
 
 	if usernameExists {
-		return fmt.Errorf("user with username %s already exists", user.Username)
+		logger.Error.Printf("user with username %s already exists", user.Username)
+		return 0, errs.ErrUsernameUniquenessFailed
 	}
 
 	if emailExists {
-		return fmt.Errorf("user with email %s already exists", user.Email)
+		logger.Error.Printf("user with email %s already exists", user.Email)
+		return 0, errs.ErrEmailUniquenessFailed
 	}
 
-	if err := repository.CreateUser(user); err != nil {
-		return fmt.Errorf("failed to create user: %w", err)
+	user.HashPassword = utils.GenerateHash(user.HashPassword)
+
+	var userID uint
+
+	if userID, err = repository.CreateUser(user); err != nil {
+		return 0, fmt.Errorf("failed to create user: %w", err)
 	}
 
-	return nil
+	return userID, nil
 }
