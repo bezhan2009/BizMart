@@ -61,8 +61,8 @@ type Product struct {
 	Description      string         `gorm:"not null" json:"description"`
 	Price            float64        `gorm:"not null" json:"price"`
 	Amount           int            `gorm:"not null" json:"amount"`
-	DefaultAccountID *uint          `gorm:"default:NULL" json:"default_account_id,omitempty"`
-	DefaultAccount   *Account       `gorm:"foreignKey:DefaultAccountID"`
+	DefaultAccountID uint           `gorm:"default:NULL" json:"default_account_id,omitempty"`
+	DefaultAccount   Account        `gorm:"foreignKey:DefaultAccountID"`
 	IsDeleted        bool           `gorm:"default:false" json:"is_deleted"`
 	Views            int            `gorm:"default:0" json:"views"`
 	CreatedAt        time.Time      `json:"created_at"`
@@ -173,4 +173,56 @@ type Payment struct {
 	CreatedAt time.Time      `json:"created_at"`
 	UpdatedAt time.Time      `json:"updated_at"`
 	DeletedAt gorm.DeletedAt `json:"-" gorm:"index"`
+}
+
+func (Account) TableName() string {
+	return "accountapp_account"
+}
+
+func (Order) TableName() string {
+	return "orderapp_order"
+}
+
+func (OrderDetails) TableName() string {
+	return "orderapp_orderdetails"
+}
+
+func (OrderStatus) TableName() string {
+	return "orderapp_orderstatus"
+}
+
+func (FeaturedProduct) TableName() string {
+	return "featured_productapp_featuredproduct"
+}
+
+func (Payment) TableName() string {
+	return "payapp_payment"
+}
+
+func (Product) TableName() string {
+	return "productapp_product"
+}
+
+func (Address) TableName() string {
+	return "addressapp_address"
+}
+
+func (UserProfile) TableName() string {
+	return "userapp_userprofile"
+}
+
+func (Review) TableName() string {
+	return "reviewapp_review"
+}
+
+func (Comment) TableName() string {
+	return "commentapp_comment"
+}
+
+func (Category) TableName() string {
+	return "categoryapp_category"
+}
+
+func (ProductImage) TableName() string {
+	return "productapp_productimage"
 }

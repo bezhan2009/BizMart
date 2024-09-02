@@ -40,4 +40,15 @@ func SetupRouter(r *gin.Engine) {
 		reviewRoutes.PUT("/:id", middlewares.CheckUserAuthentication)
 		reviewRoutes.DELETE("/:id", middlewares.CheckUserAuthentication)
 	}
+
+	r.GET("hash-password", middlewares.CheckSecretKey, controllers.HashPassword)
+
+	categoryRoutes := r.Group("/category")
+	{
+		categoryRoutes.GET("/", controllers.GetAllCategories)
+		categoryRoutes.GET("/:id", controllers.GetCategoryById)
+		categoryRoutes.POST("/", middlewares.CheckUserAuthentication, middlewares.CheckAdmin, controllers.CreateCategory)
+		categoryRoutes.PUT("/", middlewares.CheckUserAuthentication, middlewares.CheckAdmin, controllers.UpdateCategory)
+		categoryRoutes.DELETE("/", middlewares.CheckUserAuthentication, middlewares.CheckAdmin, controllers.DeleteCategory)
+	}
 }

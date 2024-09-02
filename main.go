@@ -51,4 +51,11 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	defer func() {
+		err := db.CloseDBConn()
+		if err != nil {
+			panic(err.Error())
+		}
+	}()
 }
