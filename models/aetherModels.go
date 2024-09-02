@@ -53,8 +53,8 @@ type Category struct {
 // Product represents a product in the system.
 type Product struct {
 	ID               uint           `json:"id" gorm:"primaryKey"`
-	UserID           uint           `gorm:"not null" json:"user_id"`
-	User             User           `gorm:"foreignKey:UserID"`
+	StoreID          uint           `gorm:"not null" json:"store_id"`
+	Store            Store          `gorm:"foreignKey:StoreID" json:"store"`
 	CategoryID       uint           `gorm:"not null" json:"category_id"`
 	Category         Category       `gorm:"foreignKey:CategoryID;constraint:OnDelete:CASCADE;"`
 	Title            string         `gorm:"size:100;not null" json:"title"`
