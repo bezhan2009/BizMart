@@ -9,3 +9,4 @@ logs
 configs/configs.json
 .env
 server.exe
+server.exe~
