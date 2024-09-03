@@ -1,4 +1,4 @@
-package controllers
+package Users
 
 import (
 	"BizMart/logger"

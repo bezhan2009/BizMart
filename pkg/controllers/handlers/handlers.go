@@ -1,4 +1,4 @@
-package controllers
+package handlers
 
 import (
 	"BizMart/errs"
@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func handleError(c *gin.Context, err error) {
+func HandleError(c *gin.Context, err error) {
 	if errors.Is(err, errs.ErrUsernameUniquenessFailed) ||
 		errors.Is(err, errs.ErrIncorrectUsernameOrPassword) ||
 		errors.Is(err, errs.ErrIncorrectUsernameOrPassword) {

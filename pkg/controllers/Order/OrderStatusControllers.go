@@ -1,9 +1,10 @@
-package controllers
+package Order
 
 import (
 	"BizMart/errs"
 	"BizMart/logger"
 	"BizMart/models"
+	"BizMart/pkg/controllers/handlers"
 	"BizMart/pkg/repository/order"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -13,7 +14,7 @@ import (
 func GetAllOrderStatusses(c *gin.Context) {
 	orderStatus, err := order.GetAllOrderStatuses()
 	if err != nil {
-		handleError(c, err)
+		handlers.HandleError(c, err)
 		return
 	}
 
@@ -24,13 +25,13 @@ func GetOrderStatusByID(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		handleError(c, err)
+		handlers.HandleError(c, err)
 		return
 	}
 
 	orderStatus, err := order.GetOrderStatusByID(uint(id))
 	if err != nil {
-		handleError(c, err)
+		handlers.HandleError(c, err)
 		return
 	}
 
@@ -41,7 +42,7 @@ func GetOrderStatusByName(c *gin.Context) {
 	name := c.Param("name")
 	orderStatus, err := order.GetOrderStatusByName(name)
 	if err != nil {
-		handleError(c, err)
+		handlers.HandleError(c, err)
 		return
 	}
 
@@ -57,7 +58,7 @@ func CreateOrderStatus(c *gin.Context) {
 
 	orderStatusID, err := order.CreateOrderStatus(orderStatus)
 	if err != nil {
-		handleError(c, err)
+		handlers.HandleError(c, err)
 		return
 	}
 
@@ -69,13 +70,13 @@ func CreateOrderStatus(c *gin.Context) {
 func UpdateOrderStatus(c *gin.Context) {
 	orderStatusID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		handleError(c, errs.ErrValidationFailed)
+		handlers.HandleError(c, errs.ErrValidationFailed)
 		return
 	}
 
 	var OrdStat models.OrderStatus
 	if err = c.BindJSON(&OrdStat); err != nil {
-		handleError(c, errs.ErrValidationFailed)
+		handlers.HandleError(c, errs.ErrValidationFailed)
 		return
 	}
 
@@ -83,7 +84,7 @@ func UpdateOrderStatus(c *gin.Context) {
 
 	OrderStatusIDUpdated, err := order.UpdateOrderStatus(OrdStat)
 	if err != nil {
-		handleError(c, err)
+		handlers.HandleError(c, err)
 		return
 	}
 

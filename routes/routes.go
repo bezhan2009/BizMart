@@ -2,7 +2,9 @@ package routes
 
 import (
 	"BizMart/middlewares"
-	"BizMart/pkg/controllers"
+	"BizMart/pkg/controllers/Category"
+	"BizMart/pkg/controllers/Users"
+	"BizMart/pkg/controllers/handlers"
 	"github.com/gin-gonic/gin"
 )
 
@@ -10,15 +12,15 @@ func SetupRouter(r *gin.Engine) {
 	// usersRoute Маршруты для пользователей (авторизация, профили)
 	usersRoute := r.Group("/users")
 	{
-		usersRoute.GET("", controllers.GetAllUsers)
-		usersRoute.POST("", controllers.CreateUser)
-		usersRoute.GET(":id", controllers.GetUserByID)
+		usersRoute.GET("", Users.GetAllUsers)
+		usersRoute.POST("", Users.CreateUser)
+		usersRoute.GET(":id", Users.GetUserByID)
 	}
 
 	auth := r.Group("/auth")
 	{
-		auth.POST("/sign-up", controllers.SignUp)
-		auth.POST("/sign-in", controllers.SignIn)
+		auth.POST("/sign-up", Users.SignUp)
+		auth.POST("/sign-in", Users.SignIn)
 	}
 
 	// storeRoutes Маршруты для магазинов
@@ -41,14 +43,15 @@ func SetupRouter(r *gin.Engine) {
 		reviewRoutes.DELETE("/:id", middlewares.CheckUserAuthentication)
 	}
 
-	r.GET("hash-password", middlewares.CheckSecretKey, controllers.HashPassword)
+	r.GET("hash-password", middlewares.CheckSecretKey, handlers.HashPassword)
 
+	// categoryRoutes Маршруты для категорий на магазине
 	categoryRoutes := r.Group("/category")
 	{
-		categoryRoutes.GET("/", controllers.GetAllCategories)
-		categoryRoutes.GET("/:id", controllers.GetCategoryById)
-		categoryRoutes.POST("/", middlewares.CheckUserAuthentication, middlewares.CheckAdmin, controllers.CreateCategory)
-		categoryRoutes.PUT("/", middlewares.CheckUserAuthentication, middlewares.CheckAdmin, controllers.UpdateCategory)
-		categoryRoutes.DELETE("/", middlewares.CheckUserAuthentication, middlewares.CheckAdmin, controllers.DeleteCategory)
+		categoryRoutes.GET("/", Category.GetAllCategories)
+		categoryRoutes.GET("/:id", Category.GetCategoryById)
+		categoryRoutes.POST("/", middlewares.CheckUserAuthentication, middlewares.CheckAdmin, Category.CreateCategory)
+		categoryRoutes.PUT("/", middlewares.CheckUserAuthentication, middlewares.CheckAdmin, Category.UpdateCategory)
+		categoryRoutes.DELETE("/", middlewares.CheckUserAuthentication, middlewares.CheckAdmin, Category.DeleteCategory)
 	}
 }

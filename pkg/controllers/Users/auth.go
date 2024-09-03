@@ -1,9 +1,10 @@
-package controllers
+package Users
 
 import (
 	"BizMart/errs"
 	"BizMart/logger"
 	"BizMart/models"
+	"BizMart/pkg/controllers/handlers"
 	"BizMart/pkg/service"
 	"BizMart/utils"
 	"github.com/gin-gonic/gin"
@@ -38,7 +39,7 @@ func SignUp(c *gin.Context) {
 	// Create the user
 	userID, err := service.CreateUser(user)
 	if err != nil {
-		handleError(c, err)
+		handlers.HandleError(c, err)
 		return
 	}
 
@@ -65,7 +66,7 @@ func SignIn(c *gin.Context) {
 
 	// Parse JSON body into the user struct
 	if err := c.BindJSON(&user); err != nil {
-		handleError(c, err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": errs.ErrInvalidData})
 		return
 	}
 
@@ -91,7 +92,7 @@ func SignIn(c *gin.Context) {
 	// Sign in the user
 	user, accessToken, err := service.SignIn(user.Username, user.Email, user.HashPassword)
 	if err != nil {
-		handleError(c, err)
+		handlers.HandleError(c, err)
 		return
 	}
 

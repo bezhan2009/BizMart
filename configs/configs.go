@@ -30,6 +30,5 @@ func ReadSettings() (models.Configs, error) {
 	if err = json.NewDecoder(configFile).Decode(&AppSettings); err != nil {
 		return models.Configs{}, errors.New(fmt.Sprintf("Couldn't decode settings json file. Error is: %s", err.Error()))
 	}
-	fmt.Println("Read: ", AppSettings)
 	return AppSettings, nil
 }

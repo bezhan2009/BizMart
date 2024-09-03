@@ -47,7 +47,7 @@ func main() {
 	router := gin.Default()
 
 	routes.SetupRouter(router)
-	err = router.Run(":8080")
+	err = router.Run(security.AppSettings.AppParams.PortRun)
 	if err != nil {
 		panic(err)
 	}
