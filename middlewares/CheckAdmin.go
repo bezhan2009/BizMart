@@ -2,7 +2,7 @@ package middlewares
 
 import (
 	"BizMart/errs"
-	"BizMart/pkg/repository"
+	"BizMart/pkg/repository/Users"
 	"BizMart/utils"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -37,7 +37,7 @@ func CheckAdmin(c *gin.Context) {
 		})
 	}
 
-	user, err := repository.GetUserByID(claims.UserID)
+	user, err := Users.GetUserByID(claims.UserID)
 	if err != nil {
 		return
 	}

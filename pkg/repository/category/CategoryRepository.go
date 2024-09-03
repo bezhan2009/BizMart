@@ -1,4 +1,4 @@
-package repository
+package category
 
 import (
 	"BizMart/db"

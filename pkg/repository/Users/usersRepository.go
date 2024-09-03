@@ -1,4 +1,4 @@
-package repository
+package Users
 
 import (
 	"BizMart/db"

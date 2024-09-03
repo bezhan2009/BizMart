@@ -3,7 +3,7 @@ package service
 import (
 	"BizMart/errs"
 	"BizMart/models"
-	"BizMart/pkg/repository"
+	"BizMart/pkg/repository/Users"
 	"BizMart/utils"
 )
 
@@ -13,17 +13,17 @@ func SignIn(username, useremail, password string) (user models.User, accessToken
 	}
 
 	if useremail != "" && username != "" {
-		user, err = repository.GetUserByEmailPasswordAndUsername(username, useremail, password)
+		user, err = Users.GetUserByEmailPasswordAndUsername(username, useremail, password)
 		if err != nil {
 			return user, "", errs.TranslateGormError(err)
 		}
 	} else if username != "" {
-		user, err = repository.GetUserByUsernameAndPassword(username, password)
+		user, err = Users.GetUserByUsernameAndPassword(username, password)
 		if err != nil {
 			return user, "", errs.TranslateGormError(err)
 		}
 	} else if useremail != "" {
-		user, err = repository.GetUserByEmailAndPassword(useremail, password)
+		user, err = Users.GetUserByEmailAndPassword(useremail, password)
 		if err != nil {
 			return user, "", errs.TranslateGormError(err)
 		}

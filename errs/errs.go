@@ -2,20 +2,33 @@ package errs
 
 import "errors"
 
+// Authentication Errors
 var (
-	ErrUsernameUniquenessFailed    = errors.New("ErrUsernameUniquenessFailed")
 	ErrIncorrectUsernameOrPassword = errors.New("ErrIncorrectUsernameOrPassword")
-	ErrEmailUniquenessFailed       = errors.New("ErrEmailUniquenessFailed")
-	ErrRecordNotFound              = errors.New("ErrRecordNotFound")
-	ErrSomethingWentWrong          = errors.New("ErrSomethingWentWrong")
-	ErrInvalidData                 = errors.New("ErrInvalidData")
-	ErrInvalidDataCustom           = errors.New("ErrInvalidDataCustom")
 	ErrPasswordIsEmpty             = errors.New("ErrPasswordIsEmpty")
 	ErrPasswordIncorrect           = errors.New("ErrPasswordIncorrect")
-	ErrEmailIsEmpty                = errors.New("ErrEmailIsEmpty")
 	ErrUsernameIsEmpty             = errors.New("ErrUsernameIsEmpty")
+	ErrEmailIsEmpty                = errors.New("ErrUsernameIsEmpty")
 	ErrUsernameOrEmailIsEmpty      = errors.New("ErrUsernameOrEmailIsEmpty")
 	ErrUsernameOrPasswordIsEmpty   = errors.New("ErrUsernameOrPasswordIsEmpty")
 	ErrEmailOrPasswordIsEmpty      = errors.New("ErrEmailOrPasswordIsEmpty")
 	ErrPermissionDenied            = errors.New("ErrPermissionDenied")
+)
+
+// Validation Errors
+var (
+	ErrInvalidData      = errors.New("ErrInvalidData")
+	ErrValidationFailed = errors.New("ErrValidationFailed")
+)
+
+// Uniqueness Errors
+var (
+	ErrUsernameUniquenessFailed = errors.New("ErrUsernameUniquenessFailed")
+	ErrEmailUniquenessFailed    = errors.New("ErrEmailUniquenessFailed")
+)
+
+// General Errors
+var (
+	ErrRecordNotFound     = errors.New("ErrRecordNotFound")
+	ErrSomethingWentWrong = errors.New("ErrSomethingWentWrong")
 )

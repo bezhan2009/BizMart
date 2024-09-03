@@ -4,13 +4,13 @@ import (
 	"BizMart/errs"
 	"BizMart/logger"
 	"BizMart/models"
-	"BizMart/pkg/repository"
+	"BizMart/pkg/repository/Users"
 	"BizMart/utils"
 	"fmt"
 )
 
 func GetAllUsers() (users []models.User, err error) {
-	users, err = repository.GetAllUsers()
+	users, err = Users.GetAllUsers()
 	if err != nil {
 		return nil, err
 	}
@@ -19,7 +19,7 @@ func GetAllUsers() (users []models.User, err error) {
 }
 
 func GetUserByID(id uint) (user models.User, err error) {
-	user, err = repository.GetUserByID(id)
+	user, err = Users.GetUserByID(id)
 	if err != nil {
 		return user, err
 	}
@@ -28,13 +28,13 @@ func GetUserByID(id uint) (user models.User, err error) {
 }
 
 func CreateUser(user models.User) (uint, error) {
-	usernameExists, emailExists, err := repository.UserExists(user.Username, user.Email)
+	usernameExists, emailExists, err := Users.UserExists(user.Username, user.Email)
 	if err != nil {
 		return 0, fmt.Errorf("failed to check existing user: %w", err)
 	}
 
 	if user.HashPassword == "" || user.Email == "" || user.Username == "" {
-		return 0, errs.ErrInvalidDataCustom
+		return 0, errs.ErrInvalidData
 	}
 
 	if usernameExists {
@@ -51,7 +51,7 @@ func CreateUser(user models.User) (uint, error) {
 
 	var userID uint
 
-	if userID, err = repository.CreateUser(user); err != nil {
+	if userID, err = Users.CreateUser(user); err != nil {
 		return 0, fmt.Errorf("failed to create user: %w", err)
 	}
 
