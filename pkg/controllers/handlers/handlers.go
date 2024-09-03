@@ -11,7 +11,9 @@ import (
 func HandleError(c *gin.Context, err error) {
 	if errors.Is(err, errs.ErrUsernameUniquenessFailed) ||
 		errors.Is(err, errs.ErrIncorrectUsernameOrPassword) ||
-		errors.Is(err, errs.ErrIncorrectUsernameOrPassword) {
+		errors.Is(err, errs.ErrIncorrectUsernameOrPassword) ||
+		errors.Is(err, errs.ErrCategoryNameUniquenessFailed) ||
+		errors.Is(err, errs.ErrOrderStatusNameUniquenessFailed) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	} else if errors.Is(err, errs.ErrPermissionDenied) {
 		c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})

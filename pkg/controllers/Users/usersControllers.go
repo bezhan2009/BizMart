@@ -3,14 +3,14 @@ package Users
 import (
 	"BizMart/logger"
 	"BizMart/models"
-	"BizMart/pkg/service"
+	"BizMart/pkg/service/UsersService"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
 )
 
 func GetAllUsers(c *gin.Context) {
-	users, err := service.GetAllUsers()
+	users, err := UsersService.GetAllUsers()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),
@@ -35,7 +35,7 @@ func GetUserByID(c *gin.Context) {
 		return
 	}
 
-	user, err := service.GetUserByID(uint(id))
+	user, err := UsersService.GetUserByID(uint(id))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),
@@ -58,7 +58,7 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
-	_, err := service.CreateUser(user)
+	_, err := UsersService.CreateUser(user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),

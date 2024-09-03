@@ -50,8 +50,8 @@ func CheckAdmin(c *gin.Context) {
 	}
 
 	if user.Username != os.Getenv("ADMIN") {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-			"error": errs.ErrPermissionDenied,
+		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{
+			"error": errs.ErrPermissionDenied.Error(),
 		})
 		return
 	}

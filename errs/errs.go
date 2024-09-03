@@ -19,12 +19,15 @@ var (
 var (
 	ErrInvalidData      = errors.New("ErrInvalidData")
 	ErrValidationFailed = errors.New("ErrValidationFailed")
+	ErrPathParametrized = errors.New("ErrPathParametrized")
 )
 
 // Uniqueness Errors
 var (
-	ErrUsernameUniquenessFailed = errors.New("ErrUsernameUniquenessFailed")
-	ErrEmailUniquenessFailed    = errors.New("ErrEmailUniquenessFailed")
+	ErrUsernameUniquenessFailed        = errors.New("ErrUsernameUniquenessFailed")
+	ErrEmailUniquenessFailed           = errors.New("ErrEmailUniquenessFailed")
+	ErrCategoryNameUniquenessFailed    = errors.New("ErrCategoryNameUniquenessFailed")
+	ErrOrderStatusNameUniquenessFailed = errors.New("ErrOrderStatusNameUniquenessFailed")
 )
 
 // General Errors

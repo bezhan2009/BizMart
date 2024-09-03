@@ -5,8 +5,9 @@ import (
 	"BizMart/logger"
 	"BizMart/models"
 	"BizMart/pkg/controllers/handlers"
-	"BizMart/pkg/service"
+	"BizMart/pkg/service/UsersService"
 	"BizMart/utils"
+	"errors"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -37,8 +38,12 @@ func SignUp(c *gin.Context) {
 	}
 
 	// Create the user
-	userID, err := service.CreateUser(user)
+	userID, err := UsersService.CreateUser(user)
 	if err != nil {
+		if errors.Is(err, errs.ErrRecordNotFound) {
+			c.JSON(http.StatusBadRequest, gin.H{"error": errs.ErrIncorrectUsernameOrPassword})
+			return
+		}
 		handlers.HandleError(c, err)
 		return
 	}
@@ -66,7 +71,7 @@ func SignIn(c *gin.Context) {
 
 	// Parse JSON body into the user struct
 	if err := c.BindJSON(&user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": errs.ErrInvalidData})
+		c.JSON(http.StatusBadRequest, gin.H{"error": errs.ErrInvalidData.Error()})
 		return
 	}
 
@@ -90,8 +95,12 @@ func SignIn(c *gin.Context) {
 	user.HashPassword = utils.GenerateHash(user.HashPassword)
 
 	// Sign in the user
-	user, accessToken, err := service.SignIn(user.Username, user.Email, user.HashPassword)
+	user, accessToken, err := UsersService.SignIn(user.Username, user.Email, user.HashPassword)
 	if err != nil {
+		if errors.Is(err, errs.ErrRecordNotFound) {
+			c.JSON(http.StatusBadRequest, gin.H{"error": errs.ErrIncorrectUsernameOrPassword.Error()})
+			return
+		}
 		handlers.HandleError(c, err)
 		return
 	}

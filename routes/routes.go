@@ -3,6 +3,7 @@ package routes
 import (
 	"BizMart/middlewares"
 	"BizMart/pkg/controllers/Category"
+	"BizMart/pkg/controllers/Order"
 	"BizMart/pkg/controllers/Users"
 	"BizMart/pkg/controllers/handlers"
 	"github.com/gin-gonic/gin"
@@ -14,7 +15,7 @@ func SetupRouter(r *gin.Engine) {
 	{
 		usersRoute.GET("", Users.GetAllUsers)
 		usersRoute.POST("", Users.CreateUser)
-		usersRoute.GET(":id", Users.GetUserByID)
+		usersRoute.GET("/:id", Users.GetUserByID)
 	}
 
 	auth := r.Group("/auth")
@@ -43,7 +44,7 @@ func SetupRouter(r *gin.Engine) {
 		reviewRoutes.DELETE("/:id", middlewares.CheckUserAuthentication)
 	}
 
-	r.GET("hash-password", middlewares.CheckSecretKey, handlers.HashPassword)
+	r.GET("/hash-password", middlewares.CheckSecretKey, handlers.HashPassword)
 
 	// categoryRoutes Маршруты для категорий на магазине
 	categoryRoutes := r.Group("/category")
@@ -51,7 +52,20 @@ func SetupRouter(r *gin.Engine) {
 		categoryRoutes.GET("/", Category.GetAllCategories)
 		categoryRoutes.GET("/:id", Category.GetCategoryById)
 		categoryRoutes.POST("/", middlewares.CheckUserAuthentication, middlewares.CheckAdmin, Category.CreateCategory)
-		categoryRoutes.PUT("/", middlewares.CheckUserAuthentication, middlewares.CheckAdmin, Category.UpdateCategory)
-		categoryRoutes.DELETE("/", middlewares.CheckUserAuthentication, middlewares.CheckAdmin, Category.DeleteCategory)
+		categoryRoutes.PUT("/:id", middlewares.CheckUserAuthentication, middlewares.CheckAdmin, Category.UpdateCategory)
+		categoryRoutes.DELETE("/:id", middlewares.CheckUserAuthentication, middlewares.CheckAdmin, Category.DeleteCategory)
 	}
+
+	// orderStatusGroup Маршруты для статусов заказов
+	orderStatusGroup := r.Group("/orderstatus")
+	{
+		orderStatusGroup.GET("/", Order.GetAllOrderStatusses)
+		orderStatusGroup.GET("/:id", Order.GetOrderStatusByID)
+		orderStatusGroup.POST("/", middlewares.CheckUserAuthentication, middlewares.CheckAdmin, Order.CreateOrderStatus)
+		orderStatusGroup.PUT("/:id", middlewares.CheckUserAuthentication, middlewares.CheckAdmin, Order.UpdateOrderStatus)
+		orderStatusGroup.DELETE("/:id", middlewares.CheckUserAuthentication, middlewares.CheckAdmin, Order.DeleteOrderStatus)
+	}
+
+	// Обработчик статусов заказов по имени
+	r.GET("/orderstatus/name/:name", Order.GetOrderStatusByName)
 }

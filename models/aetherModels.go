@@ -42,8 +42,8 @@ type Address struct {
 // Category represents a product category.
 type Category struct {
 	ID           uint           `json:"id" gorm:"primaryKey"`
-	CategoryName string         `gorm:"size:100;not null" json:"category_name"`
-	ParentID     *uint          `json:"parent_id,omitempty"`
+	CategoryName string         `gorm:"unique;size:100;not null" json:"category_name"`
+	ParentID     uint           `json:"parent_id"`
 	Description  string         `json:"description"`
 	CreatedAt    time.Time      `json:"created_at"`
 	UpdatedAt    time.Time      `json:"updated_at"`

@@ -3,7 +3,8 @@ package Category
 import (
 	"BizMart/models"
 	"BizMart/pkg/controllers/handlers"
-	"BizMart/pkg/repository/category"
+	"BizMart/pkg/repository/categoryRepository"
+	"BizMart/pkg/service/CategoryService"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -11,7 +12,7 @@ import (
 
 // GetAllCategories retrieves all categories from the repository
 func GetAllCategories(c *gin.Context) {
-	categories, err := category.GetAllCategories() // Corrected package name to lowercase 'category'
+	categories, err := categoryRepository.GetAllCategories() // Corrected package name to lowercase 'category'
 	if err != nil {
 		handlers.HandleError(c, err)
 		return
@@ -29,7 +30,7 @@ func GetCategoryById(c *gin.Context) {
 		return
 	}
 
-	categ, err := category.GetCategoryByID(uint(id))
+	categ, err := categoryRepository.GetCategoryByID(uint(id))
 	if err != nil {
 		handlers.HandleError(c, err)
 		return
@@ -46,7 +47,7 @@ func CreateCategory(c *gin.Context) {
 		return
 	}
 
-	categoryID, err := category.CreateCategory(categ)
+	categoryID, err := CategoryService.CreateCategory(categ)
 	if err != nil {
 		handlers.HandleError(c, err)
 		return
@@ -66,7 +67,7 @@ func UpdateCategory(c *gin.Context) {
 		return
 	}
 
-	categoryID, err := category.UpdateCategory(categ)
+	categoryID, err := categoryRepository.UpdateCategory(categ)
 	if err != nil {
 		handlers.HandleError(c, err)
 		return
@@ -87,7 +88,7 @@ func DeleteCategory(c *gin.Context) {
 		return
 	}
 
-	err = category.DeleteCategory(uint(id))
+	err = categoryRepository.DeleteCategory(uint(id))
 	if err != nil {
 		handlers.HandleError(c, err)
 		return
