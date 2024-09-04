@@ -7,12 +7,13 @@ import (
 	"BizMart/pkg/controllers/handlers"
 	"BizMart/pkg/repository/orderRepository"
 	"BizMart/pkg/service/OrderService"
+	"errors"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
 )
 
-func GetAllOrderStatusses(c *gin.Context) {
+func GetAllOrderStatuses(c *gin.Context) {
 	orderStatus, err := orderRepository.GetAllOrderStatuses()
 	if err != nil {
 		handlers.HandleError(c, err)
@@ -26,12 +27,17 @@ func GetOrderStatusByID(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		handlers.HandleError(c, err)
+		handlers.HandleError(c, errs.ErrPathParametrized)
 		return
 	}
 
 	orderStatus, err := orderRepository.GetOrderStatusByID(uint(id))
 	if err != nil {
+		if errors.Is(err, errs.ErrRecordNotFound) {
+			handlers.HandleError(c, errs.ErrOrderStatusNotFound)
+			return
+		}
+
 		handlers.HandleError(c, err)
 		return
 	}
@@ -83,7 +89,7 @@ func UpdateOrderStatus(c *gin.Context) {
 
 	OrdStat.ID = uint(orderStatusID)
 
-	OrderStatusIDUpdated, err := orderRepository.UpdateOrderStatus(OrdStat)
+	OrderStatusIDUpdated, err := OrderService.UpdateOrderStatus(uint(orderStatusID), OrdStat)
 	if err != nil {
 		handlers.HandleError(c, err)
 		return

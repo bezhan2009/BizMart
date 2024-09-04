@@ -10,14 +10,14 @@ import (
 )
 
 func SetupRouter(r *gin.Engine) {
-	// usersRoute Маршруты для пользователей (авторизация, профили)
+	// usersRoute Маршруты для пользователей (профили)
 	usersRoute := r.Group("/users")
 	{
 		usersRoute.GET("", Users.GetAllUsers)
-		usersRoute.POST("", Users.CreateUser)
 		usersRoute.GET("/:id", Users.GetUserByID)
 	}
 
+	// auth Маршруты для авторизаций
 	auth := r.Group("/auth")
 	{
 		auth.POST("/sign-up", Users.SignUp)
@@ -57,9 +57,9 @@ func SetupRouter(r *gin.Engine) {
 	}
 
 	// orderStatusGroup Маршруты для статусов заказов
-	orderStatusGroup := r.Group("/orderstatus")
+	orderStatusGroup := r.Group("/order-status")
 	{
-		orderStatusGroup.GET("/", Order.GetAllOrderStatusses)
+		orderStatusGroup.GET("/", Order.GetAllOrderStatuses)
 		orderStatusGroup.GET("/:id", Order.GetOrderStatusByID)
 		orderStatusGroup.POST("/", middlewares.CheckUserAuthentication, middlewares.CheckAdmin, Order.CreateOrderStatus)
 		orderStatusGroup.PUT("/:id", middlewares.CheckUserAuthentication, middlewares.CheckAdmin, Order.UpdateOrderStatus)
@@ -67,5 +67,5 @@ func SetupRouter(r *gin.Engine) {
 	}
 
 	// Обработчик статусов заказов по имени
-	r.GET("/orderstatus/name/:name", Order.GetOrderStatusByName)
+	r.GET("/order-status/name/:name", Order.GetOrderStatusByName)
 }

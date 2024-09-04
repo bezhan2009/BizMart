@@ -2,6 +2,7 @@ package orderRepository
 
 import (
 	"BizMart/db"
+	"BizMart/errs"
 	"BizMart/logger"
 	"BizMart/models"
 )
@@ -10,7 +11,7 @@ func GetOrderStatusByID(orderStatusID uint) (models.OrderStatus, error) {
 	var orderStatus models.OrderStatus
 	if err := db.GetDBConn().Where("id = ?", orderStatusID).First(&orderStatus).Error; err != nil {
 		logger.Error.Printf("[repository.GetOrderStatusByID] error getting order status by ID: %s\n", err.Error())
-		return orderStatus, err
+		return orderStatus, errs.TranslateGormError(err)
 	}
 
 	return orderStatus, nil
@@ -45,13 +46,19 @@ func CreateOrderStatus(orderStatus models.OrderStatus) (uint, error) {
 	return orderStatus.ID, nil
 }
 
-func UpdateOrderStatus(orderStatus models.OrderStatus) (uint, error) {
-	if err := db.GetDBConn().Save(&orderStatus).Error; err != nil {
-		logger.Error.Printf("[repository.UpdateOrderStatus] error updating order status: %s\n", err.Error())
-		return 0, err
+func UpdateOrderStatus(orderStatusID uint, orderStatus models.OrderStatus) (OrderStatusID uint, err error) {
+	existingOrderStatus := models.Category{}
+	if err = db.GetDBConn().First(&existingOrderStatus, orderStatusID).Error; err != nil {
+		logger.Error.Printf("[repository.UpdateOrderStatus] orderStatus not found: %v\n", err)
+		return 0, errs.ErrOrderStatusNotFound
 	}
 
-	return orderStatus.ID, nil
+	if err = db.GetDBConn().Model(&existingOrderStatus).Updates(orderStatus).Error; err != nil {
+		logger.Error.Printf("[repository.UpdateOrderStatus] error updating orderStatus: %v\n", err)
+		return orderStatusID, err
+	}
+
+	return orderStatusID, nil
 }
 
 func DeleteOrderStatus(orderStatus models.OrderStatus) error {

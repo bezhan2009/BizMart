@@ -22,13 +22,6 @@ func CreateCategory(categ models.Category) (categID uint, err error) {
 }
 
 func UpdateCategory(categoryID uint, categ models.Category) (categID uint, err error) {
-	var category models.Category
-
-	category, _ = categoryRepository.GetCategoryByName(categ.CategoryName)
-	if category.ID != 0 {
-		return category.ID, errs.ErrCategoryNameUniquenessFailed
-	}
-
 	if categID, err = categoryRepository.UpdateCategory(categoryID, categ); err != nil {
 		return 0, err
 	}

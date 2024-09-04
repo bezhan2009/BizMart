@@ -32,7 +32,8 @@ var (
 
 // General Errors
 var (
-	ErrRecordNotFound     = errors.New("ErrRecordNotFound")
-	ErrCategoryNotFound   = errors.New("ErrCategoryNotFound")
-	ErrSomethingWentWrong = errors.New("ErrSomethingWentWrong")
+	ErrRecordNotFound      = errors.New("ErrRecordNotFound")
+	ErrCategoryNotFound    = errors.New("ErrCategoryNotFound")
+	ErrOrderStatusNotFound = errors.New("ErrOrderStatusNotFound")
+	ErrSomethingWentWrong  = errors.New("ErrSomethingWentWrong")
 )

@@ -119,7 +119,7 @@ type Comment struct {
 // OrderStatus represents the status of an order.
 type OrderStatus struct {
 	ID          uint           `json:"id" gorm:"primaryKey"`
-	StatusName  string         `gorm:"size:100;not null" json:"status_name"`
+	StatusName  string         `gorm:"unique;size:100;not null" json:"status_name"`
 	Description string         `json:"description"`
 	CreatedAt   time.Time      `json:"created_at"`
 	UpdatedAt   time.Time      `json:"updated_at"`
