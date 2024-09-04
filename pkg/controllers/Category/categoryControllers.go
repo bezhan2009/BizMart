@@ -1,6 +1,7 @@
 package Category
 
 import (
+	"BizMart/errs"
 	"BizMart/models"
 	"BizMart/pkg/controllers/handlers"
 	"BizMart/pkg/repository/categoryRepository"
@@ -61,13 +62,20 @@ func CreateCategory(c *gin.Context) {
 
 // UpdateCategory updates an existing category in the repository
 func UpdateCategory(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		handlers.HandleError(c, errs.ErrPathParametrized)
+		return
+	}
+
 	var categ models.Category
 	if err := c.ShouldBindJSON(&categ); err != nil {
 		handlers.HandleError(c, err)
 		return
 	}
 
-	categoryID, err := categoryRepository.UpdateCategory(categ)
+	categoryID, err := CategoryService.UpdateCategory(uint(id), categ)
 	if err != nil {
 		handlers.HandleError(c, err)
 		return

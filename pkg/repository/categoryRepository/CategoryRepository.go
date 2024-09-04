@@ -2,6 +2,7 @@ package categoryRepository
 
 import (
 	"BizMart/db"
+	"BizMart/errs"
 	"BizMart/logger"
 	"BizMart/models"
 )
@@ -25,7 +26,7 @@ func GetCategoryByID(categoryID uint) (category models.Category, err error) {
 }
 
 func GetCategoryByName(categoryName string) (category models.Category, err error) {
-	if err = db.GetDBConn().Where("name = ?", categoryName).First(&category).Error; err != nil {
+	if err = db.GetDBConn().Where("category_name = ?", categoryName).First(&category).Error; err != nil {
 		logger.Error.Printf("[repository.GetCategoryByName] error getting category by name: %s\n", err)
 		return category, err
 	}
@@ -42,17 +43,28 @@ func CreateCategory(category models.Category) (categoryID uint, err error) {
 	return category.ID, nil
 }
 
-func UpdateCategory(category models.Category) (categoryID uint, err error) {
-	if err = db.GetDBConn().Save(&category).Error; err != nil {
-		logger.Error.Printf("[repository.UpdateCategory] error updating category: %v\n", err)
-		return category.ID, err
+func UpdateCategory(categID uint, category models.Category) (categoryID uint, err error) {
+	existingCategory := models.Category{}
+	if err = db.GetDBConn().First(&existingCategory, categID).Error; err != nil {
+		logger.Error.Printf("[repository.UpdateCategory] category not found: %v\n", err)
+		return 0, errs.ErrCategoryNotFound
 	}
 
-	return category.ID, nil
+	if err = db.GetDBConn().Model(&existingCategory).Updates(category).Error; err != nil {
+		logger.Error.Printf("[repository.UpdateCategory] error updating category: %v\n", err)
+		return categID, err
+	}
+
+	return categID, nil
 }
 
 func DeleteCategory(categoryID uint) (err error) {
 	var category models.Category
+	category, err = GetCategoryByID(categoryID)
+	if err != nil {
+		return errs.ErrCategoryNotFound
+	}
+
 	if err = db.GetDBConn().Delete(&category).Error; err != nil {
 		logger.Error.Printf("[repository.DeleteCategory] error deleting category: %v\n", err)
 		return err
