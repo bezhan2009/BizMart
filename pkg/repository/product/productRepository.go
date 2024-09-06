@@ -98,7 +98,7 @@ func DeleteProduct(productID uint, userID uint) error {
 }
 
 // GetAllProducts retrieves all products filtered by category, price range, etc., and includes associated ProductImage data.
-func GetAllProducts(minPrice, maxPrice float64, categoryID uint, productName string) ([]models.Product, error) {
+func GetAllProducts(minPrice, maxPrice float64, categoryID uint, productName string, storeID uint) ([]models.Product, error) {
 	var products []models.Product
 
 	// Start building the query
@@ -117,6 +117,9 @@ func GetAllProducts(minPrice, maxPrice float64, categoryID uint, productName str
 	}
 	if categoryID > 0 {
 		query = query.Where("products.category_id = ?", categoryID)
+	}
+	if storeID > 0 {
+		query = query.Where("products.store_id = ?", storeID)
 	}
 	if productName != "" {
 		query = query.Where("products.title LIKE ?", "%"+productName+"%")

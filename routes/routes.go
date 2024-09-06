@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SetupRouter(r *gin.Engine) {
+func InitRoutes(r *gin.Engine) *gin.Engine {
 	// usersRoute Маршруты для пользователей (профили)
 	usersRoute := r.Group("/users")
 	{
@@ -68,4 +68,6 @@ func SetupRouter(r *gin.Engine) {
 
 	// Обработчик статусов заказов по имени
 	r.GET("/order-status/name/:name", Order.GetOrderStatusByName)
+
+	return r
 }

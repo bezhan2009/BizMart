@@ -17,9 +17,16 @@ var (
 
 // Validation Errors
 var (
-	ErrInvalidData      = errors.New("ErrInvalidData")
-	ErrValidationFailed = errors.New("ErrValidationFailed")
-	ErrPathParametrized = errors.New("ErrPathParametrized")
+	ErrInvalidData       = errors.New("ErrInvalidData")
+	ErrValidationFailed  = errors.New("ErrValidationFailed")
+	ErrPathParametrized  = errors.New("ErrPathParametrized")
+	ErrInvalidMinPrice   = errors.New("ErrInvalidMinPrice")
+	ErrInvalidMaxPrice   = errors.New("ErrInvalidMaxPrice")
+	ErrInvalidAmount     = errors.New("ErrInvalidAmount")
+	ErrInsufficientFunds = errors.New("ErrInsufficientFunds")
+	ErrInvalidCategory   = errors.New("ErrInvalidCategory")
+	ErrInvalidStore      = errors.New("ErrInvalidStore")
+	ErrInvalidID         = errors.New("ErrInvalidID")
 )
 
 // Uniqueness Errors

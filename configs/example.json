@@ -13,7 +13,7 @@
   },
   "app_params": {
     "gin_mode": "release",
-    "port_run": ":8181",
+    "port_run": "8181",
     "server_url": "localhost",
     "server_name": "BizMart_service"
   },
