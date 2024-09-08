@@ -1,9 +1,10 @@
-package store
+package storeRepository
 
 import (
 	"BizMart/db"
 	"BizMart/logger"
 	"BizMart/models"
+	"BizMart/pkg/repository"
 	"errors"
 	"gorm.io/gorm"
 )
@@ -38,9 +39,6 @@ func UpdateStore(storeID uint, updatedData *models.Store) error {
 		return err
 	}
 
-	// Prevent the password from being updated
-	updatedData.HashPassword = store.HashPassword
-
 	if err := tx.Model(&store).Updates(updatedData).Error; err != nil {
 		logger.Error.Printf("[repository.UpdateStore] Error updating store with ID %d: %v", storeID, err)
 		tx.Rollback()
@@ -71,10 +69,23 @@ func GetStoreByID(storeID uint) (models.Store, error) {
 	if err := db.GetDBConn().Where("id = ?", storeID).First(&store).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			logger.Error.Printf("[repository.GetStoreByID] Store with ID %d not found: %v", storeID, err)
-			return store, nil
+			return store, repository.TranslateGormError(err)
 		}
 		logger.Error.Printf("[repository.GetStoreByID] Error retrieving store with ID %d: %v", storeID, err)
-		return store, err
+		return store, repository.TranslateGormError(err)
+	}
+	return store, nil
+}
+
+func GetStoreByName(storeName string) (models.Store, error) {
+	var store models.Store
+	if err := db.GetDBConn().Where("name = ?", storeName).First(&store).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			logger.Error.Printf("[repository.GetStoreByName] Store with Name %v not found: %v", storeName, err)
+			return store, repository.TranslateGormError(err)
+		}
+		logger.Error.Printf("[repository.GetStoreByName] Error retrieving store with Name %v: %v", storeName, err)
+		return store, repository.TranslateGormError(err)
 	}
 	return store, nil
 }

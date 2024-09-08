@@ -8,9 +8,21 @@ setlocal enabledelayedexpansion
 :: Переменная для хранения PID server.exe
 set "serverPID="
 
+:: Директория для поиска файлов .go
+set "rootDir=C:\Users\Admin\GolandProjects\BizMart"
+
+:: Проверка на существование каталога
+if not exist "%rootDir%" (
+    echo ERROR: Directory %rootDir% does not exist!
+    exit /b
+)
+
 :: Метка начала скрипта
 :start
 echo Building and starting the server...
+
+:: Переходим в каталог проекта
+cd /d "%rootDir%"
 
 :: Компилируем Go файл в исполняемый файл server.exe
 go build -o server.exe main.go
@@ -21,8 +33,8 @@ for /f "tokens=2" %%i in ('tasklist /fi "imagename eq server.exe" /fo list ^| fi
 
 echo Server started with PID: %serverPID%
 
-:: Считываем текущую дату последней модификации всех файлов с расширением .go в переменную lastModifiedTime
-for /f "delims=" %%i in ('forfiles /m *.go /c "cmd /c echo @fdate @ftime"') do set lastModifiedTime=%%i
+:: Считываем текущую дату последней модификации всех файлов с расширением .go во всех поддиректориях
+for /f "delims=" %%i in ('forfiles /S /p "%rootDir%" /m *.go /c "cmd /c echo @relpath @fdate @ftime"') do set lastModifiedTime=%%i
 
 :: Переход к метке watch
 :watch
@@ -32,8 +44,8 @@ timeout /t 2 > nul
 :: Переменная для отслеживания изменений во всех .go файлах
 set modified=
 
-:: Сравниваем текущую дату последней модификации с предыдущей
-for /f "delims=" %%i in ('forfiles /m *.go /c "cmd /c echo @fdate @ftime"') do (
+:: Сравниваем текущую дату последней модификации с предыдущей для всех файлов .go в поддиректориях
+for /f "delims=" %%i in ('forfiles /S /p "%rootDir%" /m *.go /c "cmd /c echo @relpath @fdate @ftime"') do (
     if NOT "%%i"=="%lastModifiedTime%" (
         set modified=true
         set lastModifiedTime=%%i
@@ -42,6 +54,7 @@ for /f "delims=" %%i in ('forfiles /m *.go /c "cmd /c echo @fdate @ftime"') do (
 
 :: Если изменение было обнаружено, перезапускаем сервер
 if defined modified (
+    echo Change detected, restarting server...
     taskkill /f /pid %serverPID% >nul 2>&1
     goto start
 )

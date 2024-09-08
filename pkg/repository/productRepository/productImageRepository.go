@@ -1,4 +1,4 @@
-package product
+package productRepository
 
 import (
 	"BizMart/db"

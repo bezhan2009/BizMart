@@ -17,9 +17,17 @@ var (
 
 // Validation Errors
 var (
-	ErrInvalidData      = errors.New("ErrInvalidData")
-	ErrValidationFailed = errors.New("ErrValidationFailed")
-	ErrPathParametrized = errors.New("ErrPathParametrized")
+	ErrInvalidData       = errors.New("ErrInvalidData")
+	ErrValidationFailed  = errors.New("ErrValidationFailed")
+	ErrPathParametrized  = errors.New("ErrPathParametrized")
+	ErrInvalidMinPrice   = errors.New("ErrInvalidMinPrice")
+	ErrInvalidMaxPrice   = errors.New("ErrInvalidMaxPrice")
+	ErrInvalidAmount     = errors.New("ErrInvalidAmount")
+	ErrInsufficientFunds = errors.New("ErrInsufficientFunds")
+	ErrInvalidCategory   = errors.New("ErrInvalidCategory")
+	ErrInvalidStore      = errors.New("ErrInvalidStore")
+	ErrInvalidID         = errors.New("ErrInvalidID")
+	ErrInvalidProductID  = errors.New("ErrInvalidProductID")
 )
 
 // Uniqueness Errors
@@ -28,6 +36,7 @@ var (
 	ErrEmailUniquenessFailed           = errors.New("ErrEmailUniquenessFailed")
 	ErrCategoryNameUniquenessFailed    = errors.New("ErrCategoryNameUniquenessFailed")
 	ErrOrderStatusNameUniquenessFailed = errors.New("ErrOrderStatusNameUniquenessFailed")
+	ErrStoreNameUniquenessFailed       = errors.New("ErrStoreNameUniquenessFailed")
 )
 
 // General Errors
@@ -36,4 +45,5 @@ var (
 	ErrCategoryNotFound    = errors.New("ErrCategoryNotFound")
 	ErrOrderStatusNotFound = errors.New("ErrOrderStatusNotFound")
 	ErrSomethingWentWrong  = errors.New("ErrSomethingWentWrong")
+	ErrProductNotFound     = errors.New("ErrProductNotFound")
 )

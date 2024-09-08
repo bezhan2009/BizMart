@@ -5,13 +5,14 @@ import (
 	"BizMart/errs"
 	"BizMart/logger"
 	"BizMart/models"
+	"BizMart/pkg/repository"
 )
 
 func GetOrderStatusByID(orderStatusID uint) (models.OrderStatus, error) {
 	var orderStatus models.OrderStatus
 	if err := db.GetDBConn().Where("id = ?", orderStatusID).First(&orderStatus).Error; err != nil {
 		logger.Error.Printf("[repository.GetOrderStatusByID] error getting order status by ID: %s\n", err.Error())
-		return orderStatus, errs.TranslateGormError(err)
+		return orderStatus, repository.TranslateGormError(err)
 	}
 
 	return orderStatus, nil
@@ -21,7 +22,7 @@ func GetOrderStatusByName(orderStatusName string) (models.OrderStatus, error) {
 	var orderStatus models.OrderStatus
 	if err := db.GetDBConn().Where("status_name = ?", orderStatusName).First(&orderStatus).Error; err != nil {
 		logger.Error.Printf("[repository.GetOrderStatusByID] error getting order status by ID: %s\n", err.Error())
-		return orderStatus, err
+		return orderStatus, repository.TranslateGormError(err)
 	}
 
 	return orderStatus, nil

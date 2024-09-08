@@ -2,9 +2,9 @@ package Users
 
 import (
 	"BizMart/db"
-	"BizMart/errs"
 	"BizMart/logger"
 	"BizMart/models"
+	"BizMart/pkg/repository"
 	"gorm.io/gorm"
 )
 
@@ -12,7 +12,7 @@ func GetAllUsers() (users []models.User, err error) {
 	err = db.GetDBConn().Find(&users).Error
 	if err != nil {
 		logger.Error.Printf("[repository.GetAllUsers] error getting all users: %s\n", err.Error())
-		return nil, errs.TranslateGormError(err)
+		return nil, repository.TranslateGormError(err)
 	}
 
 	return users, nil
@@ -22,7 +22,7 @@ func GetUserByID(id uint) (user models.User, err error) {
 	err = db.GetDBConn().Where("id = ?", id).First(&user).Error
 	if err != nil {
 		logger.Error.Printf("[repository.GetUserByID] error getting user by id: %v\n", err)
-		return user, errs.TranslateGormError(err)
+		return user, repository.TranslateGormError(err)
 	}
 	return user, nil
 }
@@ -63,7 +63,7 @@ func CreateUser(user models.User) (id uint, err error) {
 	//logger.Debug.Println(user.ID)
 	if err = db.GetDBConn().Create(&user).Error; err != nil {
 		logger.Error.Printf("[repository.CreateUser] error creating user: %v\n", err)
-		return 0, errs.TranslateGormError(err)
+		return 0, repository.TranslateGormError(err)
 	}
 
 	//logger.Debug.Println(user.ID)
@@ -74,7 +74,7 @@ func GetUserByUsernameAndPassword(username string, password string) (user models
 	err = db.GetDBConn().Where("username = ? AND hash_password = ?", username, password).First(&user).Error
 	if err != nil {
 		logger.Error.Printf("[repository.GetUserByUsernameAndPassword] error getting user by username and password: %v\n", err)
-		return user, errs.TranslateGormError(err)
+		return user, repository.TranslateGormError(err)
 	}
 
 	return user, nil
@@ -84,7 +84,7 @@ func GetUserByEmailAndPassword(email string, password string) (user models.User,
 	err = db.GetDBConn().Where("email = ? AND hash_password = ?", email, password).First(&user).Error
 	if err != nil {
 		logger.Error.Printf("[repository.GetUserByEmailAndPassword] error getting user by email and password: %v\n", err)
-		return user, errs.TranslateGormError(err)
+		return user, repository.TranslateGormError(err)
 	}
 
 	return user, nil
@@ -94,7 +94,7 @@ func GetUserByEmailPasswordAndUsername(username, email, password string) (user m
 	err = db.GetDBConn().Where("email = ? AND hash_password = ? AND username = ?", email, password, username).First(&user).Error
 	if err != nil {
 		logger.Error.Printf("[repository.GetUserByEmailPasswordAndUsername] error getting user by username, email and password: %v\n", err)
-		return user, errs.TranslateGormError(err)
+		return user, repository.TranslateGormError(err)
 	}
 
 	return user, nil

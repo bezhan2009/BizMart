@@ -3,6 +3,7 @@ package UsersService
 import (
 	"BizMart/errs"
 	"BizMart/models"
+	"BizMart/pkg/repository"
 	"BizMart/pkg/repository/Users"
 	"BizMart/utils"
 )
@@ -15,17 +16,17 @@ func SignIn(username, useremail, password string) (user models.User, accessToken
 	if useremail != "" && username != "" {
 		user, err = Users.GetUserByEmailPasswordAndUsername(username, useremail, password)
 		if err != nil {
-			return user, "", errs.TranslateGormError(err)
+			return user, "", repository.TranslateGormError(err)
 		}
 	} else if username != "" {
 		user, err = Users.GetUserByUsernameAndPassword(username, password)
 		if err != nil {
-			return user, "", errs.TranslateGormError(err)
+			return user, "", repository.TranslateGormError(err)
 		}
 	} else if useremail != "" {
 		user, err = Users.GetUserByEmailAndPassword(useremail, password)
 		if err != nil {
-			return user, "", errs.TranslateGormError(err)
+			return user, "", repository.TranslateGormError(err)
 		}
 	} else {
 		return user, "", errs.ErrInvalidData

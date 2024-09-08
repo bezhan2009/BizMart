@@ -1,4 +1,4 @@
-package product
+package productRepository
 
 import (
 	"BizMart/db"
@@ -98,28 +98,31 @@ func DeleteProduct(productID uint, userID uint) error {
 }
 
 // GetAllProducts retrieves all products filtered by category, price range, etc., and includes associated ProductImage data.
-func GetAllProducts(minPrice, maxPrice float64, categoryID uint, productName string) ([]models.Product, error) {
+func GetAllProducts(minPrice, maxPrice float64, categoryID uint, productName string, storeID uint) ([]models.Product, error) {
 	var products []models.Product
 
 	// Start building the query
 	query := db.GetDBConn().
-		Table("products").
-		Select("products.*, product_images.image AS product_image").
-		Joins("LEFT JOIN product_images ON product_images.product_id = products.id").
-		Where("products.is_deleted = ?", false)
+		Table("productapp_product").
+		Select("productapp_product.*, productapp_productimage.image AS product_image").
+		Joins("LEFT JOIN productapp_productimage ON productapp_productimage.product_id = productapp_product.id").
+		Where("productapp_product.is_deleted = ?", false)
 
 	// Apply filters
 	if minPrice > 0 {
-		query = query.Where("products.price >= ?", minPrice)
+		query = query.Where("productapp_product.price >= ?", minPrice)
 	}
 	if maxPrice > 0 {
-		query = query.Where("products.price <= ?", maxPrice)
+		query = query.Where("productapp_product.price <= ?", maxPrice)
 	}
 	if categoryID > 0 {
-		query = query.Where("products.category_id = ?", categoryID)
+		query = query.Where("productapp_product.category_id = ?", categoryID)
+	}
+	if storeID > 0 {
+		query = query.Where("productapp_product.store_id = ?", storeID)
 	}
 	if productName != "" {
-		query = query.Where("products.title LIKE ?", "%"+productName+"%")
+		query = query.Where("productapp_product.title LIKE ?", "%"+productName+"%")
 	}
 
 	// Execute the query
@@ -129,4 +132,23 @@ func GetAllProducts(minPrice, maxPrice float64, categoryID uint, productName str
 	}
 
 	return products, nil
+}
+
+func CreateProductWithImages(product *models.Product, images []models.ProductImage, userID uint) error {
+	// Создаем продукт в базе данных
+	if err := db.GetDBConn().Create(product).Error; err != nil {
+		return err
+	}
+
+	// Присваиваем ID продукта для всех изображений
+	for i := range images {
+		images[i].ProductID = product.ID
+	}
+
+	// Сохраняем все изображения в базе данных
+	if err := db.GetDBConn().Create(&images).Error; err != nil {
+		return err
+	}
+
+	return nil
 }

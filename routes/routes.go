@@ -1,37 +1,39 @@
 package routes
 
 import (
-	"BizMart/middlewares"
-	"BizMart/pkg/controllers/Category"
-	"BizMart/pkg/controllers/Order"
-	"BizMart/pkg/controllers/Users"
+	"BizMart/pkg/controllers/categoryControllers"
 	"BizMart/pkg/controllers/handlers"
+	middlewares2 "BizMart/pkg/controllers/middlewares"
+	"BizMart/pkg/controllers/orderControllers"
+	"BizMart/pkg/controllers/productControllers"
+	"BizMart/pkg/controllers/storesControllers"
+	"BizMart/pkg/controllers/usersControllers"
 	"github.com/gin-gonic/gin"
 )
 
-func SetupRouter(r *gin.Engine) {
+func InitRoutes(r *gin.Engine) *gin.Engine {
 	// usersRoute Маршруты для пользователей (профили)
 	usersRoute := r.Group("/users")
 	{
-		usersRoute.GET("", Users.GetAllUsers)
-		usersRoute.GET("/:id", Users.GetUserByID)
+		usersRoute.GET("", usersControllers.GetAllUsers)
+		usersRoute.GET("/:id", usersControllers.GetUserByID)
 	}
 
 	// auth Маршруты для авторизаций
 	auth := r.Group("/auth")
 	{
-		auth.POST("/sign-up", Users.SignUp)
-		auth.POST("/sign-in", Users.SignIn)
+		auth.POST("/sign-up", usersControllers.SignUp)
+		auth.POST("/sign-in", usersControllers.SignIn)
 	}
 
 	// storeRoutes Маршруты для магазинов
 	storeRoutes := r.Group("/stores")
 	{
-		storeRoutes.GET("/")
-		storeRoutes.GET("/:id")
-		storeRoutes.POST("/", middlewares.CheckUserAuthentication)
-		storeRoutes.PUT("/:id", middlewares.CheckUserAuthentication)
-		storeRoutes.DELETE("/:id", middlewares.CheckUserAuthentication)
+		storeRoutes.GET("/", storesControllers.GetStores)
+		storeRoutes.GET("/:id", storesControllers.GetStoreByID)
+		storeRoutes.POST("/", middlewares2.CheckUserAuthentication, storesControllers.CreateStore)
+		storeRoutes.PUT("/:id", middlewares2.CheckUserAuthentication, storesControllers.UpdateStore)
+		storeRoutes.DELETE("/:id", middlewares2.CheckUserAuthentication, storesControllers.DeleteStore)
 	}
 
 	// reviewRoutes Маршруты для отзывов на магазины
@@ -39,33 +41,41 @@ func SetupRouter(r *gin.Engine) {
 	{
 		reviewRoutes.GET("/")
 		reviewRoutes.GET("/:id")
-		reviewRoutes.POST("/", middlewares.CheckUserAuthentication)
-		reviewRoutes.PUT("/:id", middlewares.CheckUserAuthentication)
-		reviewRoutes.DELETE("/:id", middlewares.CheckUserAuthentication)
+		reviewRoutes.POST("/", middlewares2.CheckUserAuthentication)
+		reviewRoutes.PUT("/:id", middlewares2.CheckUserAuthentication)
+		reviewRoutes.DELETE("/:id", middlewares2.CheckUserAuthentication)
 	}
 
-	r.GET("/hash-password", middlewares.CheckSecretKey, handlers.HashPassword)
+	r.GET("/hash-password", middlewares2.CheckSecretKey, handlers.HashPassword)
 
 	// categoryRoutes Маршруты для категорий на магазине
 	categoryRoutes := r.Group("/category")
 	{
-		categoryRoutes.GET("/", Category.GetAllCategories)
-		categoryRoutes.GET("/:id", Category.GetCategoryById)
-		categoryRoutes.POST("/", middlewares.CheckUserAuthentication, middlewares.CheckAdmin, Category.CreateCategory)
-		categoryRoutes.PUT("/:id", middlewares.CheckUserAuthentication, middlewares.CheckAdmin, Category.UpdateCategory)
-		categoryRoutes.DELETE("/:id", middlewares.CheckUserAuthentication, middlewares.CheckAdmin, Category.DeleteCategory)
+		categoryRoutes.GET("/", categoryControllers.GetAllCategories)
+		categoryRoutes.GET("/:id", categoryControllers.GetCategoryById)
+		categoryRoutes.POST("/", middlewares2.CheckUserAuthentication, middlewares2.CheckAdmin, categoryControllers.CreateCategory)
+		categoryRoutes.PUT("/:id", middlewares2.CheckUserAuthentication, middlewares2.CheckAdmin, categoryControllers.UpdateCategory)
+		categoryRoutes.DELETE("/:id", middlewares2.CheckUserAuthentication, middlewares2.CheckAdmin, categoryControllers.DeleteCategory)
 	}
 
 	// orderStatusGroup Маршруты для статусов заказов
 	orderStatusGroup := r.Group("/order-status")
 	{
-		orderStatusGroup.GET("/", Order.GetAllOrderStatuses)
-		orderStatusGroup.GET("/:id", Order.GetOrderStatusByID)
-		orderStatusGroup.POST("/", middlewares.CheckUserAuthentication, middlewares.CheckAdmin, Order.CreateOrderStatus)
-		orderStatusGroup.PUT("/:id", middlewares.CheckUserAuthentication, middlewares.CheckAdmin, Order.UpdateOrderStatus)
-		orderStatusGroup.DELETE("/:id", middlewares.CheckUserAuthentication, middlewares.CheckAdmin, Order.DeleteOrderStatus)
+		orderStatusGroup.GET("/", orderControllers.GetAllOrderStatuses)
+		orderStatusGroup.GET("/:id", orderControllers.GetOrderStatusByID)
+		orderStatusGroup.POST("/", middlewares2.CheckUserAuthentication, middlewares2.CheckAdmin, orderControllers.CreateOrderStatus)
+		orderStatusGroup.PUT("/:id", middlewares2.CheckUserAuthentication, middlewares2.CheckAdmin, orderControllers.UpdateOrderStatus)
+		orderStatusGroup.DELETE("/:id", middlewares2.CheckUserAuthentication, middlewares2.CheckAdmin, orderControllers.DeleteOrderStatus)
 	}
 
 	// Обработчик статусов заказов по имени
-	r.GET("/order-status/name/:name", Order.GetOrderStatusByName)
+	r.GET("/order-status/name/:name", orderControllers.GetOrderStatusByName)
+
+	productGroup := r.Group("/product")
+	{
+		productGroup.GET("/", productControllers.GetAllProducts)
+		productGroup.GET("/:id", productControllers.GetProductByID)
+		productGroup.POST("/", middlewares2.CheckUserAuthentication, productControllers.CreateProduct)
+	}
+	return r
 }
