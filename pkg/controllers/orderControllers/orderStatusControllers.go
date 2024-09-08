@@ -1,4 +1,4 @@
-package Order
+package orderControllers
 
 import (
 	"BizMart/errs"

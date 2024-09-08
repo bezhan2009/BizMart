@@ -1,4 +1,4 @@
-package Category
+package categoryControllers
 
 import (
 	"BizMart/errs"

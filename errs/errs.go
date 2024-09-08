@@ -27,6 +27,7 @@ var (
 	ErrInvalidCategory   = errors.New("ErrInvalidCategory")
 	ErrInvalidStore      = errors.New("ErrInvalidStore")
 	ErrInvalidID         = errors.New("ErrInvalidID")
+	ErrInvalidProductID  = errors.New("ErrInvalidProductID")
 )
 
 // Uniqueness Errors
@@ -35,6 +36,7 @@ var (
 	ErrEmailUniquenessFailed           = errors.New("ErrEmailUniquenessFailed")
 	ErrCategoryNameUniquenessFailed    = errors.New("ErrCategoryNameUniquenessFailed")
 	ErrOrderStatusNameUniquenessFailed = errors.New("ErrOrderStatusNameUniquenessFailed")
+	ErrStoreNameUniquenessFailed       = errors.New("ErrStoreNameUniquenessFailed")
 )
 
 // General Errors
@@ -43,4 +45,5 @@ var (
 	ErrCategoryNotFound    = errors.New("ErrCategoryNotFound")
 	ErrOrderStatusNotFound = errors.New("ErrOrderStatusNotFound")
 	ErrSomethingWentWrong  = errors.New("ErrSomethingWentWrong")
+	ErrProductNotFound     = errors.New("ErrProductNotFound")
 )

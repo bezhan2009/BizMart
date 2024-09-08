@@ -8,9 +8,9 @@ import (
 type StoreReview struct {
 	ID        uint           `json:"id" gorm:"primaryKey"`
 	StoreID   uint           `json:"store_id" gorm:"not null"`
-	Store     Store          `json:"store" gorm:"foreignKey:StoreID"`
+	Store     Store          `json:"-" gorm:"foreignKey:StoreID"`
 	UserID    uint           `json:"user_id" gorm:"not null"`
-	User      User           `json:"user" gorm:"foreignKey:UserID"`
+	User      User           `json:"-" gorm:"foreignKey:UserID"`
 	Rating    uint           `json:"rating" gorm:"not null"`
 	Comment   string         `json:"comment"`
 	CreatedAt time.Time      `json:"created_at"`

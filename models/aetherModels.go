@@ -18,7 +18,7 @@ type UserProfile struct {
 type Account struct {
 	ID            uint           `json:"id" gorm:"primaryKey"`
 	UserID        uint           `gorm:"not null" json:"user_id"`
-	User          User           `gorm:"foreignKey:UserID"`
+	User          User           `json:"-" gorm:"foreignKey:UserID"`
 	AccountNumber string         `gorm:"unique;not null" json:"account_number"`
 	Balance       float64        `gorm:"default:12100.09" json:"balance"`
 	IsDeleted     bool           `gorm:"default:false" json:"is_deleted"`

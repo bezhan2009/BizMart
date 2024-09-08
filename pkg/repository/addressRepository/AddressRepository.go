@@ -1,4 +1,4 @@
-package address
+package addressRepository
 
 import (
 	"BizMart/db"

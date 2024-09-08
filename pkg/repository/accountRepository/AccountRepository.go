@@ -1,4 +1,4 @@
-package account
+package accountRepository
 
 import (
 	"BizMart/db"
