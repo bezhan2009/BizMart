@@ -28,7 +28,8 @@ func HandleError(c *gin.Context, err error) {
 	} else if errors.Is(err, errs.ErrRecordNotFound) ||
 		errors.Is(err, errs.ErrCategoryNotFound) ||
 		errors.Is(err, errs.ErrOrderStatusNotFound) ||
-		errors.Is(err, errs.ErrProductNotFound) {
+		errors.Is(err, errs.ErrProductNotFound) ||
+		errors.Is(err, errs.ErrStoreNotFound) {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 	} else {
 		logger.Error.Printf("Err: %s", err)

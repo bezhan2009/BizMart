@@ -28,7 +28,7 @@ func GetStoreByID(c *gin.Context) {
 		return
 	}
 
-	OurStore, err := repository.GetStoreByID(uint(storeID))
+	OurStore, err := service.GetStoreByID(uint(storeID))
 	if err != nil {
 		HandleError(c, err)
 		return
