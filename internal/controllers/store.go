@@ -57,15 +57,17 @@ func CreateStore(c *gin.Context) {
 }
 
 func UpdateStore(c *gin.Context) {
-	var OurStore models.Store
-	if err := c.ShouldBindJSON(&OurStore); err != nil {
+	storeStrID := c.Param("id")
+	storeID, err := strconv.Atoi(storeStrID)
+	if err != nil {
 		HandleError(c, errs.ErrValidationFailed)
 		return
 	}
 
-	storeStrID := c.Param("storeID")
-	storeID, err := strconv.Atoi(storeStrID)
-	if err != nil {
+	var OurStore models.Store
+	OurStore.ID = uint(storeID)
+
+	if err = c.ShouldBindJSON(&OurStore); err != nil {
 		HandleError(c, errs.ErrValidationFailed)
 		return
 	}
@@ -94,7 +96,7 @@ func UpdateStore(c *gin.Context) {
 }
 
 func DeleteStore(c *gin.Context) {
-	storeStrID := c.Param("storeID")
+	storeStrID := c.Param("id")
 	storeID, err := strconv.Atoi(storeStrID)
 	if err != nil {
 		HandleError(c, errs.ErrValidationFailed)
