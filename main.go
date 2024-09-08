@@ -2,10 +2,10 @@ package main
 
 import (
 	"BizMart/configs"
-	"BizMart/db"
-	"BizMart/logger"
-	"BizMart/routes"
-	"BizMart/security"
+	"BizMart/internal/routes"
+	security2 "BizMart/internal/security"
+	db2 "BizMart/pkg/db"
+	"BizMart/pkg/logger"
 	"BizMart/server"
 	"context"
 	"errors"
@@ -34,23 +34,23 @@ func main() {
 		}
 	}
 
-	security.AppSettings, err = configs.ReadSettings()
+	security2.AppSettings, err = configs.ReadSettings()
 	if err != nil {
 		panic(err)
 	}
-	security.SetConnDB(security.AppSettings)
+	security2.SetConnDB(security2.AppSettings)
 
 	err = logger.Init()
 	if err != nil {
 		panic(err)
 	}
 
-	err = db.ConnectToDB()
+	err = db2.ConnectToDB()
 	if err != nil {
 		panic(err)
 	}
 
-	err = db.Migrate()
+	err = db2.Migrate()
 	if err != nil {
 		panic(err)
 	}
@@ -59,7 +59,7 @@ func main() {
 
 	mainServer := new(server.Server)
 	go func() {
-		if err = mainServer.Run(security.AppSettings.AppParams.PortRun, routes.InitRoutes(router)); err != nil {
+		if err = mainServer.Run(security2.AppSettings.AppParams.PortRun, routes.InitRoutes(router)); err != nil {
 			log.Fatalf("Ошибка при запуске HTTP сервера: %s", err)
 		}
 	}()
@@ -70,7 +70,7 @@ func main() {
 
 	fmt.Printf("\n%s\n", yellow("Начало завершения сервиса"))
 
-	if sqlDB, err := db.GetDBConn().DB(); err == nil {
+	if sqlDB, err := db2.GetDBConn().DB(); err == nil {
 		if err := sqlDB.Close(); err != nil {
 			log.Fatalf("Ошибка при закрытии соединения с БД: %s", err)
 		}
