@@ -78,7 +78,7 @@ func UpdateStore(c *gin.Context) {
 
 	userID := c.GetUint(middlewares.UserIDCtx)
 
-	if userID == store.OwnerID {
+	if userID != store.OwnerID {
 		HandleError(c, errs.ErrPermissionDenied)
 		return
 	}
@@ -109,7 +109,7 @@ func DeleteStore(c *gin.Context) {
 
 	userID := c.GetUint(middlewares.UserIDCtx)
 
-	if userID == store.OwnerID {
+	if userID != store.OwnerID {
 		HandleError(c, errs.ErrPermissionDenied)
 		return
 	}
