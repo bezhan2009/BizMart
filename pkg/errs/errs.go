@@ -47,6 +47,7 @@ var (
 	ErrSomethingWentWrong  = errors.New("ErrSomethingWentWrong")
 	ErrProductNotFound     = errors.New("ErrProductNotFound")
 	ErrStoreNotFound       = errors.New("ErrStoreNotFound")
+	ErrUserNotFound        = errors.New("ErrUserNotFound")
 )
 
 // GORM Errors

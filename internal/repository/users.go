@@ -3,6 +3,7 @@ package repository
 import (
 	"BizMart/internal/app/models"
 	"BizMart/pkg/db"
+	"BizMart/pkg/errs"
 	"BizMart/pkg/logger"
 	"errors"
 	"gorm.io/gorm"
@@ -33,7 +34,7 @@ func GetUserByUsername(username string) (*models.User, error) {
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil
+			return nil, errs.ErrUserNotFound
 		}
 		logger.Error.Printf("[repository.GetUserByUsername] error getting user by username: %v\n", err)
 		return nil, err
