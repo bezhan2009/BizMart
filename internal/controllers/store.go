@@ -70,7 +70,7 @@ func UpdateStore(c *gin.Context) {
 		return
 	}
 
-	store, err := repository.GetStoreByID(uint(storeID))
+	store, err := service.GetStoreByID(uint(storeID))
 	if err != nil {
 		HandleError(c, err)
 		return
@@ -101,7 +101,7 @@ func DeleteStore(c *gin.Context) {
 		return
 	}
 
-	store, err := repository.GetStoreByID(uint(storeID))
+	store, err := service.GetStoreByID(uint(storeID))
 	if err != nil {
 		HandleError(c, err)
 		return
