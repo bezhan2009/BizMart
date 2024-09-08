@@ -11,7 +11,6 @@ import (
 func HandleError(c *gin.Context, err error) {
 	if errors.Is(err, errs.ErrUsernameUniquenessFailed) ||
 		errors.Is(err, errs.ErrIncorrectUsernameOrPassword) ||
-		errors.Is(err, errs.ErrIncorrectUsernameOrPassword) ||
 		errors.Is(err, errs.ErrCategoryNameUniquenessFailed) ||
 		errors.Is(err, errs.ErrOrderStatusNameUniquenessFailed) ||
 		errors.Is(err, errs.ErrPathParametrized) ||
@@ -19,6 +18,9 @@ func HandleError(c *gin.Context, err error) {
 		errors.Is(err, errs.ErrInvalidMinPrice) ||
 		errors.Is(err, errs.ErrInvalidMaxPrice) ||
 		errors.Is(err, errs.ErrInvalidCategory) ||
+		errors.Is(err, errs.ErrEmailIsEmpty) ||
+		errors.Is(err, errs.ErrPasswordIsEmpty) ||
+		errors.Is(err, errs.ErrUsernameIsEmpty) ||
 		errors.Is(err, errs.ErrInvalidStore) ||
 		errors.Is(err, errs.ErrValidationFailed) ||
 		errors.Is(err, errs.ErrStoreNameUniquenessFailed) {

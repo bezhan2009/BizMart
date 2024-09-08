@@ -4,6 +4,7 @@ import (
 	"BizMart/internal/app/models"
 	"BizMart/pkg/db"
 	"BizMart/pkg/logger"
+	"errors"
 	"gorm.io/gorm"
 )
 
@@ -31,7 +32,7 @@ func GetUserByUsername(username string) (*models.User, error) {
 	err := db.GetDBConn().Where("username = ?", username).First(&user).Error
 
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
 		logger.Error.Printf("[repository.GetUserByUsername] error getting user by username: %v\n", err)

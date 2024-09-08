@@ -16,23 +16,23 @@ func SignUp(c *gin.Context) {
 
 	// Parse JSON body into the user struct
 	if err := c.BindJSON(&user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		HandleError(c, errs.ErrValidationFailed)
 		return
 	}
 
 	// Check for missing fields
 	if user.HashPassword == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": errs.ErrPasswordIsEmpty.Error()})
+		HandleError(c, errs.ErrPasswordIsEmpty)
 		return
 	}
 
 	if user.Email == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": errs.ErrEmailIsEmpty.Error()})
+		HandleError(c, errs.ErrEmailIsEmpty)
 		return
 	}
 
 	if user.Username == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": errs.ErrUsernameIsEmpty.Error()})
+		HandleError(c, errs.ErrUsernameIsEmpty)
 		return
 	}
 
@@ -40,9 +40,10 @@ func SignUp(c *gin.Context) {
 	userID, err := service.CreateUser(user)
 	if err != nil {
 		if errors.Is(err, errs.ErrRecordNotFound) {
-			c.JSON(http.StatusBadRequest, gin.H{"error": errs.ErrIncorrectUsernameOrPassword})
+			HandleError(c, errs.ErrIncorrectUsernameOrPassword)
 			return
 		}
+
 		HandleError(c, err)
 		return
 	}
@@ -53,7 +54,8 @@ func SignUp(c *gin.Context) {
 	accessToken, err := utils2.GenerateToken(user.ID, user.Username)
 	if err != nil {
 		logger.Error.Printf("Error generating access token: %s", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		HandleError(c, err)
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -70,23 +72,23 @@ func SignIn(c *gin.Context) {
 
 	// Parse JSON body into the user struct
 	if err := c.BindJSON(&user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": errs.ErrInvalidData.Error()})
+		HandleError(c, errs.ErrValidationFailed)
 		return
 	}
 
 	// Check for missing fields
 	if user.HashPassword == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": errs.ErrPasswordIsEmpty.Error()})
+		HandleError(c, errs.ErrPasswordIsEmpty)
 		return
 	}
 
 	if user.Email == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": errs.ErrEmailIsEmpty.Error()})
+		HandleError(c, errs.ErrEmailIsEmpty)
 		return
 	}
 
 	if user.Username == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": errs.ErrUsernameIsEmpty.Error()})
+		HandleError(c, errs.ErrUsernameIsEmpty)
 		return
 	}
 
@@ -98,6 +100,7 @@ func SignIn(c *gin.Context) {
 	if err != nil {
 		if errors.Is(err, errs.ErrRecordNotFound) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": errs.ErrIncorrectUsernameOrPassword.Error()})
+			HandleError(c, errs.ErrIncorrectUsernameOrPassword)
 			return
 		}
 		HandleError(c, err)

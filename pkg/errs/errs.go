@@ -48,3 +48,11 @@ var (
 	ErrProductNotFound     = errors.New("ErrProductNotFound")
 	ErrStoreNotFound       = errors.New("ErrStoreNotFound")
 )
+
+// GORM Errors
+var (
+	ErrDuplicateEntry    = errors.New("ErrDuplicateEntry")
+	ErrInvalidField      = errors.New("ErrInvalidField")
+	ErrUnsupportedDriver = errors.New("ErrUnsupportedDriver")
+	ErrNotImplemented    = errors.New("ErrNotImplemented")
+)
