@@ -148,8 +148,8 @@ func GetAllProducts(minPrice, maxPrice float64, categoryID uint, productName str
 	query := db.GetDBConn().
 		Table("productapp_product").
 		Select("productapp_product.*, STRING_AGG(productapp_productimage.image, ',') AS product_images").
+		Where("productapp_product.amount > 0").
 		Joins("LEFT JOIN productapp_productimage ON productapp_productimage.product_id = productapp_product.id").
-		Where("productapp_product.is_deleted = ?", false).
 		Group("productapp_product.id")
 
 	// Apply filters
@@ -166,7 +166,10 @@ func GetAllProducts(minPrice, maxPrice float64, categoryID uint, productName str
 		query = query.Where("productapp_product.store_id = ?", storeID)
 	}
 	if productName != "" {
-		query = query.Where("productapp_product.title LIKE ?", "%"+productName+"%")
+		query = query.Where(
+			db.GetDBConn().Where("productapp_product.title LIKE ?", "%"+productName+"%").
+				Or("productapp_product.description LIKE ?", "%"+productName+"%"),
+		)
 	}
 
 	// Execute the query

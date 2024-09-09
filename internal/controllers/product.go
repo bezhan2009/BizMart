@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"BizMart/internal/app/models"
+	"BizMart/internal/app/service"
 	"BizMart/internal/controllers/middlewares"
 	"BizMart/internal/repository"
 	"BizMart/pkg/db"
@@ -19,12 +20,17 @@ func GetAllProducts(c *gin.Context) {
 	productName := c.Query("product_name")
 	store := c.Query("store")
 
-	if minPriceStr == "" && maxPriceStr == "" && category == "" && store == "" {
+	if minPriceStr == "" && maxPriceStr == "" && category == "" && store == "" && productName == "" {
 		var products []models.Product
 
 		products, err := repository.GetAllProducts(0, 0, uint(0), productName, uint(0))
 		if err != nil {
-			c.JSON(500, gin.H{"error": "Error fetching products"})
+			HandleError(c, errs.ErrFetchingProducts)
+			return
+		}
+
+		if len(products) == 0 {
+			HandleError(c, errs.ErrNoProductsFound)
 			return
 		}
 
@@ -51,6 +57,11 @@ func GetAllProducts(c *gin.Context) {
 		}
 	}
 
+	if minPrice > maxPrice {
+		HandleError(c, errs.ErrInvalidMinPrice)
+		return
+	}
+
 	var categoryId int
 
 	if category != "" {
@@ -75,7 +86,12 @@ func GetAllProducts(c *gin.Context) {
 
 	products, err = repository.GetAllProducts(minPrice, maxPrice, uint(categoryId), productName, uint(storeId))
 	if err != nil {
-		c.JSON(500, gin.H{"error": "Error fetching products"})
+		HandleError(c, errs.ErrFetchingProducts)
+		return
+	}
+
+	if len(products) == 0 {
+		HandleError(c, errs.ErrNoProductsFound)
 		return
 	}
 
@@ -114,6 +130,11 @@ func CreateProduct(c *gin.Context) {
 		return
 	}
 
+	err = service.ValidateProduct(HandleError, productData, c)
+	if err != nil {
+		return
+	}
+
 	// Получаем данные о магазине
 	productData.Store, err = repository.GetStoreByID(uint(storeID))
 	if err != nil {
@@ -124,7 +145,7 @@ func CreateProduct(c *gin.Context) {
 	// Получаем ID пользователя
 	userID := c.GetUint(middlewares.UserIDCtx)
 	if userID == 0 {
-		HandleError(c, errs.ErrValidationFailed)
+		HandleError(c, errs.ErrUnauthorized)
 		return
 	}
 
@@ -176,6 +197,11 @@ func UpdateProduct(c *gin.Context) {
 	if err := c.ShouldBindJSON(&updatedProductData); err != nil {
 		logger.Error.Printf("[controllers.UpdateProduct] Error updating product: %s", err.Error())
 		HandleError(c, errs.ErrValidationFailed)
+		return
+	}
+
+	err = service.ValidateProduct(HandleError, productData, c)
+	if err != nil {
 		return
 	}
 

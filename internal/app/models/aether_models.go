@@ -65,7 +65,6 @@ type Product struct {
 	//DefaultAccountID uint           `gorm:"default:NULL" json:"default_account_id"`
 	//DefaultAccount   Account        `json:"-" gorm:"foreignKey:DefaultAccountID"`
 	ProductImageList pq.StringArray `gorm:"type:text[]" json:"product_image"`
-	IsDeleted        bool           `gorm:"default:false" json:"is_deleted"`
 	Views            int            `gorm:"default:0" json:"views"`
 	CreatedAt        time.Time      `json:"created_at"`
 	UpdatedAt        time.Time      `json:"updated_at"`

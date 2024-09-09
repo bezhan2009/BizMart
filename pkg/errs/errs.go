@@ -13,22 +13,26 @@ var (
 	ErrUsernameOrPasswordIsEmpty   = errors.New("ErrUsernameOrPasswordIsEmpty")
 	ErrEmailOrPasswordIsEmpty      = errors.New("ErrEmailOrPasswordIsEmpty")
 	ErrPermissionDenied            = errors.New("ErrPermissionDenied")
+	ErrUnauthorized                = errors.New("ErrUnauthorized")
 )
 
 // Validation Errors
 var (
-	ErrInvalidData       = errors.New("ErrInvalidData")
-	ErrValidationFailed  = errors.New("ErrValidationFailed")
-	ErrPathParametrized  = errors.New("ErrPathParametrized")
-	ErrInvalidMinPrice   = errors.New("ErrInvalidMinPrice")
-	ErrInvalidMaxPrice   = errors.New("ErrInvalidMaxPrice")
-	ErrInvalidAmount     = errors.New("ErrInvalidAmount")
-	ErrInsufficientFunds = errors.New("ErrInsufficientFunds")
-	ErrInvalidCategory   = errors.New("ErrInvalidCategory")
-	ErrInvalidStore      = errors.New("ErrInvalidStore")
-	ErrInvalidID         = errors.New("ErrInvalidID")
-	ErrInvalidProductID  = errors.New("ErrInvalidProductID")
-	ErrInvalidStoreID    = errors.New("ErrInvalidProductID")
+	ErrInvalidData        = errors.New("ErrInvalidData")
+	ErrValidationFailed   = errors.New("ErrValidationFailed")
+	ErrPathParametrized   = errors.New("ErrPathParametrized")
+	ErrInvalidMinPrice    = errors.New("ErrInvalidMinPrice")
+	ErrInvalidMaxPrice    = errors.New("ErrInvalidMaxPrice")
+	ErrInvalidAmount      = errors.New("ErrInvalidAmount")
+	ErrInvalidPrice       = errors.New("ErrInvalidPrice")
+	ErrInsufficientFunds  = errors.New("ErrInsufficientFunds")
+	ErrInvalidCategory    = errors.New("ErrInvalidCategory")
+	ErrInvalidStore       = errors.New("ErrInvalidStore")
+	ErrInvalidID          = errors.New("ErrInvalidID")
+	ErrInvalidProductID   = errors.New("ErrInvalidProductID")
+	ErrInvalidStoreID     = errors.New("ErrInvalidProductID")
+	ErrInvalidTitle       = errors.New("ErrInvalidTitle")
+	ErrInvalidDescription = errors.New("ErrInvalidDescription")
 )
 
 // Uniqueness Errors
@@ -50,6 +54,8 @@ var (
 	ErrStoreNotFound       = errors.New("ErrStoreNotFound")
 	ErrUserNotFound        = errors.New("ErrUserNotFound")
 	ErrDeleteFailed        = errors.New("ErrDeleteFailed")
+	ErrFetchingProducts    = errors.New("ErrFetchingProducts")
+	ErrNoProductsFound     = errors.New("ErrNoProductsFound")
 )
 
 // GORM Errors
