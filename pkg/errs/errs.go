@@ -28,6 +28,7 @@ var (
 	ErrInvalidStore      = errors.New("ErrInvalidStore")
 	ErrInvalidID         = errors.New("ErrInvalidID")
 	ErrInvalidProductID  = errors.New("ErrInvalidProductID")
+	ErrInvalidStoreID    = errors.New("ErrInvalidProductID")
 )
 
 // Uniqueness Errors
@@ -48,6 +49,7 @@ var (
 	ErrProductNotFound     = errors.New("ErrProductNotFound")
 	ErrStoreNotFound       = errors.New("ErrStoreNotFound")
 	ErrUserNotFound        = errors.New("ErrUserNotFound")
+	ErrDeleteFailed        = errors.New("ErrDeleteFailed")
 )
 
 // GORM Errors

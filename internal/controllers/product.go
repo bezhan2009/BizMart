@@ -4,7 +4,9 @@ import (
 	"BizMart/internal/app/models"
 	"BizMart/internal/controllers/middlewares"
 	"BizMart/internal/repository"
+	"BizMart/pkg/db"
 	"BizMart/pkg/errs"
+	"BizMart/pkg/logger"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -94,19 +96,20 @@ func GetProductByID(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"getProductByID": getProductByID})
+	c.JSON(http.StatusOK, gin.H{"product": getProductByID})
 }
 
 func CreateProduct(c *gin.Context) {
-	storeIDStr := c.Param("id")
+	storeIDStr := c.Param("store_id")
 	storeID, err := strconv.Atoi(storeIDStr)
 	if err != nil {
-		HandleError(c, errs.ErrInvalidProductID)
+		HandleError(c, errs.ErrInvalidStoreID)
 		return
 	}
 
 	var productData models.Product
-	if err := c.ShouldBind(&productData); err != nil {
+	if err := c.ShouldBindJSON(&productData); err != nil {
+		logger.Error.Printf("[controllers.CreateProduct] Error creating new product: %s", err.Error())
 		HandleError(c, errs.ErrValidationFailed)
 		return
 	}
@@ -114,7 +117,7 @@ func CreateProduct(c *gin.Context) {
 	// Получаем данные о магазине
 	productData.Store, err = repository.GetStoreByID(uint(storeID))
 	if err != nil {
-		HandleError(c, errs.ErrProductNotFound)
+		HandleError(c, errs.ErrStoreNotFound)
 		return
 	}
 
@@ -131,24 +134,17 @@ func CreateProduct(c *gin.Context) {
 		return
 	}
 
-	// Извлекаем поле product_image, ожидая массив строк (ссылки на изображения)
-	var productImages []string
-	if err := c.BindJSON(&productImages); err != nil {
-		HandleError(c, errs.ErrValidationFailed)
-		return
-	}
-
-	// Создаем массив структур ProductImage на основе пришедших данных
+	// Создаем массив структур ProductImage на основе данных из productData
 	var images []models.ProductImage
-	for _, image := range productImages {
+	for _, image := range productData.ProductImageList {
 		images = append(images, models.ProductImage{
-			ProductID: productData.ID, // ID продукта будет присвоен после создания продукта
+			ProductID: productData.ID,
 			Image:     image,
 		})
 	}
 
 	// Сохраняем продукт и изображения
-	if err := repository.CreateProductWithImages(&productData, images, userID); err != nil {
+	if err := repository.CreateProductWithImages(&productData, images); err != nil {
 		HandleError(c, err)
 		return
 	}
@@ -157,5 +153,133 @@ func CreateProduct(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Product and images successfully created",
 		"product": productData,
+	})
+}
+
+func UpdateProduct(c *gin.Context) {
+	productIDStr := c.Param("id")
+	productID, err := strconv.Atoi(productIDStr)
+	if err != nil {
+		HandleError(c, errs.ErrInvalidProductID)
+		return
+	}
+
+	// Получаем текущие данные продукта из базы данных
+	productData, err := repository.GetProductByID(uint(productID))
+	if err != nil {
+		HandleError(c, errs.ErrProductNotFound)
+		return
+	}
+
+	// Получаем данные из запроса
+	var updatedProductData models.Product
+	if err := c.ShouldBindJSON(&updatedProductData); err != nil {
+		logger.Error.Printf("[controllers.UpdateProduct] Error updating product: %s", err.Error())
+		HandleError(c, errs.ErrValidationFailed)
+		return
+	}
+
+	// Получаем ID пользователя
+	userID := c.GetUint(middlewares.UserIDCtx)
+	if userID == 0 {
+		HandleError(c, errs.ErrValidationFailed)
+		return
+	}
+
+	// Проверяем, является ли пользователь владельцем продукта
+	if userID != productData.Store.OwnerID {
+		HandleError(c, errs.ErrPermissionDenied)
+		return
+	}
+
+	// Обновляем данные продукта
+	productData.Title = updatedProductData.Title
+	productData.Description = updatedProductData.Description
+	productData.Price = updatedProductData.Price
+	productData.Amount = updatedProductData.Amount
+	productData.CategoryID = updatedProductData.CategoryID
+
+	// Обновляем Store только в случае необходимости, если это допускается
+
+	// Обновляем изображения
+	var updatedImages []models.ProductImage
+	for _, image := range updatedProductData.ProductImageList {
+		updatedImages = append(updatedImages, models.ProductImage{
+			ProductID: productData.ID,
+			Image:     image,
+		})
+	}
+
+	// Сохраняем изменения в базе данных
+	if err := repository.UpdateProductWithImages(&productData, updatedImages); err != nil {
+		HandleError(c, err)
+		return
+	}
+
+	// Ответ клиенту
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Product and images successfully updated",
+		"product": productData,
+	})
+}
+
+func DeleteProduct(c *gin.Context) {
+	productIdStr := c.Param("id")
+	productId, err := strconv.Atoi(productIdStr)
+	if err != nil {
+		HandleError(c, errs.ErrInvalidProductID)
+		return
+	}
+
+	// Получаем продукт по ID
+	product, err := repository.GetProductByID(uint(productId))
+	if err != nil {
+		HandleError(c, errs.ErrProductNotFound)
+		return
+	}
+
+	// Получаем информацию о магазине
+	store, err := repository.GetStoreByID(uint(product.StoreID))
+	if err != nil {
+		HandleError(c, errs.ErrStoreNotFound)
+		return
+	}
+
+	// Получаем ID пользователя
+	userID := c.GetUint(middlewares.UserIDCtx)
+	if userID == 0 {
+		HandleError(c, errs.ErrValidationFailed)
+		return
+	}
+
+	// Проверяем права пользователя на удаление продукта
+	if store.OwnerID != userID {
+		HandleError(c, errs.ErrPermissionDenied)
+		return
+	}
+
+	// Начинаем транзакцию для удаления продукта и связанных изображений
+	tx := db.GetDBConn().Begin()
+
+	// Удаляем изображения продукта
+	if err := repository.DeleteProductImagesByProductID(uint(productId)); err != nil {
+		tx.Rollback() // Откат транзакции в случае ошибки
+		HandleError(c, errs.ErrDeleteFailed)
+		return
+	}
+
+	// Удаляем сам продукт
+	if err := repository.DeleteProductByID(uint(productId)); err != nil {
+		tx.Rollback() // Откат транзакции в случае ошибки
+		HandleError(c, errs.ErrDeleteFailed)
+		return
+	}
+
+	// Фиксируем транзакцию после успешного удаления
+	tx.Commit()
+
+	// Ответ клиенту об успешном удалении
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Product and images successfully deleted",
 	})
 }

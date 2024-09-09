@@ -5,6 +5,7 @@ import (
 	"BizMart/pkg/db"
 	"BizMart/pkg/logger"
 	"errors"
+	"fmt"
 	"gorm.io/gorm"
 )
 
@@ -36,15 +37,24 @@ func CreateProduct(product *models2.Product, userID uint, productImage models2.P
 // GetProductByID retrieves a product by its ID
 func GetProductByID(productID uint) (models2.Product, error) {
 	var product models2.Product
-	if err := db.GetDBConn().Preload("Store").Preload("Category").Preload("DefaultAccount").Where("id = ?", productID).First(&product).Error; err != nil {
+	if err := db.GetDBConn().Preload("Store").Preload("Category").Where("id = ?", productID).First(&product).Error; err != nil {
 		logger.Error.Printf("[repository.GetProductByID] Error getting product: %v\n", err)
 		return product, err
 	}
+
+	// Увеличиваем количество просмотров
+	product.Views += 1
+
+	// Сохраняем изменения в базе данных
+	if err := db.GetDBConn().Save(&product).Error; err != nil {
+		logger.Error.Printf("[repository.GetProductByID] Error updating product views: %v\n", err)
+		return product, err
+	}
+
 	return product, nil
 }
 
-// UpdateProduct updates an existing product in the store
-func UpdateProduct(productID uint, updatedProduct *models2.Product, userID uint) error {
+func UpdateProduct(productID uint, updatedProduct *models2.Product, updatedImages []models2.ProductImage) error {
 	// Fetch the existing product
 	var product models2.Product
 	if err := db.GetDBConn().Where("id = ?", productID).First(&product).Error; err != nil {
@@ -52,9 +62,11 @@ func UpdateProduct(productID uint, updatedProduct *models2.Product, userID uint)
 		return err
 	}
 
-	// Validate that the user owns the store associated with the product
-	if product.Store.OwnerID != userID {
-		return errors.New("unauthorized action: you do not own this store")
+	// Check if the category exists
+	var category models2.Category
+	if err := db.GetDBConn().Where("id = ?", updatedProduct.CategoryID).First(&category).Error; err != nil {
+		logger.Error.Printf("[repository.UpdateProduct] Category not found for ID: %v, Error: %v\n", updatedProduct.CategoryID, err)
+		return fmt.Errorf("category with ID %d not found", updatedProduct.CategoryID)
 	}
 
 	// Update the product details
@@ -63,18 +75,48 @@ func UpdateProduct(productID uint, updatedProduct *models2.Product, userID uint)
 	product.Price = updatedProduct.Price
 	product.Amount = updatedProduct.Amount
 	product.CategoryID = updatedProduct.CategoryID
-	product.DefaultAccountID = updatedProduct.DefaultAccountID
 
-	if err := db.GetDBConn().Save(&product).Error; err != nil {
+	//if updatedProduct.DefaultAccountID != 0 {
+	//	product.DefaultAccountID = updatedProduct.DefaultAccountID
+	//}
+
+	// Start transaction to ensure atomicity
+	tx := db.GetDBConn().Begin()
+
+	// Save updated product details
+	if err := tx.Save(&product).Error; err != nil {
+		tx.Rollback()
 		logger.Error.Printf("[repository.UpdateProduct] Error updating product: %v\n", err)
 		return err
 	}
 
+	// Remove old product images
+	if err := tx.Where("product_id = ?", productID).Delete(&models2.ProductImage{}).Error; err != nil {
+		tx.Rollback()
+		logger.Error.Printf("[repository.UpdateProduct] Error deleting old product images: %v\n", err)
+		return err
+	}
+
+	// Assign the updated product ID to the new images and save them
+	for i := range updatedImages {
+		updatedImages[i].ProductID = productID
+	}
+
+	// Save the updated product images
+	if err := tx.Create(&updatedImages).Error; err != nil {
+		tx.Rollback()
+		logger.Error.Printf("[repository.UpdateProduct] Error updating product images: %v\n", err)
+		return err
+	}
+
+	// Commit the transaction
+	tx.Commit()
+
 	return nil
 }
 
-// DeleteProduct marks a product as deleted
-func DeleteProduct(productID uint, userID uint) error {
+// DeleteProductByID marks a product as deleted
+func DeleteProductByID(productID uint) error {
 	// Fetch the existing product
 	var product models2.Product
 	if err := db.GetDBConn().Where("id = ?", productID).First(&product).Error; err != nil {
@@ -82,18 +124,19 @@ func DeleteProduct(productID uint, userID uint) error {
 		return err
 	}
 
-	// Validate that the user owns the store associated with the product
-	if product.Store.OwnerID != userID {
-		return errors.New("unauthorized action: you do not own this store")
-	}
-
-	// Mark the product as deleted
-	product.IsDeleted = true
-	if err := db.GetDBConn().Save(&product).Error; err != nil {
+	if err := db.GetDBConn().Delete(&product).Error; err != nil {
 		logger.Error.Printf("[repository.DeleteProduct] Error deleting product: %v\n", err)
 		return err
 	}
 
+	return nil
+}
+
+func DeleteProductImagesByProductID(productID uint) error {
+	if err := db.GetDBConn().Where("product_id = ?", productID).Delete(&models2.ProductImage{}).Error; err != nil {
+		logger.Error.Printf("[repository.DeleteProductImagesByProductID] Error deleting product images: %v\n", err)
+		return err
+	}
 	return nil
 }
 
@@ -134,7 +177,7 @@ func GetAllProducts(minPrice, maxPrice float64, categoryID uint, productName str
 	return products, nil
 }
 
-func CreateProductWithImages(product *models2.Product, images []models2.ProductImage, userID uint) error {
+func CreateProductWithImages(product *models2.Product, images []models2.ProductImage) error {
 	// Создаем продукт в базе данных
 	if err := db.GetDBConn().Create(product).Error; err != nil {
 		return err
@@ -146,6 +189,30 @@ func CreateProductWithImages(product *models2.Product, images []models2.ProductI
 	}
 
 	// Сохраняем все изображения в базе данных
+	if err := db.GetDBConn().Create(&images).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func UpdateProductWithImages(product *models2.Product, images []models2.ProductImage) error {
+	// Обновляем продукт в базе данных
+	if err := db.GetDBConn().Save(product).Error; err != nil {
+		return err
+	}
+
+	// Удаляем старые изображения
+	if err := db.GetDBConn().Where("product_id = ?", product.ID).Delete(&models2.ProductImage{}).Error; err != nil {
+		return err
+	}
+
+	// Добавляем новые изображения
+	for i := range images {
+		images[i].ProductID = product.ID
+	}
+
+	// Сохраняем новые изображения
 	if err := db.GetDBConn().Create(&images).Error; err != nil {
 		return err
 	}

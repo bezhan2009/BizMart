@@ -23,7 +23,8 @@ func HandleError(c *gin.Context, err error) {
 		errors.Is(err, errs.ErrUsernameIsEmpty) ||
 		errors.Is(err, errs.ErrInvalidStore) ||
 		errors.Is(err, errs.ErrValidationFailed) ||
-		errors.Is(err, errs.ErrStoreNameUniquenessFailed) {
+		errors.Is(err, errs.ErrStoreNameUniquenessFailed) ||
+		errors.Is(err, errs.ErrDeleteFailed) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	} else if errors.Is(err, errs.ErrPermissionDenied) {
 		c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})

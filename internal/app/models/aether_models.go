@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/lib/pq"
 	"gorm.io/gorm"
 	"time"
 )
@@ -52,17 +53,18 @@ type Category struct {
 
 // Product represents a product in the system.
 type Product struct {
-	ID               uint           `json:"id" gorm:"primaryKey"`
-	StoreID          uint           `gorm:"not null" json:"store_id"`
-	Store            Store          `gorm:"foreignKey:StoreID" json:"store"`
-	CategoryID       uint           `gorm:"not null" json:"category_id"`
-	Category         Category       `gorm:"foreignKey:CategoryID;constraint:OnDelete:CASCADE;"`
-	Title            string         `gorm:"size:100;not null" json:"title"`
-	Description      string         `gorm:"not null" json:"description"`
-	Price            float64        `gorm:"not null" json:"price"`
-	Amount           int            `gorm:"not null" json:"amount"`
-	DefaultAccountID uint           `gorm:"default:NULL" json:"default_account_id,omitempty"`
-	DefaultAccount   Account        `gorm:"foreignKey:DefaultAccountID"`
+	ID          uint     `json:"id" gorm:"primaryKey"`
+	StoreID     uint     `gorm:"not null" json:"store_id"`
+	Store       Store    `json:"-" gorm:"foreignKey:StoreID"`
+	CategoryID  uint     `gorm:"not null" json:"category_id"`
+	Category    Category `json:"-" gorm:"foreignKey:CategoryID;constraint:OnDelete:CASCADE;"`
+	Title       string   `gorm:"size:100;not null" json:"title"`
+	Description string   `gorm:"not null" json:"description"`
+	Price       float64  `gorm:"not null" json:"price"`
+	Amount      int      `gorm:"not null" json:"amount"`
+	//DefaultAccountID uint           `gorm:"default:NULL" json:"default_account_id"`
+	//DefaultAccount   Account        `json:"-" gorm:"foreignKey:DefaultAccountID"`
+	ProductImageList pq.StringArray `gorm:"type:text[]" json:"product_image"`
 	IsDeleted        bool           `gorm:"default:false" json:"is_deleted"`
 	Views            int            `gorm:"default:0" json:"views"`
 	CreatedAt        time.Time      `json:"created_at"`
@@ -74,9 +76,9 @@ type Product struct {
 type FeaturedProduct struct {
 	gorm.Model
 	ProductID uint    `gorm:"not null" json:"product_id"`
-	Product   Product `gorm:"foreignKey:ProductID"`
+	Product   Product `json:"-" gorm:"foreignKey:ProductID"`
 	UserID    uint    `gorm:"not null" json:"user_id"`
-	User      User    `gorm:"foreignKey:UserID"`
+	User      User    `json:"-" gorm:"foreignKey:UserID"`
 	IsDeleted bool    `gorm:"default:false" json:"is_deleted"`
 }
 
@@ -84,7 +86,7 @@ type FeaturedProduct struct {
 type ProductImage struct {
 	gorm.Model
 	ProductID uint    `gorm:"not null" json:"product_id"`
-	Product   Product `gorm:"foreignKey:ProductID"`
+	Product   Product `json:"-" gorm:"foreignKey:ProductID"`
 	Image     string  `gorm:"not null" json:"image"`
 }
 
@@ -92,9 +94,9 @@ type ProductImage struct {
 type Review struct {
 	gorm.Model
 	UserID    uint      `gorm:"not null" json:"user_id"`
-	User      User      `gorm:"foreignKey:UserID"`
+	User      User      `json:"-" gorm:"foreignKey:UserID"`
 	ProductID uint      `gorm:"not null" json:"product_id"`
-	Product   Product   `gorm:"foreignKey:ProductID"`
+	Product   Product   `json:"-" gorm:"foreignKey:ProductID"`
 	Title     string    `gorm:"size:255;not null" json:"title"`
 	Content   string    `gorm:"not null" json:"content"`
 	Rating    uint      `gorm:"not null;check:rating >= 1 and rating <= 5" json:"rating"`
@@ -106,10 +108,10 @@ type Review struct {
 type Comment struct {
 	ID          uint           `json:"id" gorm:"primaryKey"`
 	UserID      uint           `gorm:"not null" json:"user_id"`
-	User        User           `gorm:"foreignKey:UserID"`
+	User        User           `json:"-" gorm:"foreignKey:UserID"`
 	ProductID   uint           `gorm:"not null" json:"product_id"`
-	Product     Product        `gorm:"foreignKey:ProductID"`
-	ParentID    *uint          `json:"parent_id,omitempty"`
+	Product     Product        `json:"-" gorm:"foreignKey:ProductID"`
+	ParentID    uint           `json:"parent_id,omitempty"`
 	CommentText string         `json:"comment_text"`
 	CreatedAt   time.Time      `json:"created_at"`
 	UpdatedAt   time.Time      `json:"updated_at"`
@@ -130,13 +132,13 @@ type OrderStatus struct {
 type OrderDetails struct {
 	ID        uint           `json:"id" gorm:"primaryKey"`
 	ProductID uint           `gorm:"not null" json:"product_id"`
-	Product   Product        `gorm:"foreignKey:ProductID"`
-	Price     *float64       `json:"price,omitempty"`
+	Product   Product        `json:"-" gorm:"foreignKey:ProductID"`
+	Price     float64        `json:"price,omitempty"`
 	Quantity  int            `gorm:"default:1" json:"quantity"`
 	IsDeleted bool           `gorm:"default:false" json:"is_deleted"`
 	OrderDate time.Time      `gorm:"default:CURRENT_TIMESTAMP" json:"order_date"`
 	AddressID uint           `gorm:"not null" json:"address_id"`
-	Address   Address        `gorm:"foreignKey:AddressID"`
+	Address   Address        `json:"-" gorm:"foreignKey:AddressID"`
 	CreatedAt time.Time      `json:"created_at"`
 	UpdatedAt time.Time      `json:"updated_at"`
 	DeletedAt gorm.DeletedAt `json:"-" gorm:"index"`
@@ -144,17 +146,18 @@ type OrderDetails struct {
 
 // Order represents a user's order.
 type Order struct {
-	ID           uint           `json:"id" gorm:"primaryKey"`
-	UserID       uint           `gorm:"not null" json:"user_id"`
-	User         User           `gorm:"foreignKey:UserID"`
-	StatusID     uint           `gorm:"not null" json:"status_id"`
-	Status       OrderStatus    `gorm:"foreignKey:StatusID"`
-	OrderDetails []OrderDetails `gorm:"many2many:order_orderdetails;"` // Изменено на many2many
-	IsPaid       *bool          `gorm:"default:false" json:"is_paid"`
-	IsInTheCard  bool           `gorm:"default:true" json:"is_in_the_card"`
-	CreatedAt    time.Time      `json:"created_at"`
-	UpdatedAt    time.Time      `json:"updated_at"`
-	DeletedAt    gorm.DeletedAt `json:"-" gorm:"index"`
+	ID             uint           `json:"id" gorm:"primaryKey"`
+	UserID         uint           `gorm:"not null" json:"user_id"`
+	User           User           `gorm:"foreignKey:UserID"`
+	StatusID       uint           `gorm:"not null" json:"status_id"`
+	Status         OrderStatus    `gorm:"foreignKey:StatusID"`
+	OrderDetailsID uint           `gorm:"not null" json:"order_details_id"`
+	OrderDetails   OrderDetails   `json:"-" gorm:"foreignKey:OrderDetailsID"`
+	IsPaid         bool           `gorm:"default:false" json:"is_paid"`
+	IsInTheCard    bool           `gorm:"default:true" json:"is_in_the_card"`
+	CreatedAt      time.Time      `json:"created_at"`
+	UpdatedAt      time.Time      `json:"updated_at"`
+	DeletedAt      gorm.DeletedAt `json:"-" gorm:"index"`
 }
 
 // Payment represents a payment made by a user.
@@ -163,11 +166,11 @@ type Payment struct {
 	UserID    uint           `gorm:"not null" json:"user_id"`
 	User      User           `gorm:"foreignKey:UserID"`
 	OrderID   uint           `gorm:"not null" json:"order_id"`
-	Order     Order          `gorm:"foreignKey:OrderID"`
+	Order     Order          `json:"-" gorm:"foreignKey:OrderID"`
 	Amount    int            `gorm:"not null" json:"amount"`
 	Price     float64        `gorm:"not null" json:"price"`
 	AccountID uint           `gorm:"not null" json:"account_id"`
-	Account   Account        `gorm:"foreignKey:AccountID"`
+	Account   Account        `json:"-" gorm:"foreignKey:AccountID"`
 	PayedAt   time.Time      `gorm:"default:CURRENT_TIMESTAMP" json:"payed_at"`
 	IsDeleted bool           `gorm:"default:false" json:"is_deleted"`
 	CreatedAt time.Time      `json:"created_at"`

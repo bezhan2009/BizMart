@@ -70,7 +70,9 @@ func InitRoutes(r *gin.Engine) *gin.Engine {
 	{
 		productGroup.GET("/", controllers.GetAllProducts)
 		productGroup.GET("/:id", controllers.GetProductByID)
-		productGroup.POST("/", middlewares.CheckUserAuthentication, controllers.CreateProduct)
+		productGroup.POST("/:store_id", middlewares.CheckUserAuthentication, controllers.CreateProduct)
+		productGroup.PUT("/:id", middlewares.CheckUserAuthentication, controllers.UpdateProduct)
+		productGroup.DELETE("/:id", middlewares.CheckUserAuthentication, controllers.DeleteProduct)
 	}
 	return r
 }

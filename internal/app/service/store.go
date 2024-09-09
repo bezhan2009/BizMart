@@ -14,7 +14,7 @@ func GetStoreByID(storeID uint) (models.Store, error) {
 		if errors.Is(err, errs.ErrRecordNotFound) {
 			return store, errs.ErrStoreNotFound
 		}
-		
+
 		return store, err
 	}
 
@@ -27,8 +27,8 @@ func CreateStore(store models.Store) error {
 		return errs.ErrStoreNameUniquenessFailed
 	}
 
-	if err != nil {
-		return err
+	if err == nil {
+		return errs.ErrStoreNameUniquenessFailed
 	}
 
 	err = repository.CreateStore(&store)
