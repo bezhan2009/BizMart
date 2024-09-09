@@ -147,9 +147,10 @@ func GetAllProducts(minPrice, maxPrice float64, categoryID uint, productName str
 	// Start building the query
 	query := db.GetDBConn().
 		Table("productapp_product").
-		Select("productapp_product.*, productapp_productimage.image AS product_image").
+		Select("productapp_product.*, STRING_AGG(productapp_productimage.image, ',') AS product_images").
 		Joins("LEFT JOIN productapp_productimage ON productapp_productimage.product_id = productapp_product.id").
-		Where("productapp_product.is_deleted = ?", false)
+		Where("productapp_product.is_deleted = ?", false).
+		Group("productapp_product.id")
 
 	// Apply filters
 	if minPrice > 0 {
