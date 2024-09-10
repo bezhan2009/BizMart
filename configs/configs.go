@@ -1,7 +1,7 @@
 package configs
 
 import (
-	"BizMart/models"
+	"BizMart/internal/app/models"
 	"encoding/json"
 	"errors"
 	"fmt"
