@@ -14,7 +14,6 @@ func TranslateGormError(err error) error {
 	if errors.Is(err, gorm.ErrDuplicatedKey) {
 		return errs.ErrDuplicateEntry
 	}
-
 	if errors.Is(err, gorm.ErrInvalidField) {
 		return errs.ErrInvalidField
 	}

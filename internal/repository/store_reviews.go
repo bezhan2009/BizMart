@@ -3,6 +3,7 @@ package repository
 import (
 	"BizMart/internal/app/models"
 	"BizMart/pkg/db"
+	"BizMart/pkg/errs"
 	"BizMart/pkg/logger"
 	"errors"
 	"gorm.io/gorm"
@@ -13,7 +14,7 @@ func GetAllStoreReviews(storeID uint) ([]models.StoreReview, error) {
 	var storeReviews []models.StoreReview
 	if err := db.GetDBConn().Where("store_id = ?", storeID).Find(&storeReviews).Error; err != nil {
 		logger.Error.Printf("[repository.GetAllStoreReviews] Error retrieving store reviews for store ID %d: %v", storeID, err)
-		return nil, err
+		return nil, TranslateGormError(err)
 	}
 
 	return storeReviews, nil
@@ -23,7 +24,7 @@ func GetAllStoreReviews(storeID uint) ([]models.StoreReview, error) {
 func CreateStoreReview(storeReview *models.StoreReview) error {
 	if err := db.GetDBConn().Create(storeReview).Error; err != nil {
 		logger.Error.Printf("[repository.CreateStoreReview] Error creating store review for store ID %d: %v", storeReview.StoreID, err)
-		return err
+		return TranslateGormError(err)
 	}
 	return nil
 }
@@ -36,13 +37,13 @@ func UpdateStoreReview(storeReviewID uint, updatedData *models.StoreReview) erro
 	storeReview, err := GetStoreReviewByID(storeReviewID)
 	if err != nil {
 		tx.Rollback() // rollback transaction on error
-		return err
+		return TranslateGormError(err)
 	}
 
 	if err := tx.Model(&storeReview).Updates(updatedData).Error; err != nil {
 		logger.Error.Printf("[repository.UpdateStoreReview] Error updating store review with ID %d: %v", storeReviewID, err)
 		tx.Rollback()
-		return err
+		return TranslateGormError(err)
 	}
 
 	tx.Commit() // commit the transaction
@@ -70,10 +71,20 @@ func GetStoreReviewByID(storeReviewID uint) (models.StoreReview, error) {
 	if err := db.GetDBConn().Where("id = ?", storeReviewID).First(&storeReview).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			logger.Error.Printf("[repository.GetStoreReviewByID] Store review with ID %d not found: %v", storeReviewID, err)
-			return storeReview, nil
+			return storeReview, errs.ErrStoreReviewNotFound
 		}
 		logger.Error.Printf("[repository.GetStoreReviewByID] Error retrieving store review with ID %d: %v", storeReviewID, err)
 		return storeReview, err
+	}
+
+	return storeReview, nil
+}
+
+func GetStoreReviewByStoreIdAndUserId(storeID uint, userID uint) (*models.StoreReview, error) {
+	storeReview := &models.StoreReview{}
+	if err := db.GetDBConn().Where("store_id = ? AND user_id = ?", storeID, userID).First(storeReview).Error; err != nil {
+		logger.Error.Printf("[repository.GetStoreReviewByStoreIdAndUserId] Error retrieving store review with storeID %d, userID %d: %v", storeID, userID, err)
+		return nil, TranslateGormError(err)
 	}
 
 	return storeReview, nil

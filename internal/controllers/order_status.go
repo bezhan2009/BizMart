@@ -136,6 +136,10 @@ func DeleteOrderStatus(c *gin.Context) {
 	// Проверяем наличие статуса заказа
 	orderStatus, err := repository.GetOrderStatusByID(uint(orderStatusID))
 	if err != nil {
+		if errors.Is(err, errs.ErrRecordNotFound) {
+			HandleError(c, errs.ErrOrderStatusNotFound)
+			return
+		}
 		HandleError(c, err)
 		return
 	}

@@ -22,7 +22,7 @@ func InitRoutes(r *gin.Engine) *gin.Engine {
 	}
 
 	// storeRoutes Маршруты для магазинов
-	storeRoutes := r.Group("/stores")
+	storeRoutes := r.Group("/store")
 	{
 		storeRoutes.GET("/", controllers.GetStores)
 		storeRoutes.GET("/:id", controllers.GetStoreByID)
@@ -31,17 +31,17 @@ func InitRoutes(r *gin.Engine) *gin.Engine {
 		storeRoutes.DELETE("/:id", middlewares.CheckUserAuthentication, controllers.DeleteStore)
 	}
 
-	// reviewRoutes Маршруты для отзывов на магазины
-	reviewRoutes := r.Group("/reviews")
+	// storeReviewRoutes Маршруты для отзывов на магазины
+	storeReviewRoutes := r.Group("/store/reviews")
 	{
-		reviewRoutes.GET("/")
-		reviewRoutes.GET("/:id")
-		reviewRoutes.POST("/", middlewares.CheckUserAuthentication)
-		reviewRoutes.PUT("/:id", middlewares.CheckUserAuthentication)
-		reviewRoutes.DELETE("/:id", middlewares.CheckUserAuthentication)
+		storeReviewRoutes.GET("/:id", controllers.GetAllStoreReviewsByStoreID)
+		storeReviewRoutes.POST("/:id", middlewares.CheckUserAuthentication, controllers.CreateStoreReview)
+		storeReviewRoutes.PUT("/:id", middlewares.CheckUserAuthentication, controllers.UpdateStoreReview)
 	}
 
+	r.GET("/store/review/:id", controllers.GetStoreReviewByID)
 	r.GET("/hash-password", middlewares.CheckSecretKey, controllers.HashPassword)
+	r.DELETE("/store/review/:id", middlewares.CheckUserAuthentication, controllers.DeleteStoreReview)
 
 	// categoryRoutes Маршруты для категорий на магазине
 	categoryRoutes := r.Group("/category")
@@ -74,5 +74,6 @@ func InitRoutes(r *gin.Engine) *gin.Engine {
 		productGroup.PUT("/:id", middlewares.CheckUserAuthentication, controllers.UpdateProduct)
 		productGroup.DELETE("/:id", middlewares.CheckUserAuthentication, controllers.DeleteProduct)
 	}
+
 	return r
 }
