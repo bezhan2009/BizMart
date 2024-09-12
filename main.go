@@ -14,6 +14,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"log"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -21,6 +22,16 @@ import (
 
 var err error
 
+// @title BizMart API
+// @version 1.0.2
+
+// @description API Server for BizMart Application
+// @host localhost:8585
+// @BasePath /
+
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
 func main() {
 	red := color.New(color.FgRed).SprintFunc()
 	green := color.New(color.FgGreen).SprintFunc()
@@ -59,7 +70,8 @@ func main() {
 
 	mainServer := new(server.Server)
 	go func() {
-		if err = mainServer.Run(security2.AppSettings.AppParams.PortRun, routes.InitRoutes(router)); err != nil {
+		if err = mainServer.Run(security2.AppSettings.AppParams.PortRun, routes.InitRoutes(router)); err != nil && err != http.ErrServerClosed {
+			// Логируем только если это действительно ошибка, а не штатное завершение сервера
 			log.Fatalf("Ошибка при запуске HTTP сервера: %s", err)
 		}
 	}()
@@ -70,19 +82,22 @@ func main() {
 
 	fmt.Printf("\n%s\n", yellow("Начало завершения сервиса"))
 
+	// Закрытие соединения с БД
 	if sqlDB, err := db2.GetDBConn().DB(); err == nil {
 		if err := sqlDB.Close(); err != nil {
 			log.Fatalf("Ошибка при закрытии соединения с БД: %s", err)
 		}
+		fmt.Println(green("Соединение с БД успешно закрыто"))
 	} else {
 		log.Fatalf("Ошибка при получении *sql.DB из GORM: %s", err)
 	}
-	fmt.Println(green("Соединение с БД успешно закрыто"))
 
+	// Корректное завершение HTTP-сервера
 	if err = mainServer.Shutdown(context.Background()); err != nil {
-		log.Fatalf("Ошибка при завершении работы сервера: %s", err)
+		log.Fatalf("Ошибка при завершении работы HTTP сервера: %s", err)
+	} else {
+		fmt.Println(green("HTTP-сервис успешно выключен"))
 	}
 
-	fmt.Println(red("HTTP-сервис успешно выключен"))
 	fmt.Println(red("Конец завершения программы"))
 }

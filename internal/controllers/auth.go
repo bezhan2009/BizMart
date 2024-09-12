@@ -11,16 +11,24 @@ import (
 	"net/http"
 )
 
+// SignUp godoc
+// @Summary Register a new user
+// @Description This endpoint registers a new user with a username, email, and password.
+// @Tags auth
+// @Accept  json
+// @Produce  json
+// @Param user body models.UserRequest true "User information"
+// @Success 200 {object} models.TokenResponse
+// @Failure 400 {object} models.ErrorResponse
+// @Router /auth/sign-up [post]
 func SignUp(c *gin.Context) {
 	var user models.User
 
-	// Parse JSON body into the user struct
 	if err := c.BindJSON(&user); err != nil {
 		HandleError(c, errs.ErrValidationFailed)
 		return
 	}
 
-	// Check for missing fields
 	if user.HashPassword == "" {
 		HandleError(c, errs.ErrPasswordIsEmpty)
 		return
@@ -36,21 +44,18 @@ func SignUp(c *gin.Context) {
 		return
 	}
 
-	// Create the user
 	userID, err := service.CreateUser(user)
 	if err != nil {
 		if errors.Is(err, errs.ErrRecordNotFound) {
 			HandleError(c, errs.ErrIncorrectUsernameOrPassword)
 			return
 		}
-
 		HandleError(c, err)
 		return
 	}
 
 	user.ID = userID
 
-	// Generate access token
 	accessToken, err := utils2.GenerateToken(user.ID, user.Username)
 	if err != nil {
 		logger.Error.Printf("Error generating access token: %s", err)
@@ -58,25 +63,30 @@ func SignUp(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"access_token": accessToken,
-		"userID":       user.ID,
+	c.JSON(http.StatusOK, models.TokenResponse{
+		AccessToken: accessToken,
+		UserID:      user.ID,
 	})
-
-	// Optionally, you can send a success message instead
-	// c.JSON(http.StatusCreated, gin.H{"message": "user created successfully"})
 }
 
+// SignIn godoc
+// @Summary User login
+// @Description This endpoint logs in an existing user using their username, email, and password.
+// @Tags auth
+// @Accept  json
+// @Produce  json
+// @Param user body models.UserLogin true "User login information"
+// @Success 200 {object} models.TokenResponse
+// @Failure 400 {object} models.ErrorResponse
+// @Router /auth/sign-in [post]
 func SignIn(c *gin.Context) {
 	var user models.User
 
-	// Parse JSON body into the user struct
 	if err := c.BindJSON(&user); err != nil {
 		HandleError(c, errs.ErrValidationFailed)
 		return
 	}
 
-	// Check for missing fields
 	if user.HashPassword == "" {
 		HandleError(c, errs.ErrPasswordIsEmpty)
 		return
@@ -92,14 +102,14 @@ func SignIn(c *gin.Context) {
 		return
 	}
 
-	// Hash the password before signing in
 	user.HashPassword = utils2.GenerateHash(user.HashPassword)
 
-	// Sign in the user
 	user, accessToken, err := service.SignIn(user.Username, user.Email, user.HashPassword)
 	if err != nil {
 		if errors.Is(err, errs.ErrRecordNotFound) {
-			c.JSON(http.StatusBadRequest, gin.H{"error": errs.ErrIncorrectUsernameOrPassword.Error()})
+			c.JSON(http.StatusBadRequest, models.ErrorResponse{
+				Error: errs.ErrIncorrectUsernameOrPassword.Error(),
+			})
 			HandleError(c, errs.ErrIncorrectUsernameOrPassword)
 			return
 		}
@@ -107,8 +117,8 @@ func SignIn(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"access_token": accessToken,
-		"user_id":      user.ID,
+	c.JSON(http.StatusOK, models.TokenResponse{
+		AccessToken: accessToken,
+		UserID:      user.ID,
 	})
 }

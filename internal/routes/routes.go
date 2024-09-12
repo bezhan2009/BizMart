@@ -1,12 +1,17 @@
 package routes
 
 import (
+	_ "BizMart/docs"
 	"BizMart/internal/controllers"
 	"BizMart/internal/controllers/middlewares"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	"github.com/swaggo/gin-swagger"
 )
 
 func InitRoutes(r *gin.Engine) *gin.Engine {
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 	// usersRoute Маршруты для пользователей (профили)
 	usersRoute := r.Group("/users")
 	{
