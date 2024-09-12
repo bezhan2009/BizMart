@@ -1,12 +1,17 @@
 package routes
 
 import (
+	_ "BizMart/docs"
 	"BizMart/internal/controllers"
 	"BizMart/internal/controllers/middlewares"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	"github.com/swaggo/gin-swagger"
 )
 
 func InitRoutes(r *gin.Engine) *gin.Engine {
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 	// usersRoute Маршруты для пользователей (профили)
 	usersRoute := r.Group("/users")
 	{
@@ -73,6 +78,25 @@ func InitRoutes(r *gin.Engine) *gin.Engine {
 		productGroup.POST("/:store_id", middlewares.CheckUserAuthentication, controllers.CreateProduct)
 		productGroup.PUT("/:id", middlewares.CheckUserAuthentication, controllers.UpdateProduct)
 		productGroup.DELETE("/:id", middlewares.CheckUserAuthentication, controllers.DeleteProduct)
+	}
+
+	addressGroup := r.Group("/address", middlewares.CheckUserAuthentication)
+	{
+		addressGroup.GET("/", controllers.GetAddressesByUserID)
+		addressGroup.GET("/:id", controllers.GetAddressByID)
+		addressGroup.POST("/", controllers.CreateAddress)
+		addressGroup.PUT("/:id", controllers.UpdateAddress)
+		addressGroup.DELETE("/:id", controllers.DeleteAddress)
+	}
+
+	accountGroup := r.Group("/accounts", middlewares.CheckUserAuthentication)
+	{
+		accountGroup.GET("/", controllers.GetAccountsByUserID)
+		accountGroup.GET("/:id", controllers.GetAccountByID)
+		accountGroup.POST("/", controllers.CreateAccount)
+		accountGroup.PUT("/:id", controllers.UpdateAccount)
+		accountGroup.PUT("/fill", controllers.FillAccountBalance)
+		accountGroup.DELETE("/:id", controllers.DeleteAccount)
 	}
 
 	return r

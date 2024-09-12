@@ -21,7 +21,7 @@ type Account struct {
 	UserID        uint           `gorm:"not null" json:"user_id"`
 	User          User           `json:"-" gorm:"foreignKey:UserID"`
 	AccountNumber string         `gorm:"unique;not null" json:"account_number"`
-	Balance       float64        `gorm:"default:12100.09" json:"balance"`
+	Balance       float64        `json:"balance"`
 	IsDeleted     bool           `gorm:"default:false" json:"is_deleted"`
 	CreatedAt     time.Time      `json:"created_at"`
 	UpdatedAt     time.Time      `json:"updated_at"`
@@ -33,7 +33,7 @@ type Address struct {
 	ID          uint           `json:"id" gorm:"primaryKey"`
 	AddressName string         `gorm:"size:100;not null" json:"address_name"`
 	UserID      uint           `gorm:"not null" json:"user_id"`
-	User        User           `gorm:"foreignKey:UserID"`
+	User        User           `json:"-" gorm:"foreignKey:UserID"`
 	IsDeleted   bool           `gorm:"default:false" json:"is_deleted"`
 	CreatedAt   time.Time      `json:"created_at"`
 	UpdatedAt   time.Time      `json:"updated_at"`
@@ -149,7 +149,7 @@ type Order struct {
 	UserID         uint           `gorm:"not null" json:"user_id"`
 	User           User           `gorm:"foreignKey:UserID"`
 	StatusID       uint           `gorm:"not null" json:"status_id"`
-	Status         OrderStatus    `gorm:"foreignKey:StatusID"`
+	Status         OrderStatus    `json:"-" gorm:"foreignKey:StatusID"`
 	OrderDetailsID uint           `gorm:"not null" json:"order_details_id"`
 	OrderDetails   OrderDetails   `json:"-" gorm:"foreignKey:OrderDetailsID"`
 	IsPaid         bool           `gorm:"default:false" json:"is_paid"`
