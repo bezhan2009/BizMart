@@ -71,7 +71,6 @@ func main() {
 	mainServer := new(server.Server)
 	go func() {
 		if err = mainServer.Run(security2.AppSettings.AppParams.PortRun, routes.InitRoutes(router)); err != nil && err != http.ErrServerClosed {
-			// Логируем только если это действительно ошибка, а не штатное завершение сервера
 			log.Fatalf("Ошибка при запуске HTTP сервера: %s", err)
 		}
 	}()

@@ -81,6 +81,7 @@ func SignUp(c *gin.Context) {
 // @Router /auth/sign-in [post]
 func SignIn(c *gin.Context) {
 	var user models.User
+	isEmailEmpty := false
 
 	if err := c.BindJSON(&user); err != nil {
 		HandleError(c, errs.ErrValidationFailed)
@@ -93,11 +94,10 @@ func SignIn(c *gin.Context) {
 	}
 
 	if user.Email == "" {
-		HandleError(c, errs.ErrEmailIsEmpty)
-		return
+		isEmailEmpty = true
 	}
 
-	if user.Username == "" {
+	if user.Username == "" && isEmailEmpty {
 		HandleError(c, errs.ErrUsernameIsEmpty)
 		return
 	}
@@ -107,12 +107,10 @@ func SignIn(c *gin.Context) {
 	user, accessToken, err := service.SignIn(user.Username, user.Email, user.HashPassword)
 	if err != nil {
 		if errors.Is(err, errs.ErrRecordNotFound) {
-			c.JSON(http.StatusBadRequest, models.ErrorResponse{
-				Error: errs.ErrIncorrectUsernameOrPassword.Error(),
-			})
 			HandleError(c, errs.ErrIncorrectUsernameOrPassword)
 			return
 		}
+
 		HandleError(c, err)
 		return
 	}

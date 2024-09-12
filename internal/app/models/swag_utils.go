@@ -34,3 +34,7 @@ type CategoryRequest struct {
 	ParentID     uint   `json:"parent_id,omitempty"`              // Идентификатор родительской категории, необязательное поле
 	Description  string `json:"description,omitempty"`            // Описание категории, необязательное поле
 }
+
+type AddressRequest struct {
+	AddressName string `json:"address_name"`
+}

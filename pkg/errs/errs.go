@@ -8,7 +8,7 @@ var (
 	ErrPasswordIsEmpty             = errors.New("ErrPasswordIsEmpty")
 	ErrPasswordIncorrect           = errors.New("ErrPasswordIncorrect")
 	ErrUsernameIsEmpty             = errors.New("ErrUsernameIsEmpty")
-	ErrEmailIsEmpty                = errors.New("ErrUsernameIsEmpty")
+	ErrEmailIsEmpty                = errors.New("ErrEmailIsEmpty")
 	ErrUsernameOrEmailIsEmpty      = errors.New("ErrUsernameOrEmailIsEmpty")
 	ErrUsernameOrPasswordIsEmpty   = errors.New("ErrUsernameOrPasswordIsEmpty")
 	ErrEmailOrPasswordIsEmpty      = errors.New("ErrEmailOrPasswordIsEmpty")
@@ -29,18 +29,21 @@ var (
 	ErrInvalidCategory      = errors.New("ErrInvalidCategory")
 	ErrInvalidStore         = errors.New("ErrInvalidStore")
 	ErrInvalidID            = errors.New("ErrInvalidID")
+	ErrInvalidAddressID     = errors.New("ErrInvalidAddressID")
 	ErrInvalidProductID     = errors.New("ErrInvalidProductID")
 	ErrInvalidStoreID       = errors.New("ErrInvalidStoreID")
 	ErrInvalidStoreReviewID = errors.New("ErrInvalidStoreReviewID")
 	ErrInvalidComment       = errors.New("ErrInvalidComment")
 	ErrInvalidRating        = errors.New("ErrInvalidRating")
 	ErrInvalidTitle         = errors.New("ErrInvalidTitle")
+	ErrInvalidAddressName   = errors.New("ErrInvalidAddressName")
 	ErrInvalidDescription   = errors.New("ErrInvalidDescription")
 )
 
 // Uniqueness Errors
 var (
 	ErrUsernameUniquenessFailed        = errors.New("ErrUsernameUniquenessFailed")
+	ErrAddressNameUniquenessFailed     = errors.New("ErrAddressNameUniquenessFailed")
 	ErrEmailUniquenessFailed           = errors.New("ErrEmailUniquenessFailed")
 	ErrCategoryNameUniquenessFailed    = errors.New("ErrCategoryNameUniquenessFailed")
 	ErrOrderStatusNameUniquenessFailed = errors.New("ErrOrderStatusNameUniquenessFailed")
@@ -49,6 +52,7 @@ var (
 
 // General Errors
 var (
+	ErrAddressNotFound     = errors.New("ErrAddressNotFound")
 	ErrRecordNotFound      = errors.New("ErrRecordNotFound")
 	ErrCategoryNotFound    = errors.New("ErrCategoryNotFound")
 	ErrOrderStatusNotFound = errors.New("ErrOrderStatusNotFound")

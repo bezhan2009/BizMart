@@ -80,5 +80,14 @@ func InitRoutes(r *gin.Engine) *gin.Engine {
 		productGroup.DELETE("/:id", middlewares.CheckUserAuthentication, controllers.DeleteProduct)
 	}
 
+	addressGroup := r.Group("/address", middlewares.CheckUserAuthentication)
+	{
+		addressGroup.GET("/", controllers.GetAddressesByUserID)
+		addressGroup.GET("/:id", controllers.GetAddressByID)
+		addressGroup.POST("/", controllers.CreateAddress)
+		addressGroup.PUT("/:id", controllers.UpdateAddress)
+		addressGroup.DELETE("/:id", controllers.DeleteAddress)
+	}
+
 	return r
 }
