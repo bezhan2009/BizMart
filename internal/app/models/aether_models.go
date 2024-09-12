@@ -21,7 +21,7 @@ type Account struct {
 	UserID        uint           `gorm:"not null" json:"user_id"`
 	User          User           `json:"-" gorm:"foreignKey:UserID"`
 	AccountNumber string         `gorm:"unique;not null" json:"account_number"`
-	Balance       float64        `gorm:"default:12100.09" json:"balance"`
+	Balance       float64        `json:"balance"`
 	IsDeleted     bool           `gorm:"default:false" json:"is_deleted"`
 	CreatedAt     time.Time      `json:"created_at"`
 	UpdatedAt     time.Time      `json:"updated_at"`

@@ -38,3 +38,16 @@ type CategoryRequest struct {
 type AddressRequest struct {
 	AddressName string `json:"address_name"`
 }
+
+type AccountRequest struct {
+	AccountName string `json:"account_number"`
+}
+
+type FillAccountRequest struct {
+	AccountName string `json:"account_number"`
+	Balance     uint   `json:"balance"`
+}
+
+type AccountsResponse struct {
+	AccountName string `json:"account_name"`
+}

@@ -29,6 +29,7 @@ var (
 	ErrInvalidCategory      = errors.New("ErrInvalidCategory")
 	ErrInvalidStore         = errors.New("ErrInvalidStore")
 	ErrInvalidID            = errors.New("ErrInvalidID")
+	ErrInvalidAccountID     = errors.New("ErrInvalidAccountID")
 	ErrInvalidAddressID     = errors.New("ErrInvalidAddressID")
 	ErrInvalidProductID     = errors.New("ErrInvalidProductID")
 	ErrInvalidStoreID       = errors.New("ErrInvalidStoreID")
@@ -37,12 +38,14 @@ var (
 	ErrInvalidRating        = errors.New("ErrInvalidRating")
 	ErrInvalidTitle         = errors.New("ErrInvalidTitle")
 	ErrInvalidAddressName   = errors.New("ErrInvalidAddressName")
+	ErrInvalidAccountNumber = errors.New("ErrInvalidAccountNumber")
 	ErrInvalidDescription   = errors.New("ErrInvalidDescription")
 )
 
 // Uniqueness Errors
 var (
 	ErrUsernameUniquenessFailed        = errors.New("ErrUsernameUniquenessFailed")
+	ErrAccountNumberUniquenessFailed   = errors.New("ErrAccountNumberUniquenessFailed")
 	ErrAddressNameUniquenessFailed     = errors.New("ErrAddressNameUniquenessFailed")
 	ErrEmailUniquenessFailed           = errors.New("ErrEmailUniquenessFailed")
 	ErrCategoryNameUniquenessFailed    = errors.New("ErrCategoryNameUniquenessFailed")
@@ -53,6 +56,7 @@ var (
 // General Errors
 var (
 	ErrAddressNotFound     = errors.New("ErrAddressNotFound")
+	ErrAccountNotFound     = errors.New("ErrAccountNotFound")
 	ErrRecordNotFound      = errors.New("ErrRecordNotFound")
 	ErrCategoryNotFound    = errors.New("ErrCategoryNotFound")
 	ErrOrderStatusNotFound = errors.New("ErrOrderStatusNotFound")

@@ -89,5 +89,15 @@ func InitRoutes(r *gin.Engine) *gin.Engine {
 		addressGroup.DELETE("/:id", controllers.DeleteAddress)
 	}
 
+	accountGroup := r.Group("/accounts", middlewares.CheckUserAuthentication)
+	{
+		accountGroup.GET("/", controllers.GetAccountsByUserID)
+		accountGroup.GET("/:id", controllers.GetAccountByID)
+		accountGroup.POST("/", controllers.CreateAccount)
+		accountGroup.PUT("/:id", controllers.UpdateAccount)
+		accountGroup.PUT("/fill", controllers.FillAccountBalance)
+		accountGroup.DELETE("/:id", controllers.DeleteAccount)
+	}
+
 	return r
 }
