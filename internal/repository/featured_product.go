@@ -3,6 +3,7 @@ package repository
 import (
 	"BizMart/internal/app/models"
 	"BizMart/pkg/db"
+	"BizMart/pkg/errs"
 	"BizMart/pkg/logger"
 )
 
@@ -32,6 +33,10 @@ func GetFeaturedProductByID(featuredProductID uint) (models.FeaturedProduct, err
 
 // CreateFeaturedProduct creates a new featured product.
 func CreateFeaturedProduct(featuredProduct models.FeaturedProduct) error {
+	if _, err := GetFeaturedProductByUserAndProductId(featuredProduct.ProductID, featuredProduct.UserID); err == nil {
+		return errs.ErrFeaturedProductUniquenessFailed
+	}
+
 	if err := db.GetDBConn().Create(&featuredProduct).Error; err != nil {
 		logger.Error.Printf("[repository.CreateFeaturedProduct] Error creating featured product: %v\n", err)
 		return TranslateGormError(err)
@@ -68,4 +73,13 @@ func DeleteFeaturedProduct(featuredProduct models.FeaturedProduct) error {
 	}
 
 	return nil
+}
+
+func GetFeaturedProductByUserAndProductId(productID uint, userID uint) (models.FeaturedProduct, error) {
+	if err := db.GetDBConn().Where("user_id = ? AND product_id = ?", userID, productID).First(&models.FeaturedProduct{}).Error; err != nil {
+		logger.Error.Printf("[repository.GetFeaturedProductByUserAndProductId] Error retrieving featured product by ID: %v\n", err)
+		return models.FeaturedProduct{}, TranslateGormError(err)
+	}
+
+	return models.FeaturedProduct{}, nil
 }

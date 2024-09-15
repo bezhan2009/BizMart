@@ -21,7 +21,7 @@ import (
 // @Success      200  {object}  models.FeaturedProduct
 // @Failure      401  {object}  models.ErrorResponse
 // @Failure      500  {object}  models.ErrorResponse
-// @Router       //products/featured [get]
+// @Router       /products/featured [get]
 func GetFeaturedProducts(c *gin.Context) {
 	userID := c.GetUint(middlewares.UserIDCtx)
 	if userID == 0 {
@@ -55,7 +55,7 @@ func GetFeaturedProducts(c *gin.Context) {
 // @Failure      401  {object}  models.ErrorResponse
 // @Failure      403  {object}  models.ErrorResponse
 // @Failure      404  {object}  models.ErrorResponse
-// @Router       //products/featured/{id} [get]
+// @Router       /products/featured/{id} [get]
 func GetFeaturedProductByID(c *gin.Context) {
 	featuredProductIdStr := c.Param("id")
 	featuredProductId, err := strconv.Atoi(featuredProductIdStr)
@@ -100,7 +100,7 @@ func GetFeaturedProductByID(c *gin.Context) {
 // @Failure      400  {object}  models.ErrorResponse
 // @Failure      401  {object}  models.ErrorResponse
 // @Failure      500  {object}  models.ErrorResponse
-// @Router       //products/featured/{id} [post]
+// @Router       /products/featured/{id} [post]
 func CreateFeaturedProduct(c *gin.Context) {
 	ProductIdStr := c.Param("id")
 	ProductId, err := strconv.Atoi(ProductIdStr)
@@ -116,12 +116,15 @@ func CreateFeaturedProduct(c *gin.Context) {
 	}
 
 	var featuredProduct models.FeaturedProduct
-	if err := c.Bind(&featuredProduct); err != nil {
-		HandleError(c, errs.ErrValidationFailed)
-		return
-	}
+	featuredProduct.ProductID = uint(ProductId)
+	featuredProduct.UserID = userID
 
 	if err := service.AddToFeaturedProducts(featuredProduct, userID, uint(ProductId)); err != nil {
+		if errors.Is(err, errs.ErrFeaturedProductUniquenessFailed) {
+			c.JSON(http.StatusOK, gin.H{"message": "this product is already in featured"})
+			return
+		}
+
 		HandleError(c, err)
 		return
 	}
