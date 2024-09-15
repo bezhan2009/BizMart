@@ -55,3 +55,9 @@ type AccountsResponse struct {
 type FeaturedProductsRequest struct {
 	ProductID uint `json:"product_id"`
 }
+
+type ReviewRequest struct {
+	Title   string `json:"title"`
+	Content string `json:"content"`
+	Rating  uint   `json:"rating"`
+}

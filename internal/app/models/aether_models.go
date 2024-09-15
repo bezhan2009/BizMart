@@ -91,16 +91,17 @@ type ProductImage struct {
 
 // Review represents a review made by a user on a product.
 type Review struct {
-	gorm.Model
-	UserID    uint      `gorm:"not null" json:"user_id"`
-	User      User      `json:"-" gorm:"foreignKey:UserID"`
-	ProductID uint      `gorm:"not null" json:"product_id"`
-	Product   Product   `json:"-" gorm:"foreignKey:ProductID"`
-	Title     string    `gorm:"size:255;not null" json:"title"`
-	Content   string    `gorm:"not null" json:"content"`
-	Rating    uint      `gorm:"not null;check:rating >= 1 and rating <= 5" json:"rating"`
-	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at"`
-	IsDeleted bool      `gorm:"default:false" json:"is_deleted"`
+	ID        uint           `json:"id" gorm:"primaryKey"`
+	UserID    uint           `gorm:"not null" json:"user_id"`
+	User      User           `json:"-" gorm:"foreignKey:UserID"`
+	ProductID uint           `gorm:"not null" json:"product_id"`
+	Product   Product        `json:"-" gorm:"foreignKey:ProductID"`
+	Title     string         `gorm:"size:255;not null" json:"title"`
+	Content   string         `gorm:"not null" json:"content"`
+	Rating    uint           `gorm:"not null;check:rating >= 1 and rating <= 5" json:"rating"`
+	CreatedAt time.Time      `json:"created_at"`
+	UpdatedAt time.Time      `json:"updated_at"`
+	DeletedAt gorm.DeletedAt `json:"-" gorm:"index"`
 }
 
 // Comment represents a comment made by a user on a product.
