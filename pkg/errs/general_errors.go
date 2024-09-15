@@ -5,6 +5,7 @@ import "errors"
 // General Errors
 var (
 	ErrAddressNotFound         = errors.New("ErrAddressNotFound")
+	ErrProductReviewNotFound   = errors.New("ErrProductReviewNotFound")
 	ErrAccountNotFound         = errors.New("ErrAccountNotFound")
 	ErrFeaturedProductNotFound = errors.New("ErrFeaturedProductNotFound")
 	ErrRecordNotFound          = errors.New("ErrRecordNotFound")

@@ -107,5 +107,15 @@ func InitRoutes(r *gin.Engine) *gin.Engine {
 		featuredProductGroup.DELETE("/:id", controllers.DeleteFeaturedProduct)
 	}
 
+	productReviewGroup := r.Group("/products/reviews")
+	{
+		productReviewGroup.GET("/:id", controllers.GetAllProductReviews)
+		productReviewGroup.POST("/:id", middlewares.CheckUserAuthentication, controllers.CreateProductReview)
+		productReviewGroup.PUT("/:id", middlewares.CheckUserAuthentication, controllers.UpdateProductReview)
+		productReviewGroup.DELETE("/:id", middlewares.CheckUserAuthentication, controllers.DeleteProductReview)
+	}
+
+	r.GET("/products/review/:id", controllers.GetProductReviewByID)
+
 	return r
 }
