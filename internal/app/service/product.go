@@ -22,17 +22,12 @@ func ValidateProduct(HandleError func(ctx *gin.Context, err error), productData 
 		return errs.ErrInvalidCategory
 	}
 
-	if productData.StoreID <= 0 {
-		HandleError(c, errs.ErrInvalidStore)
-		return errs.ErrInvalidStore
-	}
-
-	if len(productData.Title) <= 10 {
+	if len(productData.Title) <= 5 {
 		HandleError(c, errs.ErrInvalidTitle)
 		return errs.ErrInvalidTitle
 	}
 
-	if len(productData.Description) <= 20 {
+	if len(productData.Description) <= 5 {
 		HandleError(c, errs.ErrInvalidDescription)
 		return errs.ErrInvalidDescription
 	}

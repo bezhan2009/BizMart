@@ -66,19 +66,19 @@ type Product struct {
 	//DefaultAccount   Account        `json:"-" gorm:"foreignKey:DefaultAccountID"`
 	ProductImageList pq.StringArray `gorm:"type:text[]" json:"product_image"`
 	Views            int            `gorm:"default:0" json:"views"`
-	CreatedAt        time.Time      `json:"created_at"`
-	UpdatedAt        time.Time      `json:"updated_at"`
-	DeletedAt        gorm.DeletedAt `json:"-" gorm:"index"`
 }
 
 // FeaturedProduct represents a featured product.
 type FeaturedProduct struct {
-	gorm.Model
-	ProductID uint    `gorm:"not null" json:"product_id"`
-	Product   Product `json:"-" gorm:"foreignKey:ProductID"`
-	UserID    uint    `gorm:"not null" json:"user_id"`
-	User      User    `json:"-" gorm:"foreignKey:UserID"`
-	IsDeleted bool    `gorm:"default:false" json:"is_deleted"`
+	ID        uint           `json:"id" gorm:"primaryKey"`
+	ProductID uint           `gorm:"not null" json:"product_id"`
+	Product   Product        `json:"-" gorm:"foreignKey:ProductID"`
+	UserID    uint           `gorm:"not null" json:"user_id"`
+	User      User           `json:"-" gorm:"foreignKey:UserID"`
+	IsDeleted bool           `gorm:"default:false" json:"is_deleted"`
+	CreatedAt time.Time      `json:"created_at"`
+	UpdatedAt time.Time      `json:"updated_at"`
+	DeletedAt gorm.DeletedAt `json:"-" gorm:"index"`
 }
 
 // ProductImage represents an image of a product.

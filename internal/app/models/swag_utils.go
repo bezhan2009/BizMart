@@ -51,3 +51,7 @@ type FillAccountRequest struct {
 type AccountsResponse struct {
 	AccountName string `json:"account_name"`
 }
+
+type FeaturedProductsRequest struct {
+	ProductID uint `json:"product_id"`
+}
