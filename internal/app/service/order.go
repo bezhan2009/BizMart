@@ -136,4 +136,6 @@ func ValidateOrder(HandleError func(ctx *gin.Context, err error), orderData mode
 		HandleError(c, errs.ErrAddressNotFound)
 		return err
 	}
+
+	return nil
 }

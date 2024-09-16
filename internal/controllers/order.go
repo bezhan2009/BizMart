@@ -106,6 +106,21 @@ func CreateOrder(c *gin.Context) {
 		return
 	}
 
+	product, err := repository.GetProductByID(orderRequest.ProductID)
+	if err != nil {
+		if errors.Is(err, errs.ErrRecordNotFound) {
+			HandleError(c, errs.ErrProductNotFound)
+			return
+		}
+
+		HandleError(c, err)
+		return
+	}
+
+	if err = service.ValidateOrder(HandleError, orderRequest, product, c); err != nil {
+		return
+	}
+
 	if err := service.CreateOrder(orderRequest); err != nil {
 		HandleError(c, err)
 		return
@@ -148,6 +163,38 @@ func UpdateOrder(c *gin.Context) {
 		return
 	}
 
+	product, err := repository.GetProductByID(orderRequest.ProductID)
+	if err != nil {
+		if errors.Is(err, errs.ErrRecordNotFound) {
+			HandleError(c, errs.ErrProductNotFound)
+			return
+		}
+
+		HandleError(c, err)
+		return
+	}
+
+	if err = service.ValidateOrder(HandleError, orderRequest, product, c); err != nil {
+		return
+	}
+
+	order, err := repository.GetOrderByID(uint(orderId))
+	if err != nil {
+		if errors.Is(err, errs.ErrRecordNotFound) {
+			HandleError(c, errs.ErrOrderNotFound)
+			return
+		}
+
+		HandleError(c, err)
+		return
+	}
+
+	order.ID = uint(orderId)
+	if order.UserID != userID {
+		HandleError(c, errs.ErrPermissionDenied)
+		return
+	}
+
 	if err := service.UpdateOrder(uint(orderId), orderRequest); err != nil {
 		HandleError(c, err)
 		return
@@ -178,6 +225,29 @@ func DeleteOrder(c *gin.Context) {
 	orderID, err := strconv.ParseUint(orderIdStr, 10, 64)
 	if err != nil {
 		HandleError(c, errs.ErrInvalidOrderID)
+		return
+	}
+
+	userID := c.GetUint(middlewares.UserIDCtx)
+	if userID == 0 {
+		HandleError(c, errs.ErrUnauthorized)
+		return
+	}
+
+	order, err := repository.GetOrderByID(uint(orderID))
+	if err != nil {
+		if errors.Is(err, errs.ErrRecordNotFound) {
+			HandleError(c, errs.ErrOrderNotFound)
+			return
+		}
+
+		HandleError(c, err)
+		return
+	}
+
+	order.ID = uint(orderID)
+	if order.UserID != userID {
+		HandleError(c, errs.ErrPermissionDenied)
 		return
 	}
 
