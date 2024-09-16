@@ -61,3 +61,10 @@ type ReviewRequest struct {
 	Content string `json:"content"`
 	Rating  uint   `json:"rating"`
 }
+
+type OrderRequest struct {
+	StatusID  uint `json:"status_id"`
+	AddressID uint `json:"address_id"`
+	ProductID uint `json:"product_id"`
+	Quantity  uint `json:"quantity"`
+}

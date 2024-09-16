@@ -12,6 +12,16 @@ import (
 	"strconv"
 )
 
+// GetAllUserOrders godoc
+// @Summary Get all orders for a user
+// @Description Retrieves all orders associated with the authenticated user.
+// @Tags orders
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} models.DefaultResponse "orders retrieved successfully"
+// @Failure 401 {object} models.ErrorResponse "unauthorized access"
+// @Failure 500 {object} models.ErrorResponse "internal server error"
+// @Router /orders [get]
 func GetAllUserOrders(c *gin.Context) {
 	userID := c.GetUint(middlewares.UserIDCtx)
 	if userID == 0 {
@@ -27,6 +37,18 @@ func GetAllUserOrders(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"orders": orders})
 }
 
+// GetOrderByID godoc
+// @Summary Get order by ID
+// @Description Retrieves a specific order by its ID.
+// @Tags orders
+// @Accept  json
+// @Produce  json
+// @Param id path uint true "Order ID"
+// @Success 200 {object} models.DefaultResponse "order retrieved successfully"
+// @Failure 400 {object} models.ErrorResponse "invalid order ID"
+// @Failure 404 {object} models.ErrorResponse "order not found"
+// @Failure 500 {object} models.ErrorResponse "internal server error"
+// @Router /orders/{id} [get]
 func GetOrderByID(c *gin.Context) {
 	orderIdStr := c.Param("id")
 	if orderIdStr == "" {
@@ -59,6 +81,18 @@ func GetOrderByID(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"order": order})
 }
 
+// CreateOrder godoc
+// @Summary Create a new order
+// @Description Creates a new order with the provided details.
+// @Tags orders
+// @Accept  json
+// @Produce  json
+// @Param order body models.OrderRequest true "Order Request"
+// @Success 201 {object} models.DefaultResponse "order created successfully"
+// @Failure 400 {object} models.ErrorResponse "invalid request data"
+// @Failure 401 {object} models.ErrorResponse "unauthorized access"
+// @Failure 500 {object} models.ErrorResponse "internal server error"
+// @Router /orders [post]
 func CreateOrder(c *gin.Context) {
 	userID := c.GetUint(middlewares.UserIDCtx)
 	if userID == 0 {
@@ -80,6 +114,20 @@ func CreateOrder(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"message": "order created successfully"})
 }
 
+// UpdateOrder godoc
+// @Summary Update an existing order
+// @Description Updates an order with the provided details.
+// @Tags orders
+// @Accept  json
+// @Produce  json
+// @Param id path uint true "Order ID"
+// @Param order body models.OrderRequest true "Order Request"
+// @Success 200 {object} models.DefaultResponse "order updated successfully"
+// @Failure 400 {object} models.ErrorResponse "invalid request data"
+// @Failure 401 {object} models.ErrorResponse "unauthorized access"
+// @Failure 404 {object} models.ErrorResponse "order not found"
+// @Failure 500 {object} models.ErrorResponse "internal server error"
+// @Router /orders/{id} [put]
 func UpdateOrder(c *gin.Context) {
 	orderIdStr := c.Param("id")
 	orderId, err := strconv.ParseUint(orderIdStr, 10, 64)
@@ -105,9 +153,21 @@ func UpdateOrder(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"message": "order created successfully"})
+	c.JSON(http.StatusCreated, gin.H{"message": "order updated successfully"})
 }
 
+// DeleteOrder godoc
+// @Summary Delete an order
+// @Description Deletes an order by its ID.
+// @Tags orders
+// @Accept  json
+// @Produce  json
+// @Param id path uint true "Order ID"
+// @Success 200 {object} models.DefaultResponse "order deleted successfully"
+// @Failure 400 {object} models.ErrorResponse "invalid order ID"
+// @Failure 404 {object} models.ErrorResponse "order not found"
+// @Failure 500 {object} models.ErrorResponse "internal server error"
+// @Router /orders/{id} [delete]
 func DeleteOrder(c *gin.Context) {
 	orderIdStr := c.Param("id")
 	if orderIdStr == "" {

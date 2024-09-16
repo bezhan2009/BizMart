@@ -158,11 +158,11 @@ type Order struct {
 }
 
 type OrderRequestJsonBind struct {
-	UserID    uint `gorm:"not null" json:"user_id"`
-	StatusID  uint `gorm:"not null" json:"status_id"`
-	AddressID uint `gorm:"not null" json:"address_id"`
-	ProductID uint `gorm:"not null" json:"product_id"`
-	Quantity  uint `gorm:"default:1" json:"quantity"`
+	UserID    uint `json:"user_id"`
+	StatusID  uint `json:"status_id"`
+	AddressID uint `json:"address_id"`
+	ProductID uint `json:"product_id"`
+	Quantity  uint `json:"quantity"`
 }
 
 // Payment represents a payment made by a user.
