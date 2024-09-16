@@ -117,5 +117,14 @@ func InitRoutes(r *gin.Engine) *gin.Engine {
 
 	r.GET("/products/review/:id", controllers.GetProductReviewByID)
 
+	orderGroup := r.Group("/orders", middlewares.CheckUserAuthentication)
+	{
+		orderGroup.GET("/", controllers.GetAllUserOrders)
+		orderGroup.GET("/:id", controllers.GetOrderByID)
+		orderGroup.POST("/", controllers.CreateOrder)
+		orderGroup.PUT("/:id", controllers.UpdateOrder)
+		orderGroup.DELETE("/:id", controllers.DeleteOrder)
+	}
+
 	return r
 }

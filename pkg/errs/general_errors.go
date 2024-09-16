@@ -9,6 +9,7 @@ var (
 	ErrAccountNotFound         = errors.New("ErrAccountNotFound")
 	ErrFeaturedProductNotFound = errors.New("ErrFeaturedProductNotFound")
 	ErrRecordNotFound          = errors.New("ErrRecordNotFound")
+	ErrOrderNotFound           = errors.New("ErrOrderNotFound")
 	ErrCategoryNotFound        = errors.New("ErrCategoryNotFound")
 	ErrOrderStatusNotFound     = errors.New("ErrOrderStatusNotFound")
 	ErrSomethingWentWrong      = errors.New("ErrSomethingWentWrong")

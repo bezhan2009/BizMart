@@ -15,6 +15,8 @@ var (
 	ErrInvalidCategory          = errors.New("ErrInvalidCategory")
 	ErrInvalidStore             = errors.New("ErrInvalidStore")
 	ErrInvalidID                = errors.New("ErrInvalidID")
+	ErrInvalidOrderID           = errors.New("ErrInvalidOrderID")
+	ErrInvalidQuantity          = errors.New("ErrInvalidQuantity")
 	ErrInvalidFeaturedProductID = errors.New("ErrInvalidFeaturedProductID")
 	ErrInvalidAccountID         = errors.New("ErrInvalidAccountID")
 	ErrInvalidAddressID         = errors.New("ErrInvalidAddressID")
