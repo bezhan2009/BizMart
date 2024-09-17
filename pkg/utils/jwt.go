@@ -1,13 +1,13 @@
 package utils
 
 import (
+	"BizMart/internal/security"
+	"BizMart/pkg/errs"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
+	"os"
 	"time"
 )
-
-// Секретный ключ для подписания токенов
-var secretKey = []byte("your_secret_key")
 
 // CustomClaims определяет кастомные поля токена
 type CustomClaims struct {
@@ -17,18 +17,39 @@ type CustomClaims struct {
 }
 
 // GenerateToken генерирует JWT токен с кастомными полями
-func GenerateToken(userID uint, username string) (string, error) {
-	claims := CustomClaims{
+func GenerateToken(userID uint, username string) (string, string, error) {
+	// Access token
+	claims := &CustomClaims{
 		UserID:   userID,
 		Username: username,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Hour * 1).Unix(), // токен истекает через 1 час
-			Issuer:    "your_app_name",
+			Issuer:    security.AppSettings.AppParams.ServerName,
+		},
+	}
+	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	accessTokenString, err := accessToken.SignedString([]byte(os.Getenv("JWT_SECRET_KEY")))
+	if err != nil {
+		return "", "", err
+	}
+
+	// Refresh token
+	refreshClaims := &CustomClaims{
+		UserID:   userID,
+		Username: username,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(time.Hour * 72).Unix(), // токен истекает через 72 часа
+			Issuer:    security.AppSettings.AppParams.ServerName,
 		},
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString(secretKey)
+	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, refreshClaims)
+	refreshTokenString, err := refreshToken.SignedString([]byte(os.Getenv("JWT_SECRET_KEY")))
+	if err != nil {
+		return "", "", err
+	}
+
+	return accessTokenString, refreshTokenString, nil
 }
 
 // ParseToken парсит JWT токен и возвращает кастомные поля
@@ -38,7 +59,7 @@ func ParseToken(tokenString string) (*CustomClaims, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		return secretKey, nil
+		return []byte(os.Getenv("JWT_SECRET_KEY")), nil
 	})
 
 	if err != nil {
@@ -49,5 +70,5 @@ func ParseToken(tokenString string) (*CustomClaims, error) {
 		return claims, nil
 	}
 
-	return nil, fmt.Errorf("invalid token")
+	return nil, errs.ErrInvalidToken
 }

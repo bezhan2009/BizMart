@@ -61,7 +61,7 @@ type Product struct {
 	Title       string   `gorm:"size:100;not null" json:"title"`
 	Description string   `gorm:"not null" json:"description"`
 	Price       float64  `gorm:"not null" json:"price"`
-	Amount      int      `gorm:"not null" json:"amount"`
+	Amount      uint     `gorm:"not null" json:"amount"`
 	//DefaultAccountID uint           `gorm:"default:NULL" json:"default_account_id"`
 	//DefaultAccount   Account        `json:"-" gorm:"foreignKey:DefaultAccountID"`
 	ProductImageList pq.StringArray `gorm:"type:text[]" json:"product_image"`
@@ -134,9 +134,7 @@ type OrderDetails struct {
 	ProductID uint           `gorm:"not null" json:"product_id"`
 	Product   Product        `json:"-" gorm:"foreignKey:ProductID"`
 	Price     float64        `json:"price,omitempty"`
-	Quantity  int            `gorm:"default:1" json:"quantity"`
-	IsDeleted bool           `gorm:"default:false" json:"is_deleted"`
-	OrderDate time.Time      `gorm:"default:CURRENT_TIMESTAMP" json:"order_date"`
+	Quantity  uint           `gorm:"default:1" json:"quantity"`
 	AddressID uint           `gorm:"not null" json:"address_id"`
 	Address   Address        `json:"-" gorm:"foreignKey:AddressID"`
 	CreatedAt time.Time      `json:"created_at"`
@@ -148,16 +146,22 @@ type OrderDetails struct {
 type Order struct {
 	ID             uint           `json:"id" gorm:"primaryKey"`
 	UserID         uint           `gorm:"not null" json:"user_id"`
-	User           User           `gorm:"foreignKey:UserID"`
+	User           User           `json:"-" gorm:"foreignKey:UserID"`
 	StatusID       uint           `gorm:"not null" json:"status_id"`
 	Status         OrderStatus    `json:"-" gorm:"foreignKey:StatusID"`
 	OrderDetailsID uint           `gorm:"not null" json:"order_details_id"`
-	OrderDetails   OrderDetails   `json:"-" gorm:"foreignKey:OrderDetailsID"`
-	IsPaid         bool           `gorm:"default:false" json:"is_paid"`
-	IsInTheCard    bool           `gorm:"default:true" json:"is_in_the_card"`
+	OrderDetails   OrderDetails   `json:"order_details" gorm:"foreignKey:OrderDetailsID"`
 	CreatedAt      time.Time      `json:"created_at"`
 	UpdatedAt      time.Time      `json:"updated_at"`
 	DeletedAt      gorm.DeletedAt `json:"-" gorm:"index"`
+}
+
+type OrderRequestJsonBind struct {
+	UserID    uint `json:"user_id"`
+	StatusID  uint `json:"status_id"`
+	AddressID uint `json:"address_id"`
+	ProductID uint `json:"product_id"`
+	Quantity  uint `json:"quantity"`
 }
 
 // Payment represents a payment made by a user.

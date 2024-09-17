@@ -2,8 +2,9 @@ package models
 
 // TokenResponse represents the response with access token and user ID
 type TokenResponse struct {
-	AccessToken string `json:"access_token"`
-	UserID      uint   `json:"user_id"`
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
+	UserID       uint   `json:"user_id"`
 }
 
 // ErrorResponse represents an error message response
@@ -60,4 +61,11 @@ type ReviewRequest struct {
 	Title   string `json:"title"`
 	Content string `json:"content"`
 	Rating  uint   `json:"rating"`
+}
+
+type OrderRequest struct {
+	StatusID  uint `json:"status_id"`
+	AddressID uint `json:"address_id"`
+	ProductID uint `json:"product_id"`
+	Quantity  uint `json:"quantity"`
 }

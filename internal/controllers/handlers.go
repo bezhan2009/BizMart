@@ -14,10 +14,12 @@ func handleBadRequestErrors(err error) bool {
 		errors.Is(err, errs.ErrIncorrectUsernameOrPassword) ||
 		errors.Is(err, errs.ErrCategoryNameUniquenessFailed) ||
 		errors.Is(err, errs.ErrOrderStatusNameUniquenessFailed) ||
+		errors.Is(err, errs.ErrOrderNotFound) ||
 		errors.Is(err, errs.ErrInvalidStoreReviewID) ||
 		errors.Is(err, errs.ErrPathParametrized) ||
 		errors.Is(err, errs.ErrInvalidProductID) ||
 		errors.Is(err, errs.ErrInvalidAddressID) ||
+		errors.Is(err, errs.ErrInvalidOrderID) ||
 		errors.Is(err, errs.ErrInvalidProductReviewID) ||
 		errors.Is(err, errs.ErrInvalidAccountID) ||
 		errors.Is(err, errs.ErrInvalidFeaturedProductID) ||
@@ -39,10 +41,12 @@ func handleBadRequestErrors(err error) bool {
 		errors.Is(err, errs.ErrInvalidStoreID) ||
 		errors.Is(err, errs.ErrValidationFailed) ||
 		errors.Is(err, errs.ErrStoreNameUniquenessFailed) ||
+		errors.Is(err, errs.ErrNotEnoughProductInStock) ||
 		errors.Is(err, errs.ErrDeleteFailed) ||
 		errors.Is(err, errs.ErrInvalidTitle) ||
 		errors.Is(err, errs.ErrInvalidDescription) ||
 		errors.Is(err, errs.ErrInvalidAmount) ||
+		errors.Is(err, errs.ErrInvalidQuantity) ||
 		errors.Is(err, errs.ErrInsufficientFunds)
 }
 
@@ -51,6 +55,7 @@ func handleNotFoundErrors(err error) bool {
 	return errors.Is(err, errs.ErrRecordNotFound) ||
 		errors.Is(err, errs.ErrCategoryNotFound) ||
 		errors.Is(err, errs.ErrOrderStatusNotFound) ||
+		errors.Is(err, errs.ErrOrderNotFound) ||
 		errors.Is(err, errs.ErrProductReviewNotFound) ||
 		errors.Is(err, errs.ErrProductNotFound) ||
 		errors.Is(err, errs.ErrAddressNotFound) ||
@@ -60,22 +65,29 @@ func handleNotFoundErrors(err error) bool {
 		errors.Is(err, errs.ErrStoreReviewNotFound)
 }
 
+// Обработка ошибок, которые приводят к статусу 401 (Unauthorized)
+func handleUnauthorizedErrors(err error) bool {
+	return errors.Is(err, errs.ErrInvalidToken) ||
+		errors.Is(err, errs.ErrUnauthorized) ||
+		errors.Is(err, errs.ErrRefreshTokenExpired)
+}
+
 // HandleError Основная функция обработки ошибок
 func HandleError(c *gin.Context, err error) {
 	if handleBadRequestErrors(err) {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, newErrorResponse(err.Error()))
 	} else if errors.Is(err, errs.ErrPermissionDenied) {
-		c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
+		c.JSON(http.StatusForbidden, newErrorResponse(err.Error()))
 	} else if handleNotFoundErrors(err) {
-		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		c.JSON(http.StatusNotFound, newErrorResponse(err.Error()))
 	} else if errors.Is(err, errs.ErrFetchingProducts) {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, newErrorResponse(err.Error()))
 	} else if errors.Is(err, errs.ErrNoProductsFound) {
-		c.JSON(http.StatusOK, gin.H{"error": err.Error()})
-	} else if errors.Is(err, errs.ErrUnauthorized) {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		c.JSON(http.StatusOK, newErrorResponse(err.Error()))
+	} else if handleUnauthorizedErrors(err) {
+		c.JSON(http.StatusUnauthorized, newErrorResponse(err.Error()))
 	} else {
 		logger.Error.Printf("Err: %s", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": errs.ErrSomethingWentWrong.Error()})
+		c.JSON(http.StatusInternalServerError, newErrorResponse(errs.ErrSomethingWentWrong.Error()))
 	}
 }

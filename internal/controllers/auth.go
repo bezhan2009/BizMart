@@ -7,8 +7,11 @@ import (
 	"BizMart/pkg/logger"
 	utils2 "BizMart/pkg/utils"
 	"errors"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"os"
+	"time"
 )
 
 // SignUp godoc
@@ -56,7 +59,7 @@ func SignUp(c *gin.Context) {
 
 	user.ID = userID
 
-	accessToken, err := utils2.GenerateToken(user.ID, user.Username)
+	accessToken, refreshToken, err := utils2.GenerateToken(user.ID, user.Username)
 	if err != nil {
 		logger.Error.Printf("Error generating access token: %s", err)
 		HandleError(c, err)
@@ -64,8 +67,9 @@ func SignUp(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, models.TokenResponse{
-		AccessToken: accessToken,
-		UserID:      user.ID,
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+		UserID:       user.ID,
 	})
 }
 
@@ -104,7 +108,7 @@ func SignIn(c *gin.Context) {
 
 	user.HashPassword = utils2.GenerateHash(user.HashPassword)
 
-	user, accessToken, err := service.SignIn(user.Username, user.Email, user.HashPassword)
+	user, accessToken, refreshToken, err := service.SignIn(user.Username, user.Email, user.HashPassword)
 	if err != nil {
 		if errors.Is(err, errs.ErrRecordNotFound) {
 			HandleError(c, errs.ErrIncorrectUsernameOrPassword)
@@ -116,7 +120,43 @@ func SignIn(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, models.TokenResponse{
-		AccessToken: accessToken,
-		UserID:      user.ID,
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+		UserID:       user.ID,
 	})
+}
+
+func RefreshToken(c *gin.Context) {
+	var requestBody struct {
+		RefreshToken string `json:"refresh_token"`
+	}
+
+	if err := c.ShouldBindJSON(&requestBody); err != nil {
+		HandleError(c, errs.ErrValidationFailed)
+		return
+	}
+
+	// Проверка валидности refresh_token
+	token, err := jwt.ParseWithClaims(requestBody.RefreshToken, &utils2.CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("JWT_SECRET_KEY")), nil
+	})
+	if err != nil || !token.Valid {
+		HandleError(c, errs.ErrInvalidToken)
+		return
+	}
+
+	// Генерация нового access_token
+	claims, ok := token.Claims.(*utils2.CustomClaims)
+	if !ok || claims.ExpiresAt < time.Now().Unix() {
+		HandleError(c, errs.ErrRefreshTokenExpired)
+		return
+	}
+
+	accessToken, _, err := utils2.GenerateToken(claims.UserID, claims.Username)
+	if err != nil {
+		HandleError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"access_token": accessToken})
 }
