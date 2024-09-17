@@ -24,6 +24,7 @@ func InitRoutes(r *gin.Engine) *gin.Engine {
 	{
 		auth.POST("/sign-up", controllers.SignUp)
 		auth.POST("/sign-in", controllers.SignIn)
+		auth.POST("/refresh", controllers.RefreshToken)
 	}
 
 	// storeRoutes Маршруты для магазинов

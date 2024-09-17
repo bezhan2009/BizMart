@@ -2,8 +2,9 @@ package models
 
 // TokenResponse represents the response with access token and user ID
 type TokenResponse struct {
-	AccessToken string `json:"access_token"`
-	UserID      uint   `json:"user_id"`
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
+	UserID       uint   `json:"user_id"`
 }
 
 // ErrorResponse represents an error message response

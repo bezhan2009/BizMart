@@ -31,12 +31,12 @@ func DeleteProductByID(productID uint) error {
 	// Fetch the existing product
 	var product models2.Product
 	if err := db.GetDBConn().Where("id = ?", productID).First(&product).Error; err != nil {
-		logger.Error.Printf("[repository.DeleteProduct] Error finding product: %v\n", err)
+		logger.Error.Printf("[repository.DeleteProductByID] Error finding product: %v\n", err)
 		return TranslateGormError(err)
 	}
 
 	if err := db.GetDBConn().Delete(&product).Error; err != nil {
-		logger.Error.Printf("[repository.DeleteProduct] Error deleting product: %v\n", err)
+		logger.Error.Printf("[repository.DeleteProductByID] Error deleting product: %v\n", err)
 		return TranslateGormError(err)
 	}
 
@@ -95,6 +95,7 @@ func GetAllProducts(minPrice, maxPrice float64, categoryID uint, productName str
 func CreateProductWithImages(product *models2.Product, images []models2.ProductImage) error {
 	// Создаем продукт в базе данных
 	if err := db.GetDBConn().Create(product).Error; err != nil {
+		logger.Error.Printf("[repository.CreateProductWithImages] error creating product: %v\n", err)
 		return TranslateGormError(err)
 	}
 
@@ -105,6 +106,7 @@ func CreateProductWithImages(product *models2.Product, images []models2.ProductI
 
 	// Сохраняем все изображения в базе данных
 	if err := db.GetDBConn().Create(&images).Error; err != nil {
+		logger.Error.Printf("[repository.CreateProductWithImages] error creating product images: %v\n", err)
 		return TranslateGormError(err)
 	}
 
@@ -114,11 +116,13 @@ func CreateProductWithImages(product *models2.Product, images []models2.ProductI
 func UpdateProductWithImages(product *models2.Product, images []models2.ProductImage) error {
 	// Обновляем продукт в базе данных
 	if err := db.GetDBConn().Save(product).Error; err != nil {
+		logger.Error.Printf("[repository.UpdateProductWithImages] error updating product: %v\n", err)
 		return TranslateGormError(err)
 	}
 
 	// Удаляем старые изображения
 	if err := db.GetDBConn().Where("product_id = ?", product.ID).Delete(&models2.ProductImage{}).Error; err != nil {
+		logger.Error.Printf("[repository.UpdateProductWithImages] error deleting product image: %v\n", err)
 		return TranslateGormError(err)
 	}
 
@@ -129,6 +133,17 @@ func UpdateProductWithImages(product *models2.Product, images []models2.ProductI
 
 	// Сохраняем новые изображения
 	if err := db.GetDBConn().Create(&images).Error; err != nil {
+		return TranslateGormError(err)
+	}
+
+	return nil
+}
+
+func UpdateProduct(product *models2.Product) error {
+	if err := db.GetDBConn().Model(&models2.Product{}).Where("id = ?", product.ID).Updates(map[string]interface{}{
+		"amount": product.Amount,
+	}).Error; err != nil {
+		logger.Error.Printf("[repository.UpdateProduct] Error updating product: %v\n", err)
 		return TranslateGormError(err)
 	}
 

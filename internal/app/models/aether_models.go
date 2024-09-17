@@ -135,7 +135,6 @@ type OrderDetails struct {
 	Product   Product        `json:"-" gorm:"foreignKey:ProductID"`
 	Price     float64        `json:"price,omitempty"`
 	Quantity  uint           `gorm:"default:1" json:"quantity"`
-	IsDeleted bool           `gorm:"default:false" json:"is_deleted"`
 	AddressID uint           `gorm:"not null" json:"address_id"`
 	Address   Address        `json:"-" gorm:"foreignKey:AddressID"`
 	CreatedAt time.Time      `json:"created_at"`
@@ -147,11 +146,11 @@ type OrderDetails struct {
 type Order struct {
 	ID             uint           `json:"id" gorm:"primaryKey"`
 	UserID         uint           `gorm:"not null" json:"user_id"`
-	User           User           `gorm:"foreignKey:UserID"`
+	User           User           `json:"-" gorm:"foreignKey:UserID"`
 	StatusID       uint           `gorm:"not null" json:"status_id"`
 	Status         OrderStatus    `json:"-" gorm:"foreignKey:StatusID"`
 	OrderDetailsID uint           `gorm:"not null" json:"order_details_id"`
-	OrderDetails   OrderDetails   `json:"-" gorm:"foreignKey:OrderDetailsID"`
+	OrderDetails   OrderDetails   `json:"order_details" gorm:"foreignKey:OrderDetailsID"`
 	CreatedAt      time.Time      `json:"created_at"`
 	UpdatedAt      time.Time      `json:"updated_at"`
 	DeletedAt      gorm.DeletedAt `json:"-" gorm:"index"`
