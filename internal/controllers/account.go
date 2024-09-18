@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 // GetAccountsByUserID godoc
@@ -122,7 +123,7 @@ func CreateAccount(c *gin.Context) {
 
 	account.UserID = userID
 
-	if _, err := repository.GetAccountByNumber(account.AccountNumber); err != nil {
+	if _, err := repository.GetAccountByNumber(account.AccountNumber); err == nil {
 		HandleError(c, errs.ErrAccountNumberUniquenessFailed)
 		return
 	}
@@ -176,11 +177,11 @@ func UpdateAccount(c *gin.Context) {
 		return
 	}
 
-	if err := service.ValidateAccount(HandleError, account, c); err != nil {
+	if err = service.ValidateAccount(HandleError, account, c); err != nil {
 		return
 	}
 
-	if _, err := repository.GetAccountByNumber(account.AccountNumber); err != nil {
+	if _, err = repository.GetAccountByNumber(account.AccountNumber); err == nil {
 		HandleError(c, errs.ErrAccountNumberUniquenessFailed)
 		return
 	}
@@ -193,6 +194,7 @@ func UpdateAccount(c *gin.Context) {
 		}
 
 		HandleError(c, err)
+		return
 	}
 
 	if accountData.UserID != userID {
@@ -281,15 +283,26 @@ func DeleteAccount(c *gin.Context) {
 // @Failure 403 {object} models.ErrorResponse "Permission Denied"
 // @Failure 404 {object} models.ErrorResponse "Account Not Found"
 // @Failure 500 {object} models.ErrorResponse "Internal Server Error"
-// @Router /accounts/fill [put]
+// @Router /accounts/fill/{id} [put]
 // @Security ApiKeyAuth
 func FillAccountBalance(c *gin.Context) {
+	accountStrID := c.Param("id")
+	if accountStrID == "" {
+		HandleError(c, errs.ErrInvalidAccountID)
+		return
+	}
+
+	accountID, err := strconv.ParseUint(accountStrID, 10, 64)
+	if err != nil {
+		HandleError(c, errs.ErrInvalidAccountID)
+		return
+	}
+
 	userID := c.GetUint(middlewares.UserIDCtx)
 	if userID == 0 {
 		HandleError(c, errs.ErrUnauthorized)
 		return
 	}
-	var err error
 
 	var account models.Account
 	if err = c.BindJSON(&account); err != nil {
@@ -297,11 +310,7 @@ func FillAccountBalance(c *gin.Context) {
 		return
 	}
 
-	if err = service.ValidateAccount(HandleError, account, c); err != nil {
-		return
-	}
-
-	accountData, err := repository.GetAccountByNumber(account.AccountNumber)
+	accountData, err := repository.GetAccountByID(uint(accountID))
 	if err != nil {
 		if errors.Is(err, errs.ErrRecordNotFound) {
 			HandleError(c, errs.ErrAccountNotFound)
@@ -309,12 +318,22 @@ func FillAccountBalance(c *gin.Context) {
 		}
 
 		HandleError(c, err)
+		return
+	}
+
+	if account.Balance < 0 || account.Balance > 20000 {
+		HandleError(c, errs.ErrInvalidBalance)
+		return
 	}
 
 	if accountData.UserID != userID {
 		HandleError(c, errs.ErrPermissionDenied)
 		return
 	}
+
+	account.ID = uint(accountID)
+	account.AccountNumber = accountData.AccountNumber
+	account.UpdatedAt = time.Now()
 
 	if err = repository.FillAccountBalance(account.AccountNumber, account.Balance); err != nil {
 		HandleError(c, err)

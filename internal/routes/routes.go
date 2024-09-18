@@ -96,7 +96,7 @@ func InitRoutes(r *gin.Engine) *gin.Engine {
 		accountGroup.GET("/:id", controllers.GetAccountByID)
 		accountGroup.POST("/", controllers.CreateAccount)
 		accountGroup.PUT("/:id", controllers.UpdateAccount)
-		accountGroup.PUT("/fill", controllers.FillAccountBalance)
+		accountGroup.PUT("/fill/:id", controllers.FillAccountBalance)
 		accountGroup.DELETE("/:id", controllers.DeleteAccount)
 	}
 
@@ -125,6 +125,15 @@ func InitRoutes(r *gin.Engine) *gin.Engine {
 		orderGroup.POST("/", controllers.CreateOrder)
 		orderGroup.PUT("/:id", controllers.UpdateOrder)
 		orderGroup.DELETE("/:id", controllers.DeleteOrder)
+	}
+
+	paymentGroup := r.Group("/payments", middlewares.CheckUserAuthentication)
+	{
+		paymentGroup.GET("/", controllers.GetUserPayments)
+		paymentGroup.GET("/:id", controllers.GetPaymentByID)
+		paymentGroup.POST("/", controllers.CreatePayment)
+		paymentGroup.PUT("/:id", controllers.UpdatePayment)
+		paymentGroup.DELETE("/:id", controllers.DeletePayment)
 	}
 
 	return r

@@ -26,9 +26,11 @@ func handleBadRequestErrors(err error) bool {
 		errors.Is(err, errs.ErrInvalidAddressName) ||
 		errors.Is(err, errs.ErrInvalidAccountNumber) ||
 		errors.Is(err, errs.ErrAddressNameUniquenessFailed) ||
+		errors.Is(err, errs.ErrAccountNumberUniquenessFailed) ||
 		errors.Is(err, errs.ErrInvalidMinPrice) ||
 		errors.Is(err, errs.ErrInvalidMaxPrice) ||
 		errors.Is(err, errs.ErrInvalidPrice) ||
+		errors.Is(err, errs.ErrInvalidPaymentID) ||
 		errors.Is(err, errs.ErrInvalidRating) ||
 		errors.Is(err, errs.ErrInvalidContent) ||
 		errors.Is(err, errs.ErrInvalidComment) ||
@@ -60,6 +62,7 @@ func handleNotFoundErrors(err error) bool {
 		errors.Is(err, errs.ErrProductNotFound) ||
 		errors.Is(err, errs.ErrAddressNotFound) ||
 		errors.Is(err, errs.ErrFeaturedProductNotFound) ||
+		errors.Is(err, errs.ErrPaymentNotFound) ||
 		errors.Is(err, errs.ErrAccountNotFound) ||
 		errors.Is(err, errs.ErrStoreNotFound) ||
 		errors.Is(err, errs.ErrStoreReviewNotFound)
