@@ -168,16 +168,15 @@ type OrderRequestJsonBind struct {
 type Payment struct {
 	ID        uint           `json:"id" gorm:"primaryKey"`
 	UserID    uint           `gorm:"not null" json:"user_id"`
-	User      User           `gorm:"foreignKey:UserID"`
+	User      User           `json:"-" gorm:"foreignKey:UserID"`
 	OrderID   uint           `gorm:"not null" json:"order_id"`
 	Order     Order          `json:"-" gorm:"foreignKey:OrderID"`
-	Amount    int            `gorm:"not null" json:"amount"`
+	Amount    uint           `gorm:"not null" json:"amount"`
 	Price     float64        `gorm:"not null" json:"price"`
 	AccountID uint           `gorm:"not null" json:"account_id"`
 	Account   Account        `json:"-" gorm:"foreignKey:AccountID"`
-	PayedAt   time.Time      `gorm:"default:CURRENT_TIMESTAMP" json:"payed_at"`
 	IsDeleted bool           `gorm:"default:false" json:"is_deleted"`
-	CreatedAt time.Time      `json:"created_at"`
+	PayedAt   time.Time      `gorm:"default:CURRENT_TIMESTAMP" json:"payed_at"`
 	UpdatedAt time.Time      `json:"updated_at"`
 	DeletedAt gorm.DeletedAt `json:"-" gorm:"index"`
 }

@@ -31,6 +31,7 @@ func GetAllUserOrders(c *gin.Context) {
 	orders, err := repository.GetAllOrderByUserID(userID)
 	if err != nil {
 		HandleError(c, err)
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{"orders": orders})
@@ -174,6 +175,7 @@ func UpdateOrder(c *gin.Context) {
 
 	if order.UserID != userID {
 		HandleError(c, errs.ErrPermissionDenied)
+		return
 	}
 
 	orderDetails, err := repository.GetOrderDetailsByID(order.OrderDetailsID)
