@@ -174,7 +174,7 @@ func UpdateOrder(c *gin.Context) {
 	}
 
 	if _, err = repository.GetPaymentByOrderID(order.ID); err == nil {
-		HandleError(c, errs.ErrPermissionDenied)
+		HandleError(c, errs.ErrOrderHasBeenPaidFor)
 		return
 	}
 
@@ -196,7 +196,7 @@ func UpdateOrder(c *gin.Context) {
 
 	orderRequest.ProductID = orderDetails.ProductID
 
-	if err := service.UpdateOrder(uint(orderId), orderRequest); err != nil {
+	if err = service.UpdateOrder(uint(orderId), orderRequest); err != nil {
 		HandleError(c, err)
 		return
 	}

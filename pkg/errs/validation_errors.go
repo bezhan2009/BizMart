@@ -15,6 +15,7 @@ var (
 	ErrOrderAlreadyPayed        = errors.New("ErrOrderAlreadyPayed")
 	ErrInvalidCategory          = errors.New("ErrInvalidCategory")
 	ErrInvalidStore             = errors.New("ErrInvalidStore")
+	ErrOrderHasBeenPaidFor      = errors.New("ErrOrderHasBeenPaidFor")
 	ErrInvalidID                = errors.New("ErrInvalidID")
 	ErrInvalidPaymentID         = errors.New("ErrInvalidPaymentID")
 	ErrInvalidOrderID           = errors.New("ErrInvalidOrderID")
