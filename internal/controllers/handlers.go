@@ -86,8 +86,8 @@ func HandleError(c *gin.Context, err error) {
 		c.JSON(http.StatusNotFound, newErrorResponse(err.Error()))
 	} else if errors.Is(err, errs.ErrFetchingProducts) {
 		c.JSON(http.StatusInternalServerError, newErrorResponse(err.Error()))
-	} else if errors.Is(err, errs.ErrNoProductsFound) {
-		c.JSON(http.StatusOK, newErrorResponse(err.Error()))
+	} else if errors.Is(err, errs.WarningNoProductsFound) {
+		c.JSON(http.StatusOK, gin.H{"message": errs.WarningNoProductsFound.Error()})
 	} else if handleUnauthorizedErrors(err) {
 		c.JSON(http.StatusUnauthorized, newErrorResponse(err.Error()))
 	} else {

@@ -80,7 +80,7 @@ func GetAllProducts(c *gin.Context) {
 	}
 
 	if len(products) == 0 {
-		HandleError(c, errs.ErrNoProductsFound)
+		HandleError(c, errs.WarningNoProductsFound)
 		return
 	}
 
@@ -97,7 +97,7 @@ func GetProductByID(c *gin.Context) {
 
 	getProductByID, err := repository.GetProductByID(uint(productId))
 	if err != nil {
-		HandleError(c, errs.ErrProductNotFound)
+		c.JSON(404, gin.H{"message": errs.ErrNoProductFound.Error()})
 		return
 	}
 
@@ -185,7 +185,7 @@ func UpdateProduct(c *gin.Context) {
 	// Получаем текущие данные продукта из базы данных
 	productData, err := repository.GetProductByID(uint(productID))
 	if err != nil {
-		HandleError(c, errs.ErrProductNotFound)
+		c.JSON(404, gin.H{"message": errs.ErrNoProductFound.Error()})
 		return
 	}
 
@@ -257,7 +257,7 @@ func DeleteProduct(c *gin.Context) {
 	// Получаем продукт по ID
 	product, err := repository.GetProductByID(uint(productId))
 	if err != nil {
-		HandleError(c, errs.ErrProductNotFound)
+		c.JSON(404, gin.H{"message": errs.ErrNoProductFound.Error()})
 		return
 	}
 
