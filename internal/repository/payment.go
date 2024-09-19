@@ -52,3 +52,12 @@ func DeletePayment(payment models.Payment) error {
 
 	return nil
 }
+
+func GetPaymentByOrderID(orderID uint) (models.Payment, error) {
+	if err := db.GetDBConn().Model(models.Payment{}).Where("order_id = ?", orderID).First(&models.Payment{}).Error; err != nil {
+		logger.Error.Printf("[repository.GetPaymentByOrderID] error getting payment by order ID: %s\n", err.Error())
+		return models.Payment{}, TranslateGormError(err)
+	}
+
+	return models.Payment{}, nil
+}
