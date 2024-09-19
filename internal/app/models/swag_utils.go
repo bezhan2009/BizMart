@@ -69,3 +69,8 @@ type OrderRequest struct {
 	ProductID uint `json:"product_id"`
 	Quantity  uint `json:"quantity"`
 }
+
+type PaymentRequest struct {
+	AccountID uint `json:"account_id"`
+	OrderID   uint `json:"order_id"`
+}
