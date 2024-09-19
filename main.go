@@ -2,6 +2,7 @@ package main
 
 import (
 	"BizMart/configs"
+	"BizMart/internal/jobs"
 	"BizMart/internal/routes"
 	security2 "BizMart/internal/security"
 	"BizMart/internal/server"
@@ -74,6 +75,8 @@ func main() {
 			log.Fatalf("Ошибка при запуске HTTP сервера: %s", err)
 		}
 	}()
+
+	go jobs.UpdateProductCache()
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)

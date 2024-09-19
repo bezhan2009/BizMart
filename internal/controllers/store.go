@@ -6,6 +6,7 @@ import (
 	"BizMart/internal/controllers/middlewares"
 	"BizMart/internal/repository"
 	"BizMart/pkg/errs"
+	"errors"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -30,11 +31,33 @@ func GetStoreByID(c *gin.Context) {
 
 	OurStore, err := service.GetStoreByID(uint(storeID))
 	if err != nil {
+		if errors.Is(err, errs.ErrRecordNotFound) {
+			HandleError(c, errs.ErrStoreNotFound)
+			return
+		}
+
 		HandleError(c, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"store": OurStore})
+	storeProducts, err := repository.GetProductByStoreID(uint(storeID))
+
+	productNums, err := repository.GetNumberOfStoreProducts(uint(storeID))
+	if err != nil {
+		HandleError(c, err)
+	}
+
+	orderNums, err := repository.GetNumberOfStoreOrders(uint(storeID))
+	if err != nil {
+		HandleError(c, err)
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"store":      OurStore,
+		"products":   storeProducts,
+		"productNum": productNums,
+		"orderNum":   orderNums,
+	})
 }
 
 func CreateStore(c *gin.Context) {

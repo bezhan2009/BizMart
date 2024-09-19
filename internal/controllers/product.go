@@ -4,6 +4,7 @@ import (
 	"BizMart/internal/app/models"
 	"BizMart/internal/app/service"
 	"BizMart/internal/controllers/middlewares"
+	"BizMart/internal/jobs"
 	"BizMart/internal/repository"
 	"BizMart/pkg/db"
 	"BizMart/pkg/errs"
@@ -21,20 +22,8 @@ func GetAllProducts(c *gin.Context) {
 	store := c.Query("store")
 
 	if minPriceStr == "" && maxPriceStr == "" && category == "" && store == "" && productName == "" {
-		var products []models.Product
-
-		products, err := repository.GetAllProducts(0, 0, uint(0), productName, uint(0))
-		if err != nil {
-			HandleError(c, errs.ErrFetchingProducts)
-			return
-		}
-
-		if len(products) == 0 {
-			HandleError(c, errs.ErrNoProductsFound)
-			return
-		}
-
-		c.JSON(200, gin.H{"products": products})
+		products := jobs.GetCachedProducts()
+		c.JSON(http.StatusOK, gin.H{"products": products})
 		return
 	}
 
@@ -57,7 +46,7 @@ func GetAllProducts(c *gin.Context) {
 		}
 	}
 
-	if minPrice > maxPrice {
+	if minPrice > maxPrice && maxPriceStr != "" {
 		HandleError(c, errs.ErrInvalidMinPrice)
 		return
 	}
@@ -112,7 +101,15 @@ func GetProductByID(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"product": getProductByID})
+	ordersNum, err := repository.GetNumberOfProductOrders(uint(productId))
+	if err != nil {
+		HandleError(c, err)
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"product": getProductByID,
+		"orders":  ordersNum,
+	})
 }
 
 func CreateProduct(c *gin.Context) {
