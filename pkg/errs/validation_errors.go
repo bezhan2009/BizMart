@@ -12,6 +12,7 @@ var (
 	ErrInvalidAmount            = errors.New("ErrInvalidAmount")
 	ErrInvalidPrice             = errors.New("ErrInvalidPrice")
 	ErrInsufficientFunds        = errors.New("ErrInsufficientFunds")
+	ErrOrderAlreadyPayed        = errors.New("ErrOrderAlreadyPayed")
 	ErrInvalidCategory          = errors.New("ErrInvalidCategory")
 	ErrInvalidStore             = errors.New("ErrInvalidStore")
 	ErrInvalidID                = errors.New("ErrInvalidID")

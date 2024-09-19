@@ -173,6 +173,11 @@ func UpdateOrder(c *gin.Context) {
 		return
 	}
 
+	if _, err = repository.GetPaymentByOrderID(order.ID); err == nil {
+		HandleError(c, errs.ErrPermissionDenied)
+		return
+	}
+
 	if order.UserID != userID {
 		HandleError(c, errs.ErrPermissionDenied)
 		return

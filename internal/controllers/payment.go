@@ -85,7 +85,7 @@ func CreatePayment(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"payment": payment})
+	c.JSON(http.StatusCreated, gin.H{"message": "payment created successfully"})
 }
 
 func UpdatePayment(c *gin.Context) {

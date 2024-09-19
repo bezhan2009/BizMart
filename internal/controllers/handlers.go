@@ -46,6 +46,7 @@ func handleBadRequestErrors(err error) bool {
 		errors.Is(err, errs.ErrNotEnoughProductInStock) ||
 		errors.Is(err, errs.ErrDeleteFailed) ||
 		errors.Is(err, errs.ErrInvalidTitle) ||
+		errors.Is(err, errs.ErrOrderAlreadyPayed) ||
 		errors.Is(err, errs.ErrInvalidDescription) ||
 		errors.Is(err, errs.ErrInvalidAmount) ||
 		errors.Is(err, errs.ErrInvalidQuantity) ||

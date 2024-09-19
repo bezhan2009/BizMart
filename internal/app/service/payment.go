@@ -63,6 +63,10 @@ func CreatePayment(payment models.Payment) error {
 		return err
 	}
 
+	if order.StatusID == 3 || order.StatusID == 4 {
+		return errs.ErrOrderAlreadyPayed
+	}
+
 	account, err := repository.GetAccountByID(payment.AccountID)
 	if err != nil {
 		return err
@@ -80,6 +84,10 @@ func CreatePayment(payment models.Payment) error {
 
 	order.StatusID = 3
 	if err = repository.UpdateOrder(order, order.OrderDetails); err != nil {
+		return err
+	}
+
+	if err = repository.CreatePayment(payment); err != nil {
 		return err
 	}
 
