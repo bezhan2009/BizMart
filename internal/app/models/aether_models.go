@@ -53,17 +53,15 @@ type Category struct {
 
 // Product represents a product in the system.
 type Product struct {
-	ID          uint     `json:"id" gorm:"primaryKey"`
-	StoreID     uint     `gorm:"not null" json:"store_id"`
-	Store       Store    `json:"-" gorm:"foreignKey:StoreID"`
-	CategoryID  uint     `gorm:"not null" json:"category_id"`
-	Category    Category `json:"-" gorm:"foreignKey:CategoryID;constraint:OnDelete:CASCADE;"`
-	Title       string   `gorm:"size:100;not null" json:"title"`
-	Description string   `gorm:"not null" json:"description"`
-	Price       float64  `gorm:"not null" json:"price"`
-	Amount      uint     `gorm:"not null" json:"amount"`
-	//DefaultAccountID uint           `gorm:"default:NULL" json:"default_account_id"`
-	//DefaultAccount   Account        `json:"-" gorm:"foreignKey:DefaultAccountID"`
+	ID               uint           `json:"id" gorm:"primaryKey"`
+	StoreID          uint           `gorm:"not null" json:"store_id"`
+	Store            Store          `json:"-" gorm:"foreignKey:StoreID"`
+	CategoryID       uint           `gorm:"not null" json:"category_id"`
+	Category         Category       `json:"-" gorm:"foreignKey:CategoryID;constraint:OnDelete:CASCADE;"`
+	Title            string         `gorm:"size:100;not null" json:"title"`
+	Description      string         `gorm:"not null" json:"description"`
+	Price            float64        `gorm:"not null" json:"price"`
+	Amount           uint           `gorm:"not null" json:"amount"`
 	ProductImageList pq.StringArray `gorm:"type:text[]" json:"product_image"`
 	Views            int            `gorm:"default:0" json:"views"`
 }

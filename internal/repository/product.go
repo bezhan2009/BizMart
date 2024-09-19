@@ -4,6 +4,7 @@ import (
 	models2 "BizMart/internal/app/models"
 	"BizMart/pkg/db"
 	"BizMart/pkg/logger"
+	"sort"
 )
 
 // GetProductByID retrieves a product by its ID
@@ -51,19 +52,16 @@ func DeleteProductImagesByProductID(productID uint) error {
 	return nil
 }
 
-// GetAllProducts retrieves all products filtered by category, price range, etc., and includes associated ProductImage data.
+// GetAllProducts retrieves all products filtered by category, price range, etc.,
+// and sorts them by the number of orders and views.
 func GetAllProducts(minPrice, maxPrice float64, categoryID uint, productName string, storeID uint) ([]models2.Product, error) {
 	var products []models2.Product
 
-	// Start building the query
 	query := db.GetDBConn().
 		Table("productapp_product").
-		Select("productapp_product.*, STRING_AGG(productapp_productimage.image, ',') AS product_images").
-		Where("productapp_product.amount > 0").
-		Joins("LEFT JOIN productapp_productimage ON productapp_productimage.product_id = productapp_product.id").
-		Group("productapp_product.id")
+		Select("productapp_product.*").
+		Where("productapp_product.amount > 0")
 
-	// Apply filters
 	if minPrice > 0 {
 		query = query.Where("productapp_product.price >= ?", minPrice)
 	}
@@ -83,11 +81,26 @@ func GetAllProducts(minPrice, maxPrice float64, categoryID uint, productName str
 		)
 	}
 
-	// Execute the query
 	if err := query.Find(&products).Error; err != nil {
 		logger.Error.Printf("[repository.GetAllProducts] Error retrieving products: %v\n", err)
 		return nil, TranslateGormError(err)
 	}
+
+	for i, product := range products {
+		numOfOrders, err := GetNumberOfProductOrders(product.ID)
+		if err != nil {
+			logger.Error.Printf("[repository.GetAllProducts] Error retrieving number of orders: %v\n", err)
+			return nil, TranslateGormError(err)
+		}
+		products[i].Amount = uint(numOfOrders)
+	}
+
+	sort.Slice(products, func(i, j int) bool {
+		if products[i].Amount == products[j].Amount {
+			return products[i].Views > products[j].Views
+		}
+		return products[i].Amount > products[j].Amount
+	})
 
 	return products, nil
 }
@@ -148,4 +161,28 @@ func UpdateProduct(product *models2.Product) error {
 	}
 
 	return nil
+}
+
+func GetProductByStoreID(storeID uint) ([]models2.Product, error) {
+	var products []models2.Product
+	if err := db.GetDBConn().Model(&models2.Product{}).Where("store_id = ?", storeID).Find(&products).Error; err != nil {
+		logger.Error.Printf("[repository.GetProductByStoreID] Error getting product: %v\n", err)
+		return nil, TranslateGormError(err)
+	}
+
+	return products, nil
+}
+
+func GetProductByStoreIDWithoutFilters(storeID uint) ([]models2.Product, error) {
+	var products []models2.Product
+	if err := db.GetDBConn().
+		Model(&models2.Product{}).
+		Preload("Store").
+		Where("store_id = ?", storeID).
+		Find(&products).Error; err != nil {
+		logger.Error.Printf("[repository.GetProductByStoreID] Error getting product: %v\n", err)
+		return nil, TranslateGormError(err)
+	}
+
+	return products, nil
 }

@@ -6,6 +6,19 @@ import (
 	"BizMart/pkg/logger"
 )
 
+func GetAllOrders() ([]models.Order, error) {
+	var orders []models.Order
+	if err := db.GetDBConn().
+		Model(&models.Order{}).
+		Preload("OrderDetails").
+		Find(&orders).Error; err != nil {
+		logger.Error.Printf("[repository.GetAllOrderByUserID] Error getting orders by user id: %v", err)
+		return []models.Order{}, TranslateGormError(err)
+	}
+
+	return orders, nil
+}
+
 func GetAllOrderByUserID(userID uint) ([]models.Order, error) {
 	var orders []models.Order
 	if err := db.GetDBConn().
@@ -105,4 +118,60 @@ func DeleteOrder(orderID uint) error {
 	}
 
 	return nil
+}
+
+func GetNumberOfProductOrders(productID uint) (int, error) {
+	orders, err := GetAllOrders()
+	if err != nil {
+		return 0, TranslateGormError(err)
+	}
+
+	numOfProductOrders := 0
+
+	for _, order := range orders {
+		if order.OrderDetails.ProductID == productID {
+			numOfProductOrders++
+		}
+	}
+
+	return numOfProductOrders, nil
+}
+
+func GetNumberOfStoreOrders(storeID uint) (int, error) {
+	products, err := GetProductByStoreIDWithoutFilters(storeID)
+	if err != nil {
+		return 0, TranslateGormError(err)
+	}
+
+	numOfStoreOrders := 0
+
+	for _, product := range products {
+		if product.StoreID == storeID {
+			numOfProductOrders, err := GetNumberOfProductOrders(product.ID)
+			if err != nil {
+				return 0, TranslateGormError(err)
+			}
+
+			numOfStoreOrders += numOfProductOrders
+		}
+	}
+
+	return numOfStoreOrders, nil
+}
+
+func GetNumberOfStoreProducts(storeID uint) (int, error) {
+	products, err := GetProductByStoreIDWithoutFilters(storeID)
+	if err != nil {
+		return 0, TranslateGormError(err)
+	}
+
+	numOfProductOrders := 0
+
+	for _, product := range products {
+		if product.StoreID == storeID {
+			numOfProductOrders++
+		}
+	}
+
+	return numOfProductOrders, nil
 }
