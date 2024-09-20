@@ -12,6 +12,15 @@ import (
 	"strconv"
 )
 
+// GetStores godoc
+// @Summary Get all stores
+// @Description Fetches all available stores.
+// @Tags stores
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} models.DefaultResponse "Returns a list of stores"
+// @Failure 400 {object} models.ErrorResponse
+// @Router /store [get]
 func GetStores(c *gin.Context) {
 	stores, err := repository.GetStores()
 	if err != nil {
@@ -21,6 +30,16 @@ func GetStores(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"stores": stores})
 }
 
+// GetStoreByID godoc
+// @Summary Get store by ID
+// @Description Retrieves a store by its ID along with the number of products and orders.
+// @Tags stores
+// @Accept  json
+// @Produce  json
+// @Param id path int true "Store ID"
+// @Success 200 {object} models.DefaultResponse "Returns the store, products, product count, and order count"
+// @Failure 404 {object} models.ErrorResponse
+// @Router /store/{id} [get]
 func GetStoreByID(c *gin.Context) {
 	storeStrID := c.Param("id")
 	storeID, err := strconv.Atoi(storeStrID)
@@ -60,6 +79,18 @@ func GetStoreByID(c *gin.Context) {
 	})
 }
 
+// CreateStore godoc
+// @Summary Create a new store
+// @Description Creates a new store for the current user.
+// @Tags stores
+// @Security ApiKeyAuth
+// @Accept  json
+// @Produce  json
+// @Param store body models.Store true "Store data"
+// @Success 200 {object} models.DefaultResponse "Returns success message"
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 403 {object} models.ErrorResponse "Permission denied"
+// @Router /store [post]
 func CreateStore(c *gin.Context) {
 	var OurStore models.Store
 	if err := c.ShouldBindJSON(&OurStore); err != nil {
@@ -68,6 +99,16 @@ func CreateStore(c *gin.Context) {
 	}
 
 	userID := c.GetUint(middlewares.UserIDCtx)
+	accounts, err := repository.GetAccountsByUserID(userID)
+	if err != nil {
+		HandleError(c, err)
+		return
+	}
+
+	if len(accounts) <= 0 {
+		HandleError(c, errs.ErrAccountNotFound)
+		return
+	}
 
 	OurStore.OwnerID = userID
 
@@ -79,6 +120,19 @@ func CreateStore(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "store created successfully"})
 }
 
+// UpdateStore godoc
+// @Summary Update an existing store
+// @Description Updates the details of a store, such as its name, description, and other properties.
+// @Tags stores
+// @Security ApiKeyAuth
+// @Accept  json
+// @Produce  json
+// @Param id path int true "Store ID"
+// @Param store body models.Store true "Updated store data"
+// @Success 200 {object} models.DefaultResponse "Returns success message"
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 403 {object} models.ErrorResponse "Permission denied"
+// @Router /store/{id} [put]
 func UpdateStore(c *gin.Context) {
 	storeStrID := c.Param("id")
 	storeID, err := strconv.Atoi(storeStrID)
@@ -118,6 +172,18 @@ func UpdateStore(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "store updated successfully"})
 }
 
+// DeleteStore godoc
+// @Summary Delete a store
+// @Description Deletes a store by its ID.
+// @Tags stores
+// @Security ApiKeyAuth
+// @Accept  json
+// @Produce  json
+// @Param id path int true "Store ID"
+// @Success 200 {object} models.DefaultResponse "Returns success message"
+// @Failure 404 {object} models.ErrorResponse
+// @Failure 403 {object} models.ErrorResponse "Permission denied"
+// @Router /store/{id} [delete]
 func DeleteStore(c *gin.Context) {
 	storeStrID := c.Param("id")
 	storeID, err := strconv.Atoi(storeStrID)

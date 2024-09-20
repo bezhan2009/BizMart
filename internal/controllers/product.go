@@ -89,7 +89,7 @@ func GetAllProducts(c *gin.Context) {
 
 	products, err = repository.GetAllProducts(minPrice, maxPrice, uint(categoryId), productName, uint(storeId))
 	if err != nil {
-		HandleError(c, errs.ErrFetchingProducts)
+		HandleError(c, err)
 		return
 	}
 
