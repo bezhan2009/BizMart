@@ -126,6 +126,16 @@ func SignIn(c *gin.Context) {
 	})
 }
 
+// RefreshToken godoc
+// @Summary Refresh Token
+// @Description This endpoint refreshes the access token.
+// @Tags auth
+// @Accept  json
+// @Produce  json
+// @Param user body models.RefreshRequest true "User login information"
+// @Success 200 {object} models.RefreshTokenResponse
+// @Failure 400 {object} models.ErrorResponse
+// @Router /auth/refresh [post]
 func RefreshToken(c *gin.Context) {
 	var requestBody struct {
 		RefreshToken string `json:"refresh_token"`

@@ -76,6 +76,7 @@ func GetProductReviewByID(c *gin.Context) {
 // @Summary      Create product review
 // @Description  Creates a new product review
 // @Tags         product_reviews
+// @Security ApiKeyAuth
 // @Accept       json
 // @Produce      json
 // @Param        id   path      int  true  "Product ID"
@@ -136,6 +137,7 @@ func CreateProductReview(c *gin.Context) {
 // @Summary      Update product review
 // @Description  Updates a new product review
 // @Tags         product_reviews
+// @Security ApiKeyAuth
 // @Accept       json
 // @Produce      json
 // @Param        id   path      int  true  "Product Review ID"
@@ -205,6 +207,7 @@ func UpdateProductReview(c *gin.Context) {
 // @Summary      Delete product review
 // @Description  Deletes a new product review
 // @Tags         product_reviews
+// @Security ApiKeyAuth
 // @Accept       json
 // @Produce      json
 // @Param        id   path      int  true  "Product Review ID"

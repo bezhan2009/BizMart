@@ -7,6 +7,11 @@ type TokenResponse struct {
 	UserID       uint   `json:"user_id"`
 }
 
+// RefreshTokenResponse represents the response with access token and user ID
+type RefreshTokenResponse struct {
+	AccessToken string `json:"access_token"`
+}
+
 // ErrorResponse represents an error message response
 type ErrorResponse struct {
 	Error string `json:"error"`
@@ -73,4 +78,18 @@ type OrderRequest struct {
 type PaymentRequest struct {
 	AccountID uint `json:"account_id"`
 	OrderID   uint `json:"order_id"`
+}
+
+type RefreshRequest struct {
+	RefreshToken string `json:"refresh_token"`
+}
+
+type ProductRequest struct {
+	StoreID       uint     `json:"store_id"`
+	CategoryID    uint     `json:"category_id"`
+	Title         string   `json:"title"`
+	Description   string   `json:"description"`
+	Price         uint     `json:"price"`
+	Amount        uint     `json:"amount"`
+	ProductImages []string `json:"product_images"`
 }

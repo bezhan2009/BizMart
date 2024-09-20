@@ -14,6 +14,20 @@ import (
 	"strconv"
 )
 
+// GetAllProducts godoc
+// @Summary Get all products
+// @Description Fetches all products with optional filtering by price, category, product name, and store.
+// @Tags products
+// @Accept  json
+// @Produce  json
+// @Param min_price query number false "Minimum price filter"
+// @Param max_price query number false "Maximum price filter"
+// @Param category query int false "Category ID"
+// @Param product_name query string false "Product name"
+// @Param store query int false "Store ID"
+// @Success 200 {object} models.Product "Returns a list of products"
+// @Failure 400 {object} models.ErrorResponse
+// @Router /products [get]
 func GetAllProducts(c *gin.Context) {
 	minPriceStr := c.Query("min_price")
 	maxPriceStr := c.Query("max_price")
@@ -87,6 +101,16 @@ func GetAllProducts(c *gin.Context) {
 	c.JSON(200, gin.H{"products": products})
 }
 
+// GetProductByID godoc
+// @Summary Get product by ID
+// @Description Retrieves a product by its ID along with the number of orders.
+// @Tags products
+// @Accept  json
+// @Produce  json
+// @Param id path int true "Product ID"
+// @Success 200 {object} models.Product "Returns the product and order count"
+// @Failure 404 {object} models.ErrorResponse
+// @Router /products/{id} [get]
 func GetProductByID(c *gin.Context) {
 	productIdStr := c.Param("id")
 	productId, err := strconv.Atoi(productIdStr)
@@ -112,6 +136,19 @@ func GetProductByID(c *gin.Context) {
 	})
 }
 
+// CreateProduct godoc
+// @Summary Create a new product
+// @Description Adds a new product to a specific store, with validation and ownership checks.
+// @Tags products
+// @Security ApiKeyAuth
+// @Accept  json
+// @Produce  json
+// @Param store_id path int true "Store ID"
+// @Param product body models.ProductRequest true "Product data"
+// @Success 200 {object} models.DefaultResponse "Returns success message and created product"
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 403 {object} models.ErrorResponse "Permission denied"
+// @Router /stores/{store_id}/products [post]
 func CreateProduct(c *gin.Context) {
 	storeIDStr := c.Param("store_id")
 	storeID, err := strconv.Atoi(storeIDStr)
@@ -127,7 +164,7 @@ func CreateProduct(c *gin.Context) {
 		return
 	}
 
-	err = service.ValidateProduct(HandleError, productData, c)
+	err = service.ValidateProduct(HandleError, productData, c, false)
 	if err != nil {
 		return
 	}
@@ -170,10 +207,22 @@ func CreateProduct(c *gin.Context) {
 	// Ответ клиенту
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Product and images successfully created",
-		"product": productData,
 	})
 }
 
+// UpdateProduct godoc
+// @Summary Update an existing product
+// @Description Updates the details of a product including title, description, price, and images.
+// @Tags products
+// @Security ApiKeyAuth
+// @Accept  json
+// @Produce  json
+// @Param id path int true "Product ID"
+// @Param product body models.ProductRequest true "Updated product data"
+// @Success 200 {object} models.DefaultResponse "Returns success message and updated product"
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 403 {object} models.ErrorResponse "Permission denied"
+// @Router /products/{id} [put]
 func UpdateProduct(c *gin.Context) {
 	productIDStr := c.Param("id")
 	productID, err := strconv.Atoi(productIDStr)
@@ -197,7 +246,7 @@ func UpdateProduct(c *gin.Context) {
 		return
 	}
 
-	err = service.ValidateProduct(HandleError, productData, c)
+	err = service.ValidateProduct(HandleError, productData, c, true)
 	if err != nil {
 		return
 	}
@@ -242,10 +291,21 @@ func UpdateProduct(c *gin.Context) {
 	// Ответ клиенту
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Product and images successfully updated",
-		"product": productData,
 	})
 }
 
+// DeleteProduct godoc
+// @Summary Delete a product
+// @Description Deletes a product and its associated images from the database.
+// @Tags products
+// @Security ApiKeyAuth
+// @Accept  json
+// @Produce  json
+// @Param id path int true "Product ID"
+// @Success 200 {object} models.DefaultResponse "Returns success message"
+// @Failure 404 {object} models.ErrorResponse
+// @Failure 403 {object} models.ErrorResponse "Permission denied"
+// @Router /products/{id} [delete]
 func DeleteProduct(c *gin.Context) {
 	productIdStr := c.Param("id")
 	productId, err := strconv.Atoi(productIdStr)

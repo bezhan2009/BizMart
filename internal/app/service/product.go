@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func ValidateProduct(HandleError func(ctx *gin.Context, err error), productData models.Product, c *gin.Context) error {
+func ValidateProduct(HandleError func(ctx *gin.Context, err error), productData models.Product, c *gin.Context, isUpdate bool) error {
 	if productData.Amount <= 0 {
 		HandleError(c, errs.ErrInvalidAmount)
 		return errs.ErrInvalidAmount
@@ -32,7 +32,7 @@ func ValidateProduct(HandleError func(ctx *gin.Context, err error), productData 
 		return errs.ErrInvalidDescription
 	}
 
-	if productData.Views > 0 {
+	if productData.Views > 0 && !isUpdate {
 		HandleError(c, errs.ErrPermissionDenied)
 		return errs.ErrPermissionDenied
 	}

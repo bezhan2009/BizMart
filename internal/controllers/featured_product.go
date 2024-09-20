@@ -16,6 +16,7 @@ import (
 // @Summary      Get all featured products
 // @Description  Retrieves a list of all featured products for the authenticated user
 // @Tags         featured_products
+// @Security ApiKeyAuth
 // @Accept       json
 // @Produce      json
 // @Success      200  {object}  models.FeaturedProduct
@@ -47,6 +48,7 @@ func GetFeaturedProducts(c *gin.Context) {
 // @Summary      Get featured product by ID
 // @Description  Retrieves a specific featured product by its ID for the authenticated user
 // @Tags         featured_products
+// @Security ApiKeyAuth
 // @Accept       json
 // @Produce      json
 // @Param        id   path      int  true  "Featured Product ID"
@@ -92,6 +94,7 @@ func GetFeaturedProductByID(c *gin.Context) {
 // @Summary      Create featured product
 // @Description  Adds a new product to the user's featured products list
 // @Tags         featured_products
+// @Security ApiKeyAuth
 // @Accept       json
 // @Produce      json
 // @Param        id   path      int  true  "Product ID"
@@ -136,6 +139,7 @@ func CreateFeaturedProduct(c *gin.Context) {
 // @Summary      Delete featured product
 // @Description  Deletes a specific featured product by its ID
 // @Tags         featured_products
+// @Security ApiKeyAuth
 // @Accept       json
 // @Produce      json
 // @Param        id   path      int  true  "Featured Product ID"
