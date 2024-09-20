@@ -75,6 +75,11 @@ type OrderRequest struct {
 	Quantity  uint `json:"quantity"`
 }
 
+type OrderStatusRequest struct {
+	StatusName  string `json:"status_name"`
+	Description string `json:"description"`
+}
+
 type PaymentRequest struct {
 	AccountID uint `json:"account_id"`
 	OrderID   uint `json:"order_id"`
@@ -102,4 +107,14 @@ type ProductResponse struct {
 	Price         uint     `json:"price"`
 	Amount        uint     `json:"amount"`
 	ProductImages []string `json:"product_images"`
+}
+
+type StoreRequest struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+}
+
+type StoreReviewRequest struct {
+	Rating  uint   `json:"rating"`
+	Comment string `json:"comment"`
 }

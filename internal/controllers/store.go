@@ -86,7 +86,7 @@ func GetStoreByID(c *gin.Context) {
 // @Security ApiKeyAuth
 // @Accept  json
 // @Produce  json
-// @Param store body models.Store true "Store data"
+// @Param store body models.StoreRequest true "Store data"
 // @Success 200 {object} models.DefaultResponse "Returns success message"
 // @Failure 400 {object} models.ErrorResponse
 // @Failure 403 {object} models.ErrorResponse "Permission denied"
@@ -128,7 +128,7 @@ func CreateStore(c *gin.Context) {
 // @Accept  json
 // @Produce  json
 // @Param id path int true "Store ID"
-// @Param store body models.Store true "Updated store data"
+// @Param store body models.StoreRequest true "Updated store data"
 // @Success 200 {object} models.DefaultResponse "Returns success message"
 // @Failure 400 {object} models.ErrorResponse
 // @Failure 403 {object} models.ErrorResponse "Permission denied"

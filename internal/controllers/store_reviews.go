@@ -12,6 +12,16 @@ import (
 	"strconv"
 )
 
+// GetAllStoreReviewsByStoreID godoc
+// @Summary Get all reviews for a store
+// @Description Fetches all reviews for a specific store by its ID.
+// @Tags store reviews
+// @Accept  json
+// @Produce  json
+// @Param id path int true "Store ID"
+// @Success 200 {object} models.Store "Returns a list of reviews for the store"
+// @Failure 400 {object} models.ErrorResponse
+// @Router /store/reviews/{id} [get]
 func GetAllStoreReviewsByStoreID(c *gin.Context) {
 	storeIDStr := c.Param("id")
 	storeID, err := strconv.Atoi(storeIDStr)
@@ -29,6 +39,16 @@ func GetAllStoreReviewsByStoreID(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"store_reviews": storeReviews})
 }
 
+// GetStoreReviewByID godoc
+// @Summary Get a specific store review by its ID
+// @Description Retrieves a specific review by its ID.
+// @Tags store reviews
+// @Accept  json
+// @Produce  json
+// @Param id path int true "Store Review ID"
+// @Success 200 {object} models.Store "Returns the store review"
+// @Failure 404 {object} models.ErrorResponse
+// @Router /store/reviews/{id} [get]
 func GetStoreReviewByID(c *gin.Context) {
 	storeReviewIDStr := c.Param("id")
 	storeID, err := strconv.Atoi(storeReviewIDStr)
@@ -46,6 +66,19 @@ func GetStoreReviewByID(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"store_review": storeReview})
 }
 
+// CreateStoreReview godoc
+// @Summary Create a new store review
+// @Description Creates a new review for a store.
+// @Tags store reviews
+// @Security ApiKeyAuth
+// @Accept  json
+// @Produce  json
+// @Param id path int true "Store ID"
+// @Param review body models.StoreReviewRequest true "Store Review data"
+// @Success 200 {object} models.DefaultResponse "Returns success message"
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 403 {object} models.ErrorResponse "Permission denied"
+// @Router /store/reviews/{id} [post]
 func CreateStoreReview(c *gin.Context) {
 	storeIDStr := c.Param("id")
 	storeID, err := strconv.Atoi(storeIDStr)
@@ -88,6 +121,19 @@ func CreateStoreReview(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Store review created successfully"})
 }
 
+// UpdateStoreReview godoc
+// @Summary Update an existing store review
+// @Description Updates the details of an existing store review.
+// @Tags store reviews
+// @Security ApiKeyAuth
+// @Accept  json
+// @Produce  json
+// @Param id path int true "Store Review ID"
+// @Param review body models.StoreReviewRequest true "Updated store review data"
+// @Success 200 {object} models.DefaultResponse "Returns success message"
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 403 {object} models.ErrorResponse "Permission denied"
+// @Router /store/reviews/{id} [put]
 func UpdateStoreReview(c *gin.Context) {
 	storeReviewIDStr := c.Param("id")
 	storeReviewID, err := strconv.Atoi(storeReviewIDStr)
@@ -136,6 +182,18 @@ func UpdateStoreReview(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Store review updated successfully"})
 }
 
+// DeleteStoreReview godoc
+// @Summary Delete a store review
+// @Description Deletes a specific review by its ID.
+// @Tags store reviews
+// @Security ApiKeyAuth
+// @Accept  json
+// @Produce  json
+// @Param id path int true "Store Review ID"
+// @Success 200 {object} models.DefaultResponse "Returns success message"
+// @Failure 404 {object} models.ErrorResponse
+// @Failure 403 {object} models.ErrorResponse "Permission denied"
+// @Router /store/reviews/{id} [delete]
 func DeleteStoreReview(c *gin.Context) {
 	storeReviewIDStr := c.Param("id")
 	storeReviewID, err := strconv.Atoi(storeReviewIDStr)

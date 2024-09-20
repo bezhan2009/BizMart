@@ -16,6 +16,7 @@ import (
 // @Summary Get all orders for a user
 // @Description Retrieves all orders associated with the authenticated user.
 // @Tags orders
+// @Security ApiKeyAuth
 // @Accept  json
 // @Produce  json
 // @Success 200 {object} models.Order "orders"
@@ -41,6 +42,7 @@ func GetAllUserOrders(c *gin.Context) {
 // @Summary Get order by ID
 // @Description Retrieves a specific order by its ID if it belongs to the authenticated user.
 // @Tags orders
+// @Security ApiKeyAuth
 // @Accept  json
 // @Produce  json
 // @Param id path int true "Order ID"
@@ -95,6 +97,7 @@ func GetOrderByID(c *gin.Context) {
 // @Summary Create a new order
 // @Description Allows the authenticated user to create a new order.
 // @Tags orders
+// @Security ApiKeyAuth
 // @Accept  json
 // @Produce  json
 // @Param order body models.OrderRequestJsonBind true "Order Data"
@@ -134,6 +137,7 @@ func CreateOrder(c *gin.Context) {
 // @Summary Update an order
 // @Description Allows the authenticated user to update an existing order.
 // @Tags orders
+// @Security ApiKeyAuth
 // @Accept  json
 // @Produce  json
 // @Param id path int true "Order ID"
@@ -208,6 +212,7 @@ func UpdateOrder(c *gin.Context) {
 // @Summary Delete an order
 // @Description Allows the authenticated user to delete an order.
 // @Tags orders
+// @Security ApiKeyAuth
 // @Accept  json
 // @Produce  json
 // @Param id path int true "Order ID"

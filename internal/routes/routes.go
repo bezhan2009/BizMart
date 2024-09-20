@@ -60,7 +60,7 @@ func InitRoutes(r *gin.Engine) *gin.Engine {
 	}
 
 	// orderStatusGroup Маршруты для статусов заказов
-	orderStatusGroup := r.Group("/order-status")
+	orderStatusGroup := r.Group("/order/status")
 	{
 		orderStatusGroup.GET("/", controllers.GetAllOrderStatuses)
 		orderStatusGroup.GET("/:id", controllers.GetOrderStatusByID)
@@ -70,7 +70,7 @@ func InitRoutes(r *gin.Engine) *gin.Engine {
 	}
 
 	// Обработчик статусов заказов по имени
-	r.GET("/order-status/name/:name", controllers.GetOrderStatusByName)
+	r.GET("/order/status/name/:name", controllers.GetOrderStatusByName)
 
 	productGroup := r.Group("/product")
 	{
