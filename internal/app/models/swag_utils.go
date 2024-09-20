@@ -118,3 +118,8 @@ type StoreReviewRequest struct {
 	Rating  uint   `json:"rating"`
 	Comment string `json:"comment"`
 }
+
+type CommentRequest struct {
+	ParentID    uint   `json:"parent_id"`
+	CommentText string `json:"text" binding:"required"`
+}

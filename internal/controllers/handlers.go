@@ -30,6 +30,7 @@ func handleBadRequestErrors(err error) bool {
 		errors.Is(err, errs.ErrInvalidMinPrice) ||
 		errors.Is(err, errs.ErrInvalidMaxPrice) ||
 		errors.Is(err, errs.ErrInvalidPrice) ||
+		errors.Is(err, errs.ErrInvalidID) ||
 		errors.Is(err, errs.ErrInvalidPaymentID) ||
 		errors.Is(err, errs.ErrInvalidRating) ||
 		errors.Is(err, errs.ErrInvalidContent) ||

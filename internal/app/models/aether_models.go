@@ -116,6 +116,11 @@ type Comment struct {
 	DeletedAt   gorm.DeletedAt `json:"-" gorm:"index"`
 }
 
+type CommentTree struct {
+	Comment  Comment       `json:"comment"`
+	Children []CommentTree `json:"children"`
+}
+
 // OrderStatus represents the status of an order.
 type OrderStatus struct {
 	ID          uint           `json:"id" gorm:"primaryKey"`

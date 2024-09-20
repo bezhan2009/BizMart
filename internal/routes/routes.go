@@ -136,5 +136,12 @@ func InitRoutes(r *gin.Engine) *gin.Engine {
 		paymentGroup.DELETE("/:id", controllers.DeletePayment)
 	}
 
+	commentGroup := r.Group("product/comments")
+	{
+		commentGroup.GET("/:id", controllers.GetProductComments)
+		commentGroup.POST("/:id", middlewares.CheckUserAuthentication, controllers.CreateProductComment)
+		commentGroup.DELETE("/:id", middlewares.CheckUserAuthentication, controllers.DeleteComment)
+	}
+
 	return r
 }
