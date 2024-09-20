@@ -93,3 +93,13 @@ type ProductRequest struct {
 	Amount        uint     `json:"amount"`
 	ProductImages []string `json:"product_images"`
 }
+
+type ProductResponse struct {
+	StoreID       uint     `json:"store_id"`
+	CategoryID    uint     `json:"category_id"`
+	Title         string   `json:"title"`
+	Description   string   `json:"description"`
+	Price         uint     `json:"price"`
+	Amount        uint     `json:"amount"`
+	ProductImages []string `json:"product_images"`
+}

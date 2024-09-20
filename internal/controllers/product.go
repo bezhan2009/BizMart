@@ -25,7 +25,7 @@ import (
 // @Param category query int false "Category ID"
 // @Param product_name query string false "Product name"
 // @Param store query int false "Store ID"
-// @Success 200 {object} models.Product "Returns a list of products"
+// @Success 200 {object} models.ProductResponse "Returns a list of products"
 // @Failure 400 {object} models.ErrorResponse
 // @Router /products [get]
 func GetAllProducts(c *gin.Context) {
@@ -108,7 +108,7 @@ func GetAllProducts(c *gin.Context) {
 // @Accept  json
 // @Produce  json
 // @Param id path int true "Product ID"
-// @Success 200 {object} models.Product "Returns the product and order count"
+// @Success 200 {object} models.ProductResponse "Returns the product and order count"
 // @Failure 404 {object} models.ErrorResponse
 // @Router /products/{id} [get]
 func GetProductByID(c *gin.Context) {
