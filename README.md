@@ -2,6 +2,7 @@
 # BizMart
 
 ![Go Version](https://img.shields.io/badge/Go-1.22-blue)
+![GIN](https://img.shields.io/badge/GIN-blue)
 ![Swagger Version](https://img.shields.io/badge/Swagger-2.0-orange)
 
 ## Описание проекта
