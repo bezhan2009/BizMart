@@ -62,6 +62,11 @@ func main() {
 		panic(err)
 	}
 
+	err = db2.InitializeRedis()
+	if err != nil {
+		panic(err)
+	}
+
 	err = db2.Migrate()
 	if err != nil {
 		panic(err)

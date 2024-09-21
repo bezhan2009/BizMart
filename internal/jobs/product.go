@@ -1,21 +1,19 @@
 package jobs
 
 import (
+	"encoding/json"
+	"log"
+	"time"
+
 	models2 "BizMart/internal/app/models"
 	"BizMart/internal/repository"
-	"log"
-	"sync"
-	"time"
+	"BizMart/pkg/db"
 )
 
-var (
-	cachedProducts []models2.Product
-	mu             sync.RWMutex
-)
+const cacheKey = "cachedProducts"
 
 // UpdateProductCache обновляет кэш продуктов каждые 10 минут
 func UpdateProductCache() {
-	// Функция для обновления данных
 	update := func() {
 		products, err := repository.GetAllProducts(0, 0, 0, "", 0) // Параметры фильтрации по умолчанию
 		if err != nil {
@@ -23,17 +21,24 @@ func UpdateProductCache() {
 			return
 		}
 
-		// Обновляем кэш с блокировкой
-		mu.Lock()
-		cachedProducts = products
-		mu.Unlock()
+		// Сериализация продуктов в JSON
+		productData, err := json.Marshal(products)
+		if err != nil {
+			log.Printf("Error marshaling products: %v", err)
+			return
+		}
+
+		// Запись данных в Redis
+		err = db.SetCache(cacheKey, productData, 10*time.Minute)
+		if err != nil {
+			log.Printf("Error setting cache in Redis: %v", err)
+			return
+		}
 	}
 
-	// Обновляем сразу при запуске
 	update()
 
-	// Запускаем обновление каждые 10 минут
-	ticker := time.NewTicker(10 * time.Minute)
+	ticker := time.NewTicker(60 * time.Minute)
 	for {
 		select {
 		case <-ticker.C:
@@ -43,8 +48,23 @@ func UpdateProductCache() {
 }
 
 // GetCachedProducts возвращает кэшированные продукты
-func GetCachedProducts() []models2.Product {
-	mu.RLock()
-	defer mu.RUnlock()
-	return cachedProducts
+func GetCachedProducts() ([]models2.Product, error) {
+	// Получение данных из Redis
+	productData, err := db.GetCache(cacheKey)
+	if err != nil {
+		return nil, err
+	}
+	if productData == "" {
+		return nil, nil
+	}
+
+	// Десериализация данных из JSON в структуру продуктов
+	var products []models2.Product
+	err = json.Unmarshal([]byte(productData), &products)
+	if err != nil {
+		log.Printf("Error unmarshaling products: %v", err)
+		return nil, err
+	}
+
+	return products, nil
 }

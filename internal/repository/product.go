@@ -56,25 +56,30 @@ func DeleteProductImagesByProductID(productID uint) error {
 // and sorts them by the number of orders and views.
 func GetAllProducts(minPrice, maxPrice float64, categoryID uint, productName string, storeID uint) ([]models2.Product, error) {
 	var products []models2.Product
-
+	isQuery := false
 	query := db.GetDBConn().
 		Table("productapp_product").
 		Select("productapp_product.*").
 		Where("productapp_product.amount > 0")
 
 	if minPrice > 0 {
+		isQuery = true
 		query = query.Where("productapp_product.price >= ?", minPrice)
 	}
 	if maxPrice > 0 {
+		isQuery = true
 		query = query.Where("productapp_product.price <= ?", maxPrice)
 	}
 	if categoryID > 0 {
+		isQuery = true
 		query = query.Where("productapp_product.category_id = ?", categoryID)
 	}
 	if storeID > 0 {
+		isQuery = true
 		query = query.Where("productapp_product.store_id = ?", storeID)
 	}
 	if productName != "" {
+		isQuery = true
 		query = query.Where(
 			db.GetDBConn().Where("productapp_product.title LIKE ?", "%"+productName+"%").
 				Or("productapp_product.description LIKE ?", "%"+productName+"%"),
@@ -85,23 +90,23 @@ func GetAllProducts(minPrice, maxPrice float64, categoryID uint, productName str
 		logger.Error.Printf("[repository.GetAllProducts] Error retrieving products: %v\n", err)
 		return nil, TranslateGormError(err)
 	}
-
-	for i, product := range products {
-		numOfOrders, err := GetNumberOfProductOrders(product.ID)
-		if err != nil {
-			logger.Error.Printf("[repository.GetAllProducts] Error retrieving number of orders: %v\n", err)
-			return nil, TranslateGormError(err)
+	if isQuery {
+		for i, product := range products {
+			numOfOrders, err := GetNumberOfProductOrders(product.ID)
+			if err != nil {
+				logger.Error.Printf("[repository.GetAllProducts] Error retrieving number of orders: %v\n", err)
+				return nil, TranslateGormError(err)
+			}
+			products[i].Amount = uint(numOfOrders)
 		}
-		products[i].Amount = uint(numOfOrders)
+
+		sort.Slice(products, func(i, j int) bool {
+			if products[i].Amount == products[j].Amount {
+				return products[i].Views > products[j].Views
+			}
+			return products[i].Amount > products[j].Amount
+		})
 	}
-
-	sort.Slice(products, func(i, j int) bool {
-		if products[i].Amount == products[j].Amount {
-			return products[i].Views > products[j].Views
-		}
-		return products[i].Amount > products[j].Amount
-	})
-
 	return products, nil
 }
 

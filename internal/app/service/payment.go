@@ -21,8 +21,8 @@ func ValidatePayment(HandleError func(ctx *gin.Context, err error), paymentData 
 	}
 
 	if account.UserID != paymentData.UserID {
-		HandleError(c, errs.ErrPermissionDenied)
-		return errs.ErrPermissionDenied
+		HandleError(c, errs.ErrAccountNotFound)
+		return errs.ErrAccountNotFound
 	}
 
 	if paymentData.OrderID == 0 {
@@ -33,8 +33,8 @@ func ValidatePayment(HandleError func(ctx *gin.Context, err error), paymentData 
 	order, err := repository.GetOrderByID(paymentData.OrderID)
 	if err != nil {
 		if errors.Is(err, errs.ErrRecordNotFound) {
-			HandleError(c, errs.ErrPaymentNotFound)
-			return errs.ErrPaymentNotFound
+			HandleError(c, errs.ErrOrderNotFound)
+			return errs.ErrOrderNotFound
 		}
 
 		HandleError(c, err)
@@ -42,8 +42,8 @@ func ValidatePayment(HandleError func(ctx *gin.Context, err error), paymentData 
 	}
 
 	if order.UserID != paymentData.UserID {
-		HandleError(c, errs.ErrPermissionDenied)
-		return errs.ErrPermissionDenied
+		HandleError(c, errs.ErrOrderNotFound)
+		return errs.ErrOrderNotFound
 	}
 
 	if order.OrderDetails.Price != paymentData.Price {
@@ -67,18 +67,40 @@ func CreatePayment(payment models.Payment) error {
 		return errs.ErrOrderAlreadyPayed
 	}
 
+	var accountStore models.Account
+
 	account, err := repository.GetAccountByID(payment.AccountID)
+	if err != nil {
+		return err
+	}
+
+	product, err := repository.GetProductByID(order.OrderDetails.ProductID)
 	if err != nil {
 		return err
 	}
 
 	if account.Balance > order.OrderDetails.Price {
 		account.Balance -= order.OrderDetails.Price
+		store, err := repository.GetStoreByID(product.StoreID)
+		if err != nil {
+			return err
+		}
+
+		accountStores, err := repository.GetAccountsByUserID(store.OwnerID)
+		if err != nil {
+			return err
+		}
+
+		accountStore = accountStores[0]
+		accountStore.Balance += order.OrderDetails.Price
 	} else {
 		return errs.ErrInsufficientFunds
 	}
 
 	if err = repository.UpdateAccount(account); err != nil {
+		return err
+	}
+	if err = repository.UpdateAccount(accountStore); err != nil {
 		return err
 	}
 

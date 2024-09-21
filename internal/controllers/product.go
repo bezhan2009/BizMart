@@ -36,7 +36,11 @@ func GetAllProducts(c *gin.Context) {
 	store := c.Query("store")
 
 	if minPriceStr == "" && maxPriceStr == "" && category == "" && store == "" && productName == "" {
-		products := jobs.GetCachedProducts()
+		products, err := jobs.GetCachedProducts()
+		if err != nil {
+			HandleError(c, err)
+		}
+
 		c.JSON(http.StatusOK, gin.H{"products": products})
 		return
 	}
@@ -185,7 +189,7 @@ func CreateProduct(c *gin.Context) {
 
 	// Проверка прав на создание продукта
 	if userID != productData.Store.OwnerID {
-		HandleError(c, errs.ErrPermissionDenied)
+		HandleError(c, errs.ErrStoreNotFound)
 		return
 	}
 

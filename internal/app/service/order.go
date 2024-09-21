@@ -197,22 +197,22 @@ func ValidateOrder(HandleError func(ctx *gin.Context, err error), orderData mode
 
 	if address, err = repository.GetAddressByID(orderData.AddressID); err != nil {
 		HandleError(c, errs.ErrAddressNotFound)
-		return err
+		return errs.ErrAddressNotFound
 	}
 
 	if address.UserID != orderData.UserID {
-		HandleError(c, errs.ErrPermissionDenied)
-		return err
+		HandleError(c, errs.ErrAddressNotFound)
+		return errs.ErrAddressNotFound
 	}
 
 	if product, err = repository.GetProductByID(orderData.ProductID); err != nil {
 		HandleError(c, errs.ErrProductNotFound)
-		return err
+		return errs.ErrProductNotFound
 	}
 
 	if _, err := repository.GetOrderStatusByID(orderData.StatusID); err != nil {
 		HandleError(c, errs.ErrOrderStatusNotFound)
-		return err
+		return errs.ErrOrderStatusNotFound
 	}
 
 	if orderData.Quantity > product.Amount || orderData.Quantity > 1000 {
