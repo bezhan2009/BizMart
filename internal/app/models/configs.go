@@ -1,5 +1,7 @@
 package models
 
+import "time"
+
 type Configs struct {
 	LogParams      LogParams      `json:"log_params"`
 	AppParams      AppParams      `json:"app_params"`
@@ -37,6 +39,6 @@ type PostgresParams struct {
 }
 
 type Auth struct {
-	JwtSecretKey  string `json:"jwt_secret_key"`
-	JwtTtlMinutes int    `json:"jwt_ttl_minutes"`
+	JwtSecretKey  string        `json:"jwt_secret_key"`
+	JwtTtlMinutes time.Duration `json:"jwt_ttl_minutes"`
 }

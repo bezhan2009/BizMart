@@ -162,11 +162,11 @@ func RefreshToken(c *gin.Context) {
 		return
 	}
 
-	accessToken, _, err := utils2.GenerateToken(claims.UserID, claims.Username)
+	accessToken, refreshToken, err := utils2.GenerateToken(claims.UserID, claims.Username)
 	if err != nil {
 		HandleError(c, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"access_token": accessToken})
+	c.JSON(http.StatusOK, gin.H{"access_token": accessToken, "refresh_token": refreshToken})
 }

@@ -27,7 +27,7 @@ import (
 // @Param store query int false "Store ID"
 // @Success 200 {object} models.ProductResponse "Returns a list of products"
 // @Failure 400 {object} models.ErrorResponse
-// @Router /products [get]
+// @Router /product [get]
 func GetAllProducts(c *gin.Context) {
 	minPriceStr := c.Query("min_price")
 	maxPriceStr := c.Query("max_price")
@@ -114,7 +114,7 @@ func GetAllProducts(c *gin.Context) {
 // @Param id path int true "Product ID"
 // @Success 200 {object} models.ProductResponse "Returns the product and order count"
 // @Failure 404 {object} models.ErrorResponse
-// @Router /products/{id} [get]
+// @Router /product/{id} [get]
 func GetProductByID(c *gin.Context) {
 	productIdStr := c.Param("id")
 	productId, err := strconv.Atoi(productIdStr)
