@@ -152,7 +152,7 @@ func GetProductByID(c *gin.Context) {
 // @Success 200 {object} models.DefaultResponse "Returns success message and created product"
 // @Failure 400 {object} models.ErrorResponse
 // @Failure 403 {object} models.ErrorResponse "Permission denied"
-// @Router /stores/{store_id}/products [post]
+// @Router /product/{store_id} [post]
 func CreateProduct(c *gin.Context) {
 	storeIDStr := c.Param("store_id")
 	storeID, err := strconv.Atoi(storeIDStr)
@@ -226,7 +226,7 @@ func CreateProduct(c *gin.Context) {
 // @Success 200 {object} models.DefaultResponse "Returns success message and updated product"
 // @Failure 400 {object} models.ErrorResponse
 // @Failure 403 {object} models.ErrorResponse "Permission denied"
-// @Router /products/{id} [put]
+// @Router /product/{id} [put]
 func UpdateProduct(c *gin.Context) {
 	productIDStr := c.Param("id")
 	productID, err := strconv.Atoi(productIDStr)
@@ -309,7 +309,7 @@ func UpdateProduct(c *gin.Context) {
 // @Success 200 {object} models.DefaultResponse "Returns success message"
 // @Failure 404 {object} models.ErrorResponse
 // @Failure 403 {object} models.ErrorResponse "Permission denied"
-// @Router /products/{id} [delete]
+// @Router /product/{id} [delete]
 func DeleteProduct(c *gin.Context) {
 	productIdStr := c.Param("id")
 	productId, err := strconv.Atoi(productIdStr)

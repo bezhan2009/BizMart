@@ -90,7 +90,7 @@ func GetAllProducts(minPrice, maxPrice float64, categoryID uint, productName str
 		logger.Error.Printf("[repository.GetAllProducts] Error retrieving products: %v\n", err)
 		return nil, TranslateGormError(err)
 	}
-	if isQuery {
+	if !isQuery {
 		for i, product := range products {
 			numOfOrders, err := GetNumberOfProductOrders(product.ID)
 			if err != nil {

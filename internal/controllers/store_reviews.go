@@ -48,7 +48,7 @@ func GetAllStoreReviewsByStoreID(c *gin.Context) {
 // @Param id path int true "Store Review ID"
 // @Success 200 {object} models.Store "Returns the store review"
 // @Failure 404 {object} models.ErrorResponse
-// @Router /store/reviews/{id} [get]
+// @Router /store/review/{id} [get]
 func GetStoreReviewByID(c *gin.Context) {
 	storeReviewIDStr := c.Param("id")
 	storeID, err := strconv.Atoi(storeReviewIDStr)
@@ -193,7 +193,7 @@ func UpdateStoreReview(c *gin.Context) {
 // @Success 200 {object} models.DefaultResponse "Returns success message"
 // @Failure 404 {object} models.ErrorResponse
 // @Failure 403 {object} models.ErrorResponse "Permission denied"
-// @Router /store/reviews/{id} [delete]
+// @Router /store/review/{id} [delete]
 func DeleteStoreReview(c *gin.Context) {
 	storeReviewIDStr := c.Param("id")
 	storeReviewID, err := strconv.Atoi(storeReviewIDStr)

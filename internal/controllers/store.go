@@ -72,10 +72,10 @@ func GetStoreByID(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"store":      OurStore,
-		"products":   storeProducts,
-		"productNum": productNums,
-		"orderNum":   orderNums,
+		"store":       OurStore,
+		"products":    storeProducts,
+		"product_num": productNums,
+		"order_num":   orderNums,
 	})
 }
 

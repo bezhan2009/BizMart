@@ -24,7 +24,7 @@ import (
 var err error
 
 // @title BizMart API
-// @version 1.0.2
+// @version 1.3.2
 
 // @description API Server for BizMart Application
 // @host localhost:8585
