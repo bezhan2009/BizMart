@@ -19,7 +19,7 @@ type ErrorResponse struct {
 
 // DefaultResponse represents a default message response
 type DefaultResponse struct {
-	Error string `json:"error"`
+	Message string `json:"message"`
 }
 
 type UserRequest struct {

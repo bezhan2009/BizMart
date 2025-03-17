@@ -16,9 +16,9 @@ var (
 // InitializeRedis инициализирует соединение с Redis
 func InitializeRedis() error {
 	RedisClient = redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379", // адрес Redis-сервера
-		Password: "",               // если пароль не установлен, оставьте пустым
-		DB:       0,                // используемая база данных Redis
+		Addr:     "redis:6379", // адрес Redis-сервера
+		Password: "",           // если пароль не установлен, оставьте пустым
+		DB:       0,            // используемая база данных Redis
 	})
 
 	// Проверка соединения
