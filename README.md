@@ -34,13 +34,9 @@
    ```bash
    cd BizMart
    ```
-4. Установите зависимости:
+4. Запустите проект:
    ```bash
-   go mod tidy
-   ```
-5. Запустите проект:
-   ```bash
-   go run main.go
+   docker-compose up --build
    ```
 
 ## Вклад
