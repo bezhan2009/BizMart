@@ -15,7 +15,8 @@
     "gin_mode": "release",
     "port_run": "8181",
     "server_url": "localhost",
-    "server_name": "BizMart_service"
+    "server_name": "BizMart_service",
+    "env": "localhost"
   },
   "postgres_params": {
     "host": "db",
@@ -27,5 +28,13 @@
   "auth_params": {
     "jwt_secret_key": "",
     "jwt_ttl_minutes": 60
+  },
+  "clients": {
+    "sso": {
+      "address": "grpc_server:44044",
+      "timeout": "1s",
+      "retries_count": 5,
+      "insecure": true
+    }
   }
 }

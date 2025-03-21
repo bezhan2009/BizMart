@@ -2,6 +2,7 @@ package main
 
 import (
 	"BizMart/configs"
+	ssogrpc "BizMart/internal/clients/sso/grpc"
 	"BizMart/internal/jobs"
 	"BizMart/internal/routes"
 	security2 "BizMart/internal/security"
@@ -80,6 +81,19 @@ func main() {
 			log.Fatalf("Ошибка при запуске HTTP сервера: %s", err)
 		}
 	}()
+
+	ssoClient, err := ssogrpc.New(
+		context.Background(),
+		security2.AppSettings,
+		security2.AppSettings.Clients.SSO.ClientAddress,
+		security2.AppSettings.Clients.SSO.Timeout,
+		security2.AppSettings.Clients.SSO.RetriesCount,
+	)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(ssoClient.IsAdmin(context.Background(), 1))
 
 	go jobs.UpdateProductCache()
 

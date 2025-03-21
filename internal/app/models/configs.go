@@ -6,6 +6,7 @@ type Configs struct {
 	LogParams      LogParams      `json:"log_params"`
 	AppParams      AppParams      `json:"app_params"`
 	PostgresParams PostgresParams `json:"postgres_params"`
+	Clients        ClientsConfig  `json:"clients"`
 	Auth           Auth           `json:"auth"`
 }
 
@@ -28,6 +29,7 @@ type AppParams struct {
 	AppVersion string `json:"app_version"`
 	PortRun    string `json:"port_run"`
 	GinMode    string `json:"gin_mode"`
+	Env        string `json:"env"`
 }
 
 type PostgresParams struct {
@@ -41,4 +43,15 @@ type PostgresParams struct {
 type Auth struct {
 	JwtSecretKey  string        `json:"jwt_secret_key"`
 	JwtTtlMinutes time.Duration `json:"jwt_ttl_minutes"`
+}
+
+type Client struct {
+	ClientAddress string        `json:"address"`
+	Timeout       time.Duration `json:"timeout"`
+	RetriesCount  int           `json:"retries_count"`
+	Insecure      bool          `json:"insecure"`
+}
+
+type ClientsConfig struct {
+	SSO Client `json:"sso"`
 }

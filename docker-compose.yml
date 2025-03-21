@@ -10,6 +10,7 @@ services:
     depends_on:
       - db
       - redis
+      - grpc_server
     environment:
       DB_PASSWORD: bezhan2009
       ADMIN: bezhan
@@ -17,6 +18,9 @@ services:
       JWT_TTL_MINUTES: 60
       JWT_TTL_HOURS: 72
       SECRET_KEY: 0078bec8585ad8a0cd71907d455998103d689f5de55ddb4e8803bd6b7d94ba1a
+    entrypoint: /bin/sh -c "sleep 10 && ./main"  # Добавить задержку
+    networks:
+      - bizmartnetwork
 
   db:
     image: postgres:17-alpine
@@ -28,11 +32,30 @@ services:
       - pgdata:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    networks:
+      - bizmartnetwork
 
   redis:
     image: redis:latest
     ports:
       - "6379:6379"
+    networks:
+      - bizmartnetwork
+
+  grpc_server:
+    build:
+      context: ./SSO  # Укажи путь к gRPC проекту
+      dockerfile: Dockerfile
+    container_name: grpc_server
+    ports:
+      - "44044:44044"
+    networks:
+      - bizmartnetwork
+
+
+networks:
+  bizmartnetwork:
+    driver: bridge
 
 volumes:
   pgdata:

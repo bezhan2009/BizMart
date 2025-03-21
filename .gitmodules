@@ -1,0 +1,3 @@
+[submodule "SSO"]
+	path = SSO
+	url = https://github.com/bezhan2009/SSO-AuthService.git
