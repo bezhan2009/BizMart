@@ -28,7 +28,7 @@
 1. Убедитесь, что у вас установлен Go 1.22, а так же Docker.
 2. Клонируйте репозиторий:
    ```bash
-   git clone https://github.com/BizMart.git
+   git clone --recurse-submodules https://github.com/BizMart.git
    ```
 3. Перейдите в директорию проекта:
    ```bash
