@@ -1,7 +1,7 @@
 
 # BizMart
 
-![Go Version](https://img.shields.io/badge/Go-1.22-blue)
+![Go Version](https://img.shields.io/badge/Go-1.23.6-blue)
 ![GIN](https://img.shields.io/badge/GIN-blue)
 ![Swagger Version](https://img.shields.io/badge/Swagger-2.0-orange)
 
@@ -25,7 +25,7 @@
 - **Документация**: Swagger 2.0
 
 ## Установка и запуск
-1. Убедитесь, что у вас установлен Go 1.22, а так же Docker.
+1. Убедитесь, что у вас установлен Go 1.23.6, а так же Docker.
 2. Клонируйте репозиторий:
    ```bash
    git clone --recurse-submodules https://github.com/BizMart.git
