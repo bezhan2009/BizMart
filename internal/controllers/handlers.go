@@ -14,6 +14,7 @@ func handleBadRequestErrors(err error) bool {
 		errors.Is(err, errs.ErrIncorrectUsernameOrPassword) ||
 		errors.Is(err, errs.ErrCategoryNameUniquenessFailed) ||
 		errors.Is(err, errs.ErrOrderStatusNameUniquenessFailed) ||
+		errors.Is(err, errs.ErrInvalidCredentials) ||
 		errors.Is(err, errs.ErrOrderNotFound) ||
 		errors.Is(err, errs.ErrInvalidStoreReviewID) ||
 		errors.Is(err, errs.ErrPathParametrized) ||

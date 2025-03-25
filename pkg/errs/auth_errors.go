@@ -4,6 +4,7 @@ import "errors"
 
 // Authentication Errors
 var (
+	ErrInvalidCredentials          = errors.New("invalid credentials")
 	ErrIncorrectUsernameOrPassword = errors.New("ErrIncorrectUsernameOrPassword")
 	ErrPasswordIsEmpty             = errors.New("ErrPasswordIsEmpty")
 	ErrPasswordIncorrect           = errors.New("ErrPasswordIncorrect")

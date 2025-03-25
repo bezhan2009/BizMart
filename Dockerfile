@@ -32,8 +32,8 @@ RUN mkdir "configs"
 COPY --from=builder /app/main .
 
 # Копируем конфиги
-COPY --from=builder /app/configs/configs.json ./configs
-COPY --from=builder /app/configs/example.json ./configs
+COPY --from=builder /app/configs/docker/configs.json ./configs
+COPY --from=builder /app/configs/docker/example.json ./configs
 
 # Копируем переменные окружения
 COPY --from=builder /app/.env .

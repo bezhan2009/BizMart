@@ -6,6 +6,7 @@ type Configs struct {
 	LogParams      LogParams      `json:"log_params"`
 	AppParams      AppParams      `json:"app_params"`
 	PostgresParams PostgresParams `json:"postgres_params"`
+	RedisParams    RedisParams    `json:"redis_params"`
 	Clients        ClientsConfig  `json:"clients"`
 	Auth           Auth           `json:"auth"`
 }
@@ -33,11 +34,19 @@ type AppParams struct {
 }
 
 type PostgresParams struct {
-	User     string `json:"user"`
+	User         string `json:"user"`
+	Host         string `json:"host"`
+	Port         string `json:"port"`
+	Database     string `json:"database"`
+	UserDatabase string `json:"user_database"`
+	SSLMode      string `json:"sslmode"`
+}
+
+type RedisParams struct {
 	Host     string `json:"host"`
-	Port     string `json:"port"`
-	Database string `json:"database"`
-	SSLMode  string `json:"sslmode"`
+	Port     int    `json:"port"`
+	Password string `json:"password"`
+	DB       int    `json:"db"`
 }
 
 type Auth struct {

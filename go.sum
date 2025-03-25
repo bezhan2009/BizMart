@@ -8,6 +8,8 @@ github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578/go.mod h1:uGdko
 github.com/andybalholm/cascadia v1.1.0/go.mod h1:GsXiBklL0woXo1j/WYWtSYYC4ouU9PqHO0sqidkEA4Y=
 github.com/bezhan2009/AuthProtos v0.0.5 h1:khXpunxmsrbtx+3aW4iyVcJgxrd2nq1jUDN2ePZsyZw=
 github.com/bezhan2009/AuthProtos v0.0.5/go.mod h1:5lgf5IEndMIQ2k3UWxsMzISrJw+JWp36lGVdI4/mxkA=
+github.com/bezhan2009/AuthProtos v0.0.7 h1:8pBkgK3G04IAeS/8ICdKex4ejvPtQ8F32wTcjx66q/g=
+github.com/bezhan2009/AuthProtos v0.0.7/go.mod h1:5lgf5IEndMIQ2k3UWxsMzISrJw+JWp36lGVdI4/mxkA=
 github.com/bytedance/sonic v1.11.6 h1:oUp34TzMlL+OY1OUWxHqsdkgC/Zfc85zGqw9siXjrc0=
 github.com/bytedance/sonic v1.11.6/go.mod h1:LysEHSvpvDySVdC2f87zGWf6CIKJcAvqab1ZaiQtds4=
 github.com/bytedance/sonic/loader v0.1.1/go.mod h1:ncP89zfokxS5LZrJxl5z0UJcsk4M4yY2JpfqGeCtNLU=

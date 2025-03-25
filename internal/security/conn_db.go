@@ -6,12 +6,13 @@ import (
 )
 
 var (
-	HostName string
-	Port     string
-	UserName string
-	Password string
-	DBName   string
-	SSLMode  string
+	HostName   string
+	Port       string
+	UserName   string
+	Password   string
+	DBName     string
+	UserDBName string
+	SSLMode    string
 )
 
 func SetConnDB(AppSettingsConfig models.Configs) {
@@ -22,5 +23,6 @@ func SetConnDB(AppSettingsConfig models.Configs) {
 	UserName = postgresParams.User
 	Password = os.Getenv("DB_PASSWORD")
 	DBName = postgresParams.Database
+	//UserDBName = postgresParams.UserDatabase
 	SSLMode = postgresParams.SSLMode
 }

@@ -1,7 +1,9 @@
 package db
 
 import (
+	"BizMart/internal/app/models"
 	"context"
+	"fmt"
 	"log"
 	"time"
 
@@ -14,11 +16,11 @@ var (
 )
 
 // InitializeRedis инициализирует соединение с Redis
-func InitializeRedis() error {
+func InitializeRedis(redisParams models.RedisParams) error {
 	RedisClient = redis.NewClient(&redis.Options{
-		Addr:     "redis:6379", // адрес Redis-сервера
-		Password: "",           // если пароль не установлен, оставьте пустым
-		DB:       0,            // используемая база данных Redis
+		Addr:     fmt.Sprintf("%s:%d", redisParams.Host, redisParams.Port), // адрес Redis-сервера
+		Password: redisParams.Password,                                     // если пароль не установлен, оставьте пустым
+		DB:       redisParams.DB,                                           // используемая база данных Redis
 	})
 
 	// Проверка соединения
@@ -61,5 +63,14 @@ func DeleteCache(key string) error {
 		log.Printf("Error deleting cache from Redis: %v", err)
 		return err
 	}
+	return nil
+}
+
+func CloseRedisConnection() error {
+	err := RedisClient.Close()
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

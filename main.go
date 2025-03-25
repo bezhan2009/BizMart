@@ -63,7 +63,7 @@ func main() {
 		panic(err)
 	}
 
-	err = db2.InitializeRedis()
+	err = db2.InitializeRedis(security2.AppSettings.RedisParams)
 	if err != nil {
 		panic(err)
 	}
@@ -78,13 +78,12 @@ func main() {
 	mainServer := new(server.Server)
 	go func() {
 		if err = mainServer.Run(security2.AppSettings.AppParams.PortRun, routes.InitRoutes(router)); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("Ошибка при запуске HTTP сервера: %s", err)
+			log.Fatalf("Error while starting HTTP Service: %s", err)
 		}
 	}()
 
-	ssoClient, err := ssogrpc.New(
+	_, err := ssogrpc.New(
 		context.Background(),
-		security2.AppSettings,
 		security2.AppSettings.Clients.SSO.ClientAddress,
 		security2.AppSettings.Clients.SSO.Timeout,
 		security2.AppSettings.Clients.SSO.RetriesCount,
@@ -92,8 +91,8 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
-	fmt.Println(ssoClient.IsAdmin(context.Background(), 1))
+	//
+	//fmt.Println(ssoClient.IsAdmin(context.Background(), 1))
 
 	go jobs.UpdateProductCache()
 
@@ -101,24 +100,30 @@ func main() {
 	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
 	<-quit
 
-	fmt.Printf("\n%s\n", yellow("Начало завершения сервиса"))
+	fmt.Printf("\n%s\n", yellow("Start of service termination"))
 
 	// Закрытие соединения с БД
-	if sqlDB, err := db2.GetDBConn().DB(); err == nil {
-		if err := sqlDB.Close(); err != nil {
-			log.Fatalf("Ошибка при закрытии соединения с БД: %s", err)
-		}
-		fmt.Println(green("Соединение с БД успешно закрыто"))
-	} else {
-		log.Fatalf("Ошибка при получении *sql.DB из GORM: %s", err)
+	err = db2.CloseDBConn()
+	if err != nil {
+		fmt.Println(fmt.Sprintf("Error closing database connection: %s", err.Error()))
+	}
+
+	//err = db2.CloseUserDBConn()
+	//if err != nil {
+	//	fmt.Println(fmt.Sprintf("Error closing user database connection: %s", err.Error()))
+	//}
+
+	err = db2.CloseRedisConnection()
+	if err != nil {
+		fmt.Println(fmt.Sprintf("Error closing redis connection: %s", err.Error()))
 	}
 
 	// Корректное завершение HTTP-сервера
 	if err = mainServer.Shutdown(context.Background()); err != nil {
-		log.Fatalf("Ошибка при завершении работы HTTP сервера: %s", err)
+		log.Fatalf("Error while termination HTTP Service: %s", err)
 	} else {
-		fmt.Println(green("HTTP-сервис успешно выключен"))
+		fmt.Println(green("HTTP-service termination successfully"))
 	}
 
-	fmt.Println(red("Конец завершения программы"))
+	fmt.Println(red("End of program completion"))
 }

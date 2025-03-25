@@ -5,30 +5,28 @@ import (
 	"BizMart/internal/repository"
 	"BizMart/pkg/errs"
 	"BizMart/pkg/utils"
+	"errors"
 )
 
-func SignIn(username, useremail, password string) (user models.User, accessToken string, refreshToken string, err error) {
-	if useremail == "" && username == "" {
+func SignIn(userDataCheck, password string) (user models.User, accessToken string, refreshToken string, err error) {
+	if userDataCheck == "" {
 		return user, "", "", errs.ErrInvalidData
 	}
 
-	if useremail != "" && username != "" {
-		user, err = repository.GetUserByEmailPasswordAndUsername(username, useremail, password)
-		if err != nil {
-			return user, "", "", repository.TranslateGormError(err)
+	user, err = repository.GetUserByEmailAndPassword(userDataCheck, password)
+	if err != nil {
+		if !errors.Is(err, errs.ErrRecordNotFound) {
+			return user, "", "", err
 		}
-	} else if username != "" {
-		user, err = repository.GetUserByUsernameAndPassword(username, password)
+
+		user, err = repository.GetUserByUsernameAndPassword(userDataCheck, password)
 		if err != nil {
-			return user, "", "", repository.TranslateGormError(err)
+			if !errors.Is(err, errs.ErrRecordNotFound) {
+				return user, "", "", err
+			}
+
+			return user, "", "", errs.ErrInvalidCredentials
 		}
-	} else if useremail != "" {
-		user, err = repository.GetUserByEmailAndPassword(useremail, password)
-		if err != nil {
-			return user, "", "", repository.TranslateGormError(err)
-		}
-	} else {
-		return user, "", "", errs.ErrInvalidData
 	}
 
 	accessToken, refreshToken, err = utils.GenerateToken(user.ID, user.Username)

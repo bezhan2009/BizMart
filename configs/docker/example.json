@@ -27,7 +27,7 @@
     "sslmode": "disable"
   },
   "redis_params": {
-    "host": "localhost",
+    "host": "redis",
     "port": 6379,
     "password": "",
     "db": 0

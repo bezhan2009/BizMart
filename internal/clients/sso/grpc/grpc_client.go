@@ -1,7 +1,6 @@
 package grpc
 
 import (
-	"BizMart/internal/app/models"
 	"context"
 	"fmt"
 	ssov1 "github.com/bezhan2009/AuthProtos/gen/go/sso"
@@ -18,7 +17,6 @@ type Client struct {
 }
 
 func New(ctx context.Context,
-	configs models.Configs,
 	addr string,
 	timeout time.Duration,
 	retriesCount int,

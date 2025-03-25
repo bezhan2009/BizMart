@@ -13,7 +13,7 @@
   },
   "app_params": {
     "gin_mode": "release",
-    "port_run": "8181",
+    "port_run": "8585",
     "server_url": "localhost",
     "server_name": "BizMart_service",
     "env": "localhost"
@@ -27,7 +27,7 @@
     "sslmode": "disable"
   },
   "redis_params": {
-    "host": "localhost",
+    "host": "redis",
     "port": 6379,
     "password": "",
     "db": 0
@@ -39,7 +39,7 @@
   "clients": {
     "sso": {
       "address": "grpc_server:44044",
-      "timeout": "1s",
+      "timeout": 1000000000,
       "retries_count": 5,
       "insecure": true
     }

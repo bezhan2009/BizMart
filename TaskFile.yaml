@@ -1,0 +1,11 @@
+version: "3"
+
+tasks:
+  docker-compose:
+    aliases:
+      - docker
+      - compose
+    desc: "Runs command for building app in docker"
+    cmds:
+      - docker-compose up --build
+
