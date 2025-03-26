@@ -4,6 +4,7 @@ import (
 	"BizMart/configs"
 	ssogrpc "BizMart/internal/clients/sso/grpc"
 	"BizMart/internal/jobs"
+	"BizMart/internal/repository"
 	"BizMart/internal/routes"
 	security2 "BizMart/internal/security"
 	"BizMart/internal/server"
@@ -91,11 +92,13 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	go repository.SynchronizationUserTable(security2.AppSettings.KafkaParams)
+
 	//
 	//fmt.Println(ssoClient.IsAdmin(context.Background(), 1))
 
 	go jobs.UpdateProductCache()
-
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
 	<-quit

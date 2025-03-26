@@ -7,6 +7,7 @@ type Configs struct {
 	AppParams      AppParams      `json:"app_params"`
 	PostgresParams PostgresParams `json:"postgres_params"`
 	RedisParams    RedisParams    `json:"redis_params"`
+	KafkaParams    KafkaParams    `json:"kafka_params"`
 	Clients        ClientsConfig  `json:"clients"`
 	Auth           Auth           `json:"auth"`
 }
@@ -47,6 +48,14 @@ type RedisParams struct {
 	Port     int    `json:"port"`
 	Password string `json:"password"`
 	DB       int    `json:"db"`
+}
+
+type KafkaParams struct {
+	Host            string `json:"host"`
+	Port            int    `json:"port"`
+	Topic           string `json:"topic"`
+	GroupID         string `json:"group_id"`
+	AutoOffsetReset string `json:"auto_offset_reset"`
 }
 
 type Auth struct {

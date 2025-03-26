@@ -5,9 +5,48 @@ import (
 	"BizMart/pkg/db"
 	"BizMart/pkg/errs"
 	"BizMart/pkg/logger"
+	"encoding/json"
 	"errors"
+	"fmt"
+	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	"gorm.io/gorm"
 )
+
+func SynchronizationUserTable(params models.KafkaParams) {
+	consumer, err := kafka.NewConsumer(&kafka.ConfigMap{
+		"bootstrap.servers": fmt.Sprintf("%s:%d", params.Host, params.Port),
+		"group.id":          params.GroupID,
+		"auto.offset.reset": params.AutoOffsetReset,
+	})
+	if err != nil {
+		panic(err)
+	}
+	defer consumer.Close()
+
+	err = consumer.Subscribe(params.Topic, nil)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Consumer started, waiting for messages...")
+
+	for {
+		msg, err := consumer.ReadMessage(-1)
+		if err != nil {
+			logger.Error.Printf("[SynchronizationUserTable] Failed to read Kafka message: %s\n", err)
+			continue // Ошибку логируем, но продолжаем работать
+		}
+
+		var user models.User
+		if err = json.Unmarshal(msg.Value, &user); err != nil {
+			logger.Error.Printf("[SynchronizationUserTable] Failed to unmarshal Kafka message: %s\n", err)
+			continue
+		}
+
+		// Создаем пользователя в БД
+		CreateUser(user)
+	}
+}
 
 func GetAllUsers() (users []models.User, err error) {
 	err = db.GetDBConn().Find(&users).Error

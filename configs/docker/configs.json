@@ -32,6 +32,13 @@
     "password": "",
     "db": 0
   },
+  "kafka_params": {
+    "host": "kafka",
+    "port": 9092,
+    "topic": "users_topic",
+    "group_id": "users-processor-unique",
+    "auto_offset_reset": "earliest"
+  },
   "auth_params": {
     "jwt_secret_key": "",
     "jwt_ttl_minutes": 60
