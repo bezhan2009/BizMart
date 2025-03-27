@@ -1,5 +1,5 @@
-# Используем официальный образ Go для сборки приложения
-FROM golang:1.23.6-alpine AS builder
+# Первый Dockerfile
+FROM golang:1.23.6 AS builder
 
 # Устанавливаем рабочую директорию
 WORKDIR /app
@@ -17,10 +17,10 @@ COPY . .
 RUN go build -o main main.go
 
 # Используем минимальный образ для запуска
-FROM alpine:latest
+FROM ubuntu:latest
 
 # Устанавливаем необходимые зависимости
-RUN apk --no-cache add ca-certificates
+RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
 
 # Устанавливаем рабочую директорию
 WORKDIR /root/

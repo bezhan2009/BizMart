@@ -3,9 +3,11 @@ package controllers
 import (
 	"BizMart/internal/app/models"
 	"BizMart/internal/app/service"
+	"BizMart/internal/clients/sso/grpc"
 	"BizMart/pkg/errs"
 	"BizMart/pkg/logger"
 	utils2 "BizMart/pkg/utils"
+	"context"
 	"errors"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
@@ -44,6 +46,23 @@ func SignUp(c *gin.Context) {
 
 	if user.Username == "" {
 		HandleError(c, errs.ErrUsernameIsEmpty)
+		return
+	}
+
+	grpcClient := grpc.GetClient()
+	ctx := context.Background()
+	_, err := grpcClient.Ping(ctx, "ping")
+
+	if err == nil {
+		_, err := grpcClient.SignUp(ctx, user)
+		if err != nil {
+			grpcCode, grpcMsg := parseGRPCError(err)
+			httpCode := grpcCodeToHTTP(grpcCode)
+			c.JSON(httpCode, gin.H{"error": grpcMsg})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"data": "Registration successful"})
 		return
 	}
 
@@ -98,6 +117,23 @@ func SignIn(c *gin.Context) {
 
 	if user.HashPassword == "" {
 		HandleError(c, errs.ErrPasswordIsEmpty)
+		return
+	}
+
+	grpcClient := grpc.GetClient()
+	ctx := context.Background()
+	_, err := grpcClient.Ping(ctx, "ping")
+
+	if err == nil {
+		tokenResponse, err := grpcClient.SignIn(ctx, user)
+		if err != nil {
+			grpcCode, grpcMsg := parseGRPCError(err)
+			httpCode := grpcCodeToHTTP(grpcCode)
+			c.JSON(httpCode, gin.H{"error": grpcMsg})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"token": tokenResponse})
 		return
 	}
 

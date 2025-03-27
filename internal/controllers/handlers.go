@@ -5,12 +5,80 @@ import (
 	"BizMart/pkg/logger"
 	"errors"
 	"github.com/gin-gonic/gin"
+	"google.golang.org/grpc/codes"
 	"net/http"
+	"strings"
 )
+
+// Функция для преобразования gRPC-кодов в HTTP-коды
+func grpcCodeToHTTP(code codes.Code) int {
+	switch code {
+	case codes.InvalidArgument:
+		return http.StatusBadRequest // 400
+	case codes.Unauthenticated:
+		return http.StatusUnauthorized // 401
+	case codes.PermissionDenied:
+		return http.StatusForbidden // 403
+	case codes.NotFound:
+		return http.StatusNotFound // 404
+	case codes.AlreadyExists:
+		return http.StatusConflict // 409
+	case codes.ResourceExhausted:
+		return http.StatusTooManyRequests // 429
+	case codes.FailedPrecondition, codes.Aborted:
+		return http.StatusPreconditionFailed // 412
+	case codes.Internal:
+		return http.StatusInternalServerError // 500
+	case codes.Unavailable:
+		return http.StatusServiceUnavailable // 503
+	default:
+		return http.StatusBadRequest // 400 по умолчанию
+	}
+}
+
+func parseGRPCError(err error) (codes.Code, string) {
+	errMsg := err.Error()
+	codePrefix := "code ="
+	descPrefix := "desc ="
+
+	// Ищем позицию начала "code ="
+	idxCode := strings.Index(errMsg, codePrefix)
+	if idxCode == -1 {
+		return codes.Internal, errMsg
+	}
+	// Ищем позицию начала "desc ="
+	idxDesc := strings.Index(errMsg, descPrefix)
+	if idxDesc == -1 {
+		return codes.Internal, errMsg
+	}
+
+	// Извлекаем код ошибки: берём строку между "code =" и "desc ="
+	codeStr := strings.TrimSpace(errMsg[idxCode+len(codePrefix) : idxDesc])
+
+	// Извлекаем описание ошибки: берём всё, что идёт после "desc ="
+	descStr := strings.TrimSpace(errMsg[idxDesc+len(descPrefix):])
+
+	// Ищем соответствующий код из пакета grpc/codes
+	var grpcCode codes.Code = codes.Internal
+	for c := codes.OK; c <= codes.Unauthenticated; c++ {
+		if strings.EqualFold(c.String(), codeStr) {
+			grpcCode = c
+			break
+		}
+	}
+
+	return grpcCode, descStr
+}
 
 // Обработка ошибок, которые приводят к статусу 400 (Bad Request)
 func handleBadRequestErrors(err error) bool {
 	return errors.Is(err, errs.ErrUsernameUniquenessFailed) ||
+		errors.Is(err, errs.ErrUsernameIsRequired) ||
+		errors.Is(err, errs.ErrPasswordIsRequired) ||
+		errors.Is(err, errs.ErrFirstNameIsRequired) ||
+		errors.Is(err, errs.ErrLastNameIsRequired) ||
+		errors.Is(err, errs.ErrAppLoginIsRequired) ||
+		errors.Is(err, errs.ErrEmailIsRequired) ||
 		errors.Is(err, errs.ErrIncorrectUsernameOrPassword) ||
 		errors.Is(err, errs.ErrCategoryNameUniquenessFailed) ||
 		errors.Is(err, errs.ErrOrderStatusNameUniquenessFailed) ||

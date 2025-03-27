@@ -10,7 +10,10 @@ import (
 	"fmt"
 	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	"gorm.io/gorm"
+	"sync"
 )
+
+const WorkerCount = 5 // Количество параллельных горутин
 
 func SynchronizationUserTable(params models.KafkaParams) {
 	consumer, err := kafka.NewConsumer(&kafka.ConfigMap{
@@ -30,11 +33,27 @@ func SynchronizationUserTable(params models.KafkaParams) {
 
 	fmt.Println("Consumer started, waiting for messages...")
 
+	// Канал для передачи задач в воркеры
+	jobs := make(chan models.User, 100) // Буферизованный канал, чтобы не блокировать чтение
+
+	// Запускаем воркеров
+	var wg sync.WaitGroup
+	for i := 0; i < WorkerCount; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for user := range jobs {
+				CreateUser(user) // Создание пользователя в БД
+			}
+		}()
+	}
+
+	// Основной цикл обработки сообщений
 	for {
 		msg, err := consumer.ReadMessage(-1)
 		if err != nil {
 			logger.Error.Printf("[SynchronizationUserTable] Failed to read Kafka message: %s\n", err)
-			continue // Ошибку логируем, но продолжаем работать
+			continue
 		}
 
 		var user models.User
@@ -43,9 +62,13 @@ func SynchronizationUserTable(params models.KafkaParams) {
 			continue
 		}
 
-		// Создаем пользователя в БД
-		CreateUser(user)
+		// Отправляем задачу в канал
+		jobs <- user
 	}
+
+	// Закрываем канал и ждем завершения всех воркеров
+	close(jobs)
+	wg.Wait()
 }
 
 func GetAllUsers() (users []models.User, err error) {
@@ -99,15 +122,16 @@ func UserExists(username, email string) (bool, bool, error) {
 	return usernameExists, emailExists, nil
 }
 
-func CreateUser(user models.User) (id uint, err error) {
+func CreateUser(user models.User) (userDB models.User, err error) {
 	//logger.Debug.Println(user.ID)
 	if err = db.GetDBConn().Create(&user).Error; err != nil {
 		logger.Error.Printf("[repository.CreateUser] error creating user: %v\n", err)
-		return 0, TranslateGormError(err)
+		return userDB, TranslateGormError(err)
 	}
 
 	//logger.Debug.Println(user.ID)
-	return user.ID, nil
+	userDB = user
+	return userDB, nil
 }
 
 func GetUserByUsernameAndPassword(username string, password string) (user models.User, err error) {

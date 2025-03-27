@@ -12,6 +12,12 @@ import (
 func InitRoutes(r *gin.Engine) *gin.Engine {
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
+	pingRoute := r.Group("/ping")
+	{
+		pingRoute.GET("/", controllers.Ping)
+		pingRoute.GET("/sso", controllers.SSOPing)
+	}
+
 	// usersRoute Маршруты для пользователей (профили)
 	usersRoute := r.Group("/users")
 	{

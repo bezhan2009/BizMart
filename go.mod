@@ -3,7 +3,7 @@ module BizMart
 go 1.23.6
 
 require (
-	github.com/bezhan2009/AuthProtos v0.0.7
+	github.com/bezhan2009/AuthProtos v0.0.8
 	github.com/confluentinc/confluent-kafka-go/v2 v2.8.0
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/fatih/color v1.17.0

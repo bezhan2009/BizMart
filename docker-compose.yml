@@ -11,6 +11,7 @@ services:
       - db
       - redis
       - grpc_server
+      - kafka
     environment:
       DB_PASSWORD: bezhan2009
       ADMIN: bezhan
@@ -18,12 +19,12 @@ services:
       JWT_TTL_MINUTES: 60
       JWT_TTL_HOURS: 72
       SECRET_KEY: 0078bec8585ad8a0cd71907d455998103d689f5de55ddb4e8803bd6b7d94ba1a
-    entrypoint: /bin/sh -c "sleep 10 && ./main"  # Добавить задержку
+    entrypoint: /bin/sh -c "sleep 10 && ./main"
     networks:
       - bizmartnetwork
 
   db:
-    image: postgres:17-alpine
+    image: postgres:17
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: bezhan2009
@@ -44,7 +45,7 @@ services:
 
   grpc_server:
     build:
-      context: ./SSO  # Укажи путь к gRPC проекту
+      context: ./SSO
       dockerfile: Dockerfile
     container_name: grpc_server
     ports:
@@ -52,6 +53,26 @@ services:
     networks:
       - bizmartnetwork
 
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    networks:
+      - bizmartnetwork
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    ports:
+      - "9092:9092"
+    networks:
+      - bizmartnetwork
 
 networks:
   bizmartnetwork:

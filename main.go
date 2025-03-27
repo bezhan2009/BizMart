@@ -8,6 +8,7 @@ import (
 	"BizMart/internal/routes"
 	security2 "BizMart/internal/security"
 	"BizMart/internal/server"
+	"BizMart/pkg/brokers/kafka"
 	db2 "BizMart/pkg/db"
 	"BizMart/pkg/logger"
 	"context"
@@ -36,6 +37,7 @@ var err error
 // @in header
 // @name Authorization
 func main() {
+	fmt.Println("STARTING BIZMART")
 	red := color.New(color.FgRed).SprintFunc()
 	green := color.New(color.FgGreen).SprintFunc()
 	yellow := color.New(color.FgYellow).SprintFunc()
@@ -74,6 +76,11 @@ func main() {
 		panic(err)
 	}
 
+	err = kafka.CreateProducer(security2.AppSettings.KafkaParams)
+	if err != nil {
+		panic(err)
+	}
+
 	router := gin.Default()
 
 	mainServer := new(server.Server)
@@ -83,7 +90,7 @@ func main() {
 		}
 	}()
 
-	_, err := ssogrpc.New(
+	err = ssogrpc.New(
 		context.Background(),
 		security2.AppSettings.Clients.SSO.ClientAddress,
 		security2.AppSettings.Clients.SSO.Timeout,
@@ -94,9 +101,6 @@ func main() {
 	}
 
 	go repository.SynchronizationUserTable(security2.AppSettings.KafkaParams)
-
-	//
-	//fmt.Println(ssoClient.IsAdmin(context.Background(), 1))
 
 	go jobs.UpdateProductCache()
 	quit := make(chan os.Signal, 1)

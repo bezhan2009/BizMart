@@ -8,7 +8,5 @@ logs
 # Security Files
 configs/configs.json
 .env
-scripts/server.exe
-server.exe~
-server.exe
+*.exe
 docs

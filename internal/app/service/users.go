@@ -3,6 +3,7 @@ package service
 import (
 	"BizMart/internal/app/models"
 	"BizMart/internal/repository"
+	"BizMart/pkg/brokers/kafka"
 	"BizMart/pkg/errs"
 	"BizMart/pkg/logger"
 	"BizMart/pkg/utils"
@@ -49,11 +50,18 @@ func CreateUser(user models.User) (uint, error) {
 
 	user.HashPassword = utils.GenerateHash(user.HashPassword)
 
-	var userID uint
+	var userDB models.User
 
-	if userID, err = repository.CreateUser(user); err != nil {
+	if userDB, err = repository.CreateUser(user); err != nil {
 		return 0, fmt.Errorf("failed to create user: %w", err)
 	}
 
-	return userID, nil
+	err = kafka.SendMessage(userDB)
+	if err != nil {
+		logger.Error.Printf("failed to send kafka message: %s", err.Error())
+
+		return 0, err
+	}
+
+	return userDB.ID, nil
 }

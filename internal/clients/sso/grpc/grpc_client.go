@@ -13,14 +13,17 @@ import (
 )
 
 type Client struct {
-	api ssov1.AuthClient
+	authApi ssov1.AuthClient
+	pingApi ssov1.PingServiceClient
 }
+
+var client *Client
 
 func New(ctx context.Context,
 	addr string,
 	timeout time.Duration,
 	retriesCount int,
-) (*Client, error) {
+) error {
 	const op = "grpc.New"
 
 	retryOpts := []grpcretry.CallOption{
@@ -36,23 +39,17 @@ func New(ctx context.Context,
 			grpcretry.UnaryClientInterceptor(retryOpts...)),
 	)
 	if err != nil {
-		return nil, fmt.Errorf("%s: %w", op, err)
+		return fmt.Errorf("%s: %w", op, err)
 	}
 
-	return &Client{
-		api: ssov1.NewAuthClient(conn),
-	}, nil
+	client = &Client{
+		authApi: ssov1.NewAuthClient(conn),
+		pingApi: ssov1.NewPingServiceClient(conn),
+	}
+
+	return nil
 }
 
-func (c *Client) IsAdmin(ctx context.Context, userID int32) (bool, error) {
-	const op = "grpc.IsAdmin"
-
-	resp, err := c.api.IsAdmin(ctx, &ssov1.IsAdminRequest{
-		UserId: userID,
-	})
-	if err != nil {
-		return false, fmt.Errorf("%s: %w", op, err)
-	}
-
-	return resp.IsAdmin, nil
+func GetClient() *Client {
+	return client
 }

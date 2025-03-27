@@ -24,6 +24,7 @@
     "user": "postgres",
     "database": "biz_mart_db",
     "user_database": "users_db",
+    "app_id": 1,
     "sslmode": "disable"
   },
   "redis_params": {

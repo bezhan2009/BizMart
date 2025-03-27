@@ -31,6 +31,7 @@ type AppParams struct {
 	AppVersion string `json:"app_version"`
 	PortRun    string `json:"port_run"`
 	GinMode    string `json:"gin_mode"`
+	AppID      int    `json:"app_id"`
 	Env        string `json:"env"`
 }
 
