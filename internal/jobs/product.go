@@ -28,7 +28,8 @@ func UpdateProductCache() {
 			return
 		}
 
-		// Запись данных в Redis
+		// Запись дан
+		//ных в Redis
 		err = db.SetCache(cacheKey, productData, 10*time.Minute)
 		if err != nil {
 			log.Printf("Error setting cache in Redis: %v", err)

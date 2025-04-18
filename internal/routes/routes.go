@@ -4,13 +4,43 @@ import (
 	_ "BizMart/docs"
 	"BizMart/internal/controllers"
 	"BizMart/internal/controllers/middlewares"
+	"BizMart/internal/security"
 	"github.com/gin-gonic/gin"
+	"github.com/markbates/goth"
+	"github.com/markbates/goth/providers/google"
 	swaggerFiles "github.com/swaggo/files"
 	"github.com/swaggo/gin-swagger"
+	"os"
 )
 
 func InitRoutes(r *gin.Engine) *gin.Engine {
+	googleProvider := security.AppSettings.ProvidersParams.GoogleProvider
+
+	// Настройка провайдера
+	if googleProvider.ClientSecret == "" || googleProvider.ClientID == "" {
+		goth.UseProviders(
+			google.New(
+				os.Getenv("GOOGLE_CLIENT_ID"),
+				os.Getenv("GOOGLE_CLIENT_SECRET"),
+				os.Getenv("GOOGLE_REDIRECT"),
+				"email", "profile",
+			),
+		)
+	} else {
+		goth.UseProviders(
+			google.New(
+				googleProvider.ClientID,
+				googleProvider.ClientSecret,
+				googleProvider.Redirect,
+				"email", "profile",
+			),
+		)
+	}
+
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+	r.GET("/auth/google", controllers.GoogleLogin)
+	r.GET("/auth/google/callback", controllers.GoogleCallback)
 
 	pingRoute := r.Group("/ping")
 	{

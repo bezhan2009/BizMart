@@ -11,10 +11,81 @@ import (
 	"errors"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"github.com/markbates/goth/gothic"
 	"net/http"
 	"os"
 	"time"
 )
+
+// GoogleLogin godoc
+// @Summary Начать авторизацию через Google
+// @Description Этот эндпоинт перенаправляет пользователя на страницу авторизации Google.
+// @Tags auth
+// @Produce  json
+// @Success 302 {string} string "Redirect to Google"
+// @Failure 500 {object} models.ErrorResponse
+// @Router /auth/google [get]
+func GoogleLogin(c *gin.Context) {
+	gothic.BeginAuthHandler(c.Writer, c.Request)
+}
+
+// GoogleCallback godoc
+// @Summary Авторизация через Google с созданием пользователя
+// @Description Этот эндпоинт авторизует пользователя через Google OAuth. Сразу вызывается регистрация пользователя (SignUp), и независимо от результата регистрации происходит вход (SignIn) для получения JWT токенов.
+// @Tags auth
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} models.TokenResponse
+// @Failure 401 {object} models.ErrorResponse
+// @Failure 500 {object} models.ErrorResponse
+// @Router /auth/google/callback [get]
+func GoogleCallback(c *gin.Context) {
+	// Устанавливаем провайдера "google" в контекст запроса
+	c.Request = c.Request.WithContext(context.WithValue(c.Request.Context(), "provider", "google"))
+
+	// Завершаем авторизацию через Google
+	userData, err := gothic.CompleteUserAuth(c.Writer, c.Request)
+	if err != nil {
+		logger.Error.Printf("Google auth error: %v", err)
+		HandleError(c, errs.ErrUnauthorized)
+		return
+	}
+
+	logger.Info.Printf("Получены данные от Google: %+v", userData)
+
+	grpcClient := grpc.GetClient()
+	ctx := context.Background()
+
+	// Формируем модель пользователя для регистрации/входа
+	user := models.User{
+		Email:    userData.Email,
+		Username: userData.Name,
+		// Генерируем единый хеш для Google-пользователя (одинаков для одного email)
+		HashPassword: utils2.GenerateHash("google:" + userData.Email),
+	}
+
+	// Сразу пытаемся зарегистрировать пользователя
+	// Игнорируем ошибку, если пользователь уже существует или возникает другая ошибка
+	_, err = grpcClient.SignUp(ctx, user)
+	if err != nil {
+		logger.Warn.Printf("SignUp вернул ошибку (игнорируем): %v", err)
+	}
+
+	// Проводим авторизацию (SignIn) для получения токенов
+	tokenResp, err := grpcClient.SignIn(ctx, user)
+	if err != nil {
+		logger.Error.Printf("SignIn error: %v", err)
+		HandleError(c, err)
+		return
+	}
+
+	// Возвращаем токены
+	c.JSON(http.StatusOK, models.TokenResponse{
+		AccessToken:  tokenResp.AccessToken,
+		RefreshToken: tokenResp.RefreshToken,
+		UserID:       tokenResp.UserID,
+	})
+}
 
 // SignUp godoc
 // @Summary Register a new user

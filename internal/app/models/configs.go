@@ -3,13 +3,14 @@ package models
 import "time"
 
 type Configs struct {
-	LogParams      LogParams      `json:"log_params"`
-	AppParams      AppParams      `json:"app_params"`
-	PostgresParams PostgresParams `json:"postgres_params"`
-	RedisParams    RedisParams    `json:"redis_params"`
-	KafkaParams    KafkaParams    `json:"kafka_params"`
-	Clients        ClientsConfig  `json:"clients"`
-	Auth           Auth           `json:"auth"`
+	LogParams       LogParams       `json:"log_params"`
+	AppParams       AppParams       `json:"app_params"`
+	PostgresParams  PostgresParams  `json:"postgres_params"`
+	RedisParams     RedisParams     `json:"redis_params"`
+	KafkaParams     KafkaParams     `json:"kafka_params"`
+	ProvidersParams ProvidersConfig `json:"providers"`
+	Clients         ClientsConfig   `json:"clients"`
+	Auth            Auth            `json:"auth"`
 }
 
 type LogParams struct {
@@ -73,4 +74,14 @@ type Client struct {
 
 type ClientsConfig struct {
 	SSO Client `json:"sso"`
+}
+
+type GoogleProvider struct {
+	ClientID     string `json:"client_id"`
+	ClientSecret string `json:"client_secret"`
+	Redirect     string `json:"redirect"`
+}
+
+type ProvidersConfig struct {
+	GoogleProvider GoogleProvider `json:"google_provider"`
 }

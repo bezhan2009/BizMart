@@ -44,6 +44,13 @@
     "jwt_secret_key": "",
     "jwt_ttl_minutes": 60
   },
+  "providers": {
+    "google": {
+      "client_id": "YOUR_CLIENT_ID",
+      "client_secret": "YOUR_CLIENT_SECRET",
+      "redirect": "http://localhost:8585/auth/google/callback"
+    }
+  },
   "clients": {
     "sso": {
       "address": "grpc_server:44044",
