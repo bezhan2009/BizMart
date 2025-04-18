@@ -38,6 +38,9 @@
    ```bash
    docker-compose up --build
    ```
+## В Docker Desktop
+   ![image](https://github.com/user-attachments/assets/cbf5019a-47b5-4fff-b4a6-b466c95fac61)
+
 
 ## Вклад
 Если вы хотите внести свой вклад в проект, пожалуйста, создайте форк репозитория и отправьте пулл-реквест с вашими изменениями.
