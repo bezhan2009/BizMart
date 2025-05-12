@@ -59,5 +59,10 @@ func Migrate() error {
 		return err
 	}
 
+	err = seeds.SeedOrderStatuses(dbConn)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

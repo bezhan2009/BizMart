@@ -96,7 +96,7 @@ type ProductRequest struct {
 	Description   string   `json:"description"`
 	Price         uint     `json:"price"`
 	Amount        uint     `json:"amount"`
-	ProductImages []string `json:"product_images"`
+	ProductImages []string `json:"product_image"`
 }
 
 type ProductResponse struct {

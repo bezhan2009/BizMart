@@ -39,9 +39,6 @@ func InitRoutes(r *gin.Engine) *gin.Engine {
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	r.GET("/auth/google", controllers.GoogleLogin)
-	r.GET("/auth/google/callback", controllers.GoogleCallback)
-
 	pingRoute := r.Group("/ping")
 	{
 		pingRoute.GET("/", controllers.Ping)
@@ -61,6 +58,9 @@ func InitRoutes(r *gin.Engine) *gin.Engine {
 		auth.POST("/sign-up", controllers.SignUp)
 		auth.POST("/sign-in", controllers.SignIn)
 		auth.POST("/refresh", controllers.RefreshToken)
+
+		auth.GET("/google", controllers.GoogleLogin)
+		auth.GET("/google/callback", controllers.GoogleCallback)
 	}
 
 	// storeRoutes Маршруты для магазинов
