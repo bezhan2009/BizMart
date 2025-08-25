@@ -30,7 +30,6 @@ var err error
 // @version 1.3.2
 
 // @description API Server for BizMart Application
-// @host localhost:8585
 // @BasePath /
 
 // @securityDefinitions.apikey ApiKeyAuth
